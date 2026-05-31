@@ -68,25 +68,47 @@ export default () => {
                 {uuid && id && (
                     <CSSTransition timeout={150} classNames={'fade'} appear in>
                         <SubNavigation>
-                            <div className={'text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 px-4 mt-2'}>
-                                Servidor
-                            </div>
-                            <div>
-                                {routes.server
-                                    .filter((route) => !!route.name)
-                                    .map((route) =>
-                                        route.permission ? (
-                                            <Can key={route.path} action={route.permission} matchAny>
-                                                <NavLink to={to(route.path, true)} exact={route.exact}>
-                                                    {route.name}
-                                                </NavLink>
-                                            </Can>
-                                        ) : (
-                                            <NavLink key={route.path} to={to(route.path, true)} exact={route.exact}>
-                                                {route.name}
-                                            </NavLink>
-                                        )
-                                    )}
+                            {[{
+                                title: 'Administración',
+                                paths: ['/', '/console', '/settings', '/importer']
+                            }, {
+                                title: 'Modificaciones',
+                                paths: ['/files', '/versions', '/split', '/subdomains', '/reverse-proxy']
+                            }, {
+                                title: 'Configuración',
+                                paths: ['/databases', '/backups', '/schedules', '/network', '/startup']
+                            }, {
+                                title: 'Actividades',
+                                paths: ['/users', '/activity']
+                            }].map((group, index) => {
+                                const groupRoutes = routes.server.filter(r => r.name && group.paths.includes(r.path));
+                                if (groupRoutes.length === 0) return null;
+                                
+                                return (
+                                    <React.Fragment key={group.title}>
+                                        <div className={`text-[10px] font-bold text-neutral-500 uppercase tracking-wider mb-1 px-4 ${index > 0 ? 'mt-4' : 'mt-2'}`}>
+                                            {group.title}
+                                        </div>
+                                        <div className="flex flex-col gap-y-1">
+                                            {groupRoutes.map((route) =>
+                                                route.permission ? (
+                                                    <Can key={route.path} action={route.permission} matchAny>
+                                                        <NavLink to={to(route.path, true)} exact={route.exact}>
+                                                            {route.name}
+                                                        </NavLink>
+                                                    </Can>
+                                                ) : (
+                                                    <NavLink key={route.path} to={to(route.path, true)} exact={route.exact}>
+                                                        {route.name}
+                                                    </NavLink>
+                                                )
+                                            )}
+                                        </div>
+                                    </React.Fragment>
+                                );
+                            })}
+                            
+                            <div className="mt-4">
                                 {rootAdmin && (
                                     // eslint-disable-next-line react/jsx-no-target-blank
                                     <a href={`/admin/servers/view/${serverId}`} target={'_blank'}>

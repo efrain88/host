@@ -13,6 +13,7 @@ import AccountApiContainer from '@/components/dashboard/AccountApiContainer';
 import AccountSSHContainer from '@/components/dashboard/ssh/AccountSSHContainer';
 import ActivityLogContainer from '@/components/dashboard/activity/ActivityLogContainer';
 import ServerActivityLogContainer from '@/components/server/ServerActivityLogContainer';
+import ServerInformation from '@/components/server/console/ServerInformationContainer';
 
 // Each of the router files is already code split out appropriately — so
 // all of the items above will only be loaded in when that router is loaded.
@@ -70,14 +71,21 @@ export default {
         {
             path: '/',
             permission: null,
-            name: 'Console',
+            name: 'Información',
+            component: ServerInformation,
+            exact: true,
+        },
+        {
+            path: '/console',
+            permission: null,
+            name: 'Consola',
             component: ServerConsole,
             exact: true,
         },
         {
             path: '/files',
             permission: 'file.*',
-            name: 'Files',
+            name: 'Archivos',
             component: FileManagerContainer,
         },
         {
@@ -89,13 +97,13 @@ export default {
         {
             path: '/databases',
             permission: 'database.*',
-            name: 'Databases',
+            name: 'Base de datos',
             component: DatabasesContainer,
         },
         {
             path: '/schedules',
             permission: 'schedule.*',
-            name: 'Schedules',
+            name: 'Automático',
             component: ScheduleContainer,
         },
         {
@@ -107,7 +115,7 @@ export default {
         {
             path: '/users',
             permission: 'user.*',
-            name: 'Users',
+            name: 'Usuarios',
             component: UsersContainer,
         },
         {
@@ -119,25 +127,25 @@ export default {
         {
             path: '/network',
             permission: 'allocation.*',
-            name: 'Network',
+            name: 'Red',
             component: NetworkContainer,
         },
         {
             path: '/startup',
             permission: 'startup.*',
-            name: 'Startup',
+            name: 'Inicio',
             component: StartupContainer,
         },
         {
             path: '/settings',
             permission: ['settings.*', 'file.sftp'],
-            name: 'Settings',
+            name: 'Configuración',
             component: SettingsContainer,
         },
         {
             path: '/activity',
             permission: 'activity.*',
-            name: 'Activity',
+            name: 'Actividad',
             component: ServerActivityLogContainer,
         },
     ],

@@ -3,25 +3,25 @@ import { ServerContext } from '@/state/server';
 import ServerContentBlock from '@/components/elements/ServerContentBlock';
 import isEqual from 'react-fast-compare';
 import Spinner from '@/components/elements/Spinner';
-import Console from '@/components/server/console/Console';
 import StatGraphs from '@/components/server/console/StatGraphs';
 import PowerButtons from '@/components/server/console/PowerButtons';
 import ServerDetailsBlock from '@/components/server/console/ServerDetailsBlock';
 import { Alert } from '@/components/elements/alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBullhorn } from '@fortawesome/free-solid-svg-icons';
+import { faBullhorn, faTerminal, faFolder, faBoxOpen, faCog } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 import useWebsocketEvent from '@/plugins/useWebsocketEvent';
 import { SocketEvent, SocketRequest } from '@/components/server/events';
 import UptimeDuration from '@/components/server/UptimeDuration';
 import { capitalize } from '@/lib/strings';
 
-const ServerConsoleContainer = () => {
+const ServerInformationContainer = () => {
     const name = ServerContext.useStoreState((state) => state.server.data!.name);
+    const id = ServerContext.useStoreState((state) => state.server.data!.id);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+    const node = ServerContext.useStoreState((state) => state.server.data!.node);
     const status = ServerContext.useStoreState((state) => state.status.value);
-    const isInstalling = ServerContext.useStoreState((state) => state.server.isInstalling);
-    const isTransferring = ServerContext.useStoreState((state) => state.server.data!.isTransferring);
-    const isNodeUnderMaintenance = ServerContext.useStoreState((state) => state.server.data!.isNodeUnderMaintenance);
-
+    
     const [uptime, setUptime] = useState(0);
     const connected = ServerContext.useStoreState((state) => state.socket.connected);
     const instance = ServerContext.useStoreState((state) => state.socket.instance);
@@ -41,17 +41,7 @@ const ServerConsoleContainer = () => {
     });
 
     return (
-        <ServerContentBlock title={'Consola'}>
-            {(isNodeUnderMaintenance || isInstalling || isTransferring) && (
-                <Alert type={'warning'} className={'mb-4'}>
-                    {isNodeUnderMaintenance
-                        ? 'El nodo de este servidor está en mantenimiento y las acciones no están disponibles.'
-                        : isInstalling
-                        ? 'Este servidor se está instalando y la mayoría de acciones no están disponibles.'
-                        : 'Este servidor está siendo transferido a otro nodo y las acciones no están disponibles.'}
-                </Alert>
-            )}
-
+        <ServerContentBlock title={'Información'}>
             {/* Promotional Banner */}
             <div className="bg-primary-900/40 border border-primary-500/30 rounded-xl p-4 mb-6 flex items-center justify-between">
                 <div className="flex items-center">
@@ -89,13 +79,6 @@ const ServerConsoleContainer = () => {
                 </div>
             </div>
 
-            {/* Terminal Console */}
-            <div className={'mb-6'}>
-                <Spinner.Suspense>
-                    <Console />
-                </Spinner.Suspense>
-            </div>
-
             {/* Stats Grid */}
             <ServerDetailsBlock className="mb-6" />
 
@@ -105,8 +88,47 @@ const ServerConsoleContainer = () => {
                     <StatGraphs />
                 </Spinner.Suspense>
             </div>
+
+            {/* Bottom Actions & Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-5">
+                    <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-4">Información del servidor</h3>
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-center p-3 bg-white/[0.02] rounded-lg border border-white/[0.02]">
+                            <span className="text-xs text-neutral-500">Nodo</span>
+                            <span className="text-xs font-medium text-neutral-300">{node}</span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 bg-white/[0.02] rounded-lg border border-white/[0.02]">
+                            <span className="text-xs text-neutral-500">UUID del servidor</span>
+                            <span className="text-xs font-medium text-neutral-300 truncate max-w-[200px]">{uuid}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-5">
+                    <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-4">Acciones rápidas</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                        <Link to={`/server/${id}/console`} className="flex items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.02] hover:border-white/[0.05] rounded-lg transition-all">
+                            <FontAwesomeIcon icon={faTerminal} className="text-primary-400 mr-3" />
+                            <span className="text-sm font-medium text-neutral-300">Console</span>
+                        </Link>
+                        <Link to={`/server/${id}/files`} className="flex items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.02] hover:border-white/[0.05] rounded-lg transition-all">
+                            <FontAwesomeIcon icon={faFolder} className="text-primary-400 mr-3" />
+                            <span className="text-sm font-medium text-neutral-300">Files</span>
+                        </Link>
+                        <Link to={`/server/${id}/backups`} className="flex items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.02] hover:border-white/[0.05] rounded-lg transition-all">
+                            <FontAwesomeIcon icon={faBoxOpen} className="text-primary-400 mr-3" />
+                            <span className="text-sm font-medium text-neutral-300">Backups</span>
+                        </Link>
+                        <Link to={`/server/${id}/settings`} className="flex items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.02] hover:border-white/[0.05] rounded-lg transition-all">
+                            <FontAwesomeIcon icon={faCog} className="text-primary-400 mr-3" />
+                            <span className="text-sm font-medium text-neutral-300">Settings</span>
+                        </Link>
+                    </div>
+                </div>
+            </div>
         </ServerContentBlock>
     );
 };
 
-export default memo(ServerConsoleContainer, isEqual);
+export default memo(ServerInformationContainer, isEqual);

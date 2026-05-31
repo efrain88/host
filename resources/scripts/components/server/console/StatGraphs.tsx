@@ -16,9 +16,9 @@ export default () => {
     const limits = ServerContext.useStoreState((state) => state.server.data!.limits);
     const previous = useRef<Record<'tx' | 'rx', number>>({ tx: -1, rx: -1 });
 
-    const cpu = useChartTickLabel('CPU', limits.cpu, '%', 2);
-    const memory = useChartTickLabel('Memory', limits.memory, 'MiB');
-    const network = useChart('Network', {
+    const cpu = useChartTickLabel('Carga de CPU', limits.cpu, '%', 2);
+    const memory = useChartTickLabel('Memoria', limits.memory, 'MiB');
+    const network = useChart('Red', {
         sets: 2,
         options: {
             scales: {
@@ -34,9 +34,9 @@ export default () => {
         callback(opts, index) {
             return {
                 ...opts,
-                label: !index ? 'Network In' : 'Network Out',
-                borderColor: !index ? theme('colors.cyan.400') : theme('colors.yellow.400'),
-                backgroundColor: hexToRgba(!index ? theme('colors.cyan.700') : theme('colors.yellow.700'), 0.5),
+                label: !index ? 'Red Entrada' : 'Red Salida',
+                borderColor: !index ? theme('colors.primary.400') : theme('colors.primary.700'),
+                backgroundColor: hexToRgba(!index ? theme('colors.primary.600') : theme('colors.primary.900'), 0.2),
             };
         },
     });
@@ -68,21 +68,21 @@ export default () => {
 
     return (
         <>
-            <ChartBlock title={'CPU Load'}>
+            <ChartBlock title={'Carga de CPU'}>
                 <Line {...cpu.props} />
             </ChartBlock>
-            <ChartBlock title={'Memory'}>
+            <ChartBlock title={'Memoria'}>
                 <Line {...memory.props} />
             </ChartBlock>
             <ChartBlock
-                title={'Network'}
+                title={'Red'}
                 legend={
                     <>
-                        <Tooltip arrow content={'Inbound'}>
-                            <CloudDownloadIcon className={'mr-2 w-4 h-4 text-yellow-400'} />
+                        <Tooltip arrow content={'Entrada'}>
+                            <CloudDownloadIcon className={'mr-2 w-4 h-4 text-primary-400'} />
                         </Tooltip>
-                        <Tooltip arrow content={'Outbound'}>
-                            <CloudUploadIcon className={'w-4 h-4 text-cyan-400'} />
+                        <Tooltip arrow content={'Salida'}>
+                            <CloudUploadIcon className={'w-4 h-4 text-primary-700'} />
                         </Tooltip>
                     </>
                 }
