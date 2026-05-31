@@ -52,9 +52,17 @@ const ServerConsoleContainer = () => {
                 </Alert>
             )}
 
-            {/* Top Bar (Name & Actions) */}
-            <div className="flex flex-col md:flex-row items-center justify-between mb-4">
-                <h1 className="text-lg font-bold text-white tracking-tight mb-4 md:mb-0">{name}</h1>
+            {/* Top Bar (Name, Status & Actions) */}
+            <div className="flex flex-col md:flex-row items-center justify-between mb-6 bg-[#050505] border border-white/[0.05] p-4 rounded-xl shadow-lg">
+                <div className="flex flex-col md:items-start space-y-1 mb-4 md:mb-0">
+                    <h1 className="text-xl font-bold text-white tracking-tight">{name}</h1>
+                    <div className="flex items-center text-xs font-medium text-neutral-400">
+                        <span className={`w-2.5 h-2.5 rounded-full mr-2 shadow-[0_0_8px_rgba(0,0,0,0.5)] ${status === 'running' ? 'bg-green-500 shadow-green-500/50' : status === 'offline' ? 'bg-red-500 shadow-red-500/50' : 'bg-yellow-500 shadow-yellow-500/50'}`}></span>
+                        <span className="text-neutral-300 mr-2 drop-shadow-sm">{status === 'running' ? 'En línea' : status === 'offline' ? 'Apagado' : capitalize(status || 'Cargando')}</span>
+                        <span className="text-neutral-600 mr-2 drop-shadow-sm">•</span>
+                        <span className="text-neutral-400 drop-shadow-sm">Uptime: {uptime > 0 ? <UptimeDuration uptime={uptime / 1000} /> : '0s'}</span>
+                    </div>
+                </div>
                 <PowerButtons />
             </div>
 
