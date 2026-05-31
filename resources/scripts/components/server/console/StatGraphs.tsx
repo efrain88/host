@@ -10,6 +10,8 @@ import { CloudDownloadIcon, CloudUploadIcon } from '@heroicons/react/solid';
 import { theme } from 'twin.macro';
 import ChartBlock from '@/components/server/console/ChartBlock';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMicrochip, faMemory } from '@fortawesome/free-solid-svg-icons';
 
 export default () => {
     const status = ServerContext.useStoreState((state) => state.status.value);
@@ -68,10 +70,24 @@ export default () => {
 
     return (
         <>
-            <ChartBlock title={'Carga de CPU'}>
+            <ChartBlock 
+                title={'Carga de CPU'}
+                legend={
+                    <Tooltip arrow content={'CPU Usage'}>
+                        <FontAwesomeIcon icon={faMicrochip} className="text-primary-500 w-4 h-4" />
+                    </Tooltip>
+                }
+            >
                 <Line {...cpu.props} />
             </ChartBlock>
-            <ChartBlock title={'Memoria'}>
+            <ChartBlock 
+                title={'Memoria'}
+                legend={
+                    <Tooltip arrow content={'Memory Usage'}>
+                        <FontAwesomeIcon icon={faMemory} className="text-primary-500 w-4 h-4" />
+                    </Tooltip>
+                }
+            >
                 <Line {...memory.props} />
             </ChartBlock>
             <ChartBlock

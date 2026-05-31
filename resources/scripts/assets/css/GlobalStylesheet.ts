@@ -7,8 +7,7 @@ export default createGlobalStyle`
     body {
         ${tw`font-sans bg-black text-neutral-200`};
         letter-spacing: 0.015em;
-        background-color: #050505;
-        background-image: radial-gradient(circle at 50% 0%, #1a1b23 0%, #050505 60%);
+        background-color: #000000;
         background-attachment: fixed;
     }
 

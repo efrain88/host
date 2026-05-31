@@ -66,8 +66,8 @@ const ServerConsoleContainer = () => {
                 ></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-black/90"></div>
                 
-                {/* Left Side Info (Centered Higher) */}
-                <div className="absolute top-[30%] -translate-y-1/2 left-8 flex flex-col z-10">
+                {/* Left Side Info (Centered Middle) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-8 flex flex-col z-10">
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-md">{name}</h2>
                     <div className="flex items-center text-xs font-medium">
                         <span className={`w-2 h-2 rounded-full mr-2 shadow-[0_0_8px_rgba(0,0,0,0.5)] ${status === 'running' ? 'bg-green-500 shadow-green-500/50' : status === 'offline' ? 'bg-red-500 shadow-red-500/50' : 'bg-yellow-500 shadow-yellow-500/50'}`}></span>

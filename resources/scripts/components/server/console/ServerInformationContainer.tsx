@@ -55,8 +55,8 @@ const ServerInformationContainer = () => {
                 ></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-black/90"></div>
                 
-                {/* Left Side Info (Centered Higher) */}
-                <div className="absolute top-[30%] -translate-y-1/2 left-8 flex flex-col z-10">
+                {/* Left Side Info (Centered Middle) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-8 flex flex-col z-10">
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-md">{name}</h2>
                     <div className="flex items-center text-xs font-medium">
                         <span className={`w-2 h-2 rounded-full mr-2 shadow-[0_0_8px_rgba(0,0,0,0.5)] ${status === 'running' ? 'bg-green-500 shadow-green-500/50' : status === 'offline' ? 'bg-red-500 shadow-red-500/50' : 'bg-yellow-500 shadow-yellow-500/50'}`}></span>
@@ -95,11 +95,11 @@ const ServerInformationContainer = () => {
                     <div className="space-y-3">
                         <div className="flex justify-between items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] transition-colors rounded-xl border border-white/[0.02]">
                             <span className="text-xs font-medium text-neutral-500">Nodo</span>
-                            <span className="text-xs font-bold text-neutral-200">{node}</span>
+                            <span className="text-[13px] font-black text-primary-400">{node}</span>
                         </div>
                         <div className="flex justify-between items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] transition-colors rounded-xl border border-white/[0.02]">
                             <span className="text-xs font-medium text-neutral-500">UUID del servidor</span>
-                            <span className="text-xs font-bold text-neutral-200 truncate max-w-[200px]">{uuid}</span>
+                            <span className="text-[13px] font-black text-primary-400 truncate max-w-[200px]">{uuid}</span>
                         </div>
                     </div>
                 </div>
@@ -112,21 +112,21 @@ const ServerInformationContainer = () => {
                         Acciones Rápidas
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
-                        <Link to={`/server/${id}/console`} className="flex flex-col justify-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
-                            <FontAwesomeIcon icon={faTerminal} className="text-neutral-400 group-hover:text-primary-400 mb-2 text-lg transition-colors" />
-                            <span className="text-xs font-bold text-neutral-300 group-hover:text-white transition-colors">Consola</span>
+                        <Link to={`/server/${id}/console`} className="flex flex-row items-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
+                            <FontAwesomeIcon icon={faTerminal} className="text-primary-500 group-hover:text-primary-400 mr-3 text-lg transition-colors" />
+                            <span className="text-sm font-bold text-neutral-200 group-hover:text-white transition-colors">Console</span>
                         </Link>
-                        <Link to={`/server/${id}/files`} className="flex flex-col justify-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
-                            <FontAwesomeIcon icon={faFolder} className="text-neutral-400 group-hover:text-primary-400 mb-2 text-lg transition-colors" />
-                            <span className="text-xs font-bold text-neutral-300 group-hover:text-white transition-colors">Archivos</span>
+                        <Link to={`/server/${id}/files`} className="flex flex-row items-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
+                            <FontAwesomeIcon icon={faFolder} className="text-primary-500 group-hover:text-primary-400 mr-3 text-lg transition-colors" />
+                            <span className="text-sm font-bold text-neutral-200 group-hover:text-white transition-colors">Files</span>
                         </Link>
-                        <Link to={`/server/${id}/backups`} className="flex flex-col justify-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
-                            <FontAwesomeIcon icon={faBoxOpen} className="text-neutral-400 group-hover:text-primary-400 mb-2 text-lg transition-colors" />
-                            <span className="text-xs font-bold text-neutral-300 group-hover:text-white transition-colors">Backups</span>
+                        <Link to={`/server/${id}/backups`} className="flex flex-row items-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
+                            <FontAwesomeIcon icon={faBoxOpen} className="text-primary-500 group-hover:text-primary-400 mr-3 text-lg transition-colors" />
+                            <span className="text-sm font-bold text-neutral-200 group-hover:text-white transition-colors">Backups</span>
                         </Link>
-                        <Link to={`/server/${id}/settings`} className="flex flex-col justify-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
-                            <FontAwesomeIcon icon={faCog} className="text-neutral-400 group-hover:text-primary-400 mb-2 text-lg transition-colors" />
-                            <span className="text-xs font-bold text-neutral-300 group-hover:text-white transition-colors">Ajustes</span>
+                        <Link to={`/server/${id}/settings`} className="flex flex-row items-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
+                            <FontAwesomeIcon icon={faCog} className="text-primary-500 group-hover:text-primary-400 mr-3 text-lg transition-colors" />
+                            <span className="text-sm font-bold text-neutral-200 group-hover:text-white transition-colors">Settings</span>
                         </Link>
                     </div>
                 </div>
