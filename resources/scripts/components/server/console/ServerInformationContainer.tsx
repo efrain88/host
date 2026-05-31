@@ -47,30 +47,29 @@ const ServerInformationContainer = () => {
                 <h1 className="text-lg font-bold text-white tracking-tight mb-4 md:mb-0">{name}</h1>
                 <PowerButtons />
             </div>
-
             {/* Banner Image */}
-            <div className="relative w-full h-32 md:h-48 rounded-xl overflow-hidden mb-6 shadow-lg border border-white/5 bg-[#0a0a0a]">
+            <div className="relative w-full h-32 md:h-48 rounded-2xl overflow-hidden mb-6 shadow-2xl border border-white/5 bg-[#050505]">
                 <div 
                     className="absolute inset-0 bg-cover bg-center opacity-70" 
                     style={{ backgroundImage: 'url(/assets/server_banner.png)' }}
                 ></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/20 to-black/80"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-black/90"></div>
                 
-                {/* Left Side Info */}
-                <div className="absolute bottom-6 left-6 flex flex-col z-10">
-                    <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 tracking-tight">{name}</h2>
+                {/* Left Side Info (Centered Higher) */}
+                <div className="absolute top-[30%] -translate-y-1/2 left-8 flex flex-col z-10">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-md">{name}</h2>
                     <div className="flex items-center text-xs font-medium">
                         <span className={`w-2 h-2 rounded-full mr-2 shadow-[0_0_8px_rgba(0,0,0,0.5)] ${status === 'running' ? 'bg-green-500 shadow-green-500/50' : status === 'offline' ? 'bg-red-500 shadow-red-500/50' : 'bg-yellow-500 shadow-yellow-500/50'}`}></span>
-                        <span className="text-neutral-300 mr-2">{status === 'running' ? 'En línea' : status === 'offline' ? 'Apagado' : capitalize(status || 'Cargando')}</span>
-                        <span className="text-neutral-600 mr-2">•</span>
-                        <span className="text-neutral-400">Uptime: {uptime > 0 ? <UptimeDuration uptime={uptime / 1000} /> : '0s'}</span>
+                        <span className="text-neutral-300 mr-2 drop-shadow-sm">{status === 'running' ? 'En línea' : status === 'offline' ? 'Apagado' : capitalize(status || 'Cargando')}</span>
+                        <span className="text-neutral-500 mr-2 drop-shadow-sm">•</span>
+                        <span className="text-neutral-300 drop-shadow-sm">Activo: {uptime > 0 ? <UptimeDuration uptime={uptime / 1000} /> : '0s'}</span>
                     </div>
                 </div>
 
                 {/* Right Side Watermark */}
-                <div className="absolute top-1/2 -translate-y-1/2 right-6 pointer-events-none flex flex-col items-end opacity-[0.15]">
-                    <span className="text-2xl md:text-3xl font-bold text-white tracking-widest uppercase leading-none">LUMENCRAFT</span>
-                    <span className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none mt-1">MINECRAFT PANEL</span>
+                <div className="absolute top-1/2 -translate-y-1/2 right-8 pointer-events-none flex flex-col items-end opacity-[0.25]">
+                    <span className="text-2xl md:text-3xl font-bold text-white tracking-widest uppercase leading-none drop-shadow-lg">LUMENCRAFT</span>
+                    <span className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none mt-1 drop-shadow-lg">MINECRAFT PANEL</span>
                 </div>
             </div>
 
@@ -85,45 +84,49 @@ const ServerInformationContainer = () => {
             </div>
 
             {/* Bottom Actions & Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-5">
-                    <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-4 flex items-center">
-                        <FontAwesomeIcon icon={faInfoCircle} className="text-primary-500 mr-2" />
-                        Información del servidor
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-[#050505] border border-white/5 rounded-2xl p-6 shadow-xl hover:border-white/10 transition-colors">
+                    <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-5 flex items-center">
+                        <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center mr-3">
+                            <FontAwesomeIcon icon={faInfoCircle} className="text-primary-500 text-sm" />
+                        </div>
+                        Información del Servidor
                     </h3>
                     <div className="space-y-3">
-                        <div className="flex justify-between items-center p-3 bg-white/[0.02] rounded-lg border border-white/[0.02]">
-                            <span className="text-xs text-neutral-500">Nodo</span>
-                            <span className="text-xs font-medium text-neutral-300">{node}</span>
+                        <div className="flex justify-between items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] transition-colors rounded-xl border border-white/[0.02]">
+                            <span className="text-xs font-medium text-neutral-500">Nodo</span>
+                            <span className="text-xs font-bold text-neutral-200">{node}</span>
                         </div>
-                        <div className="flex justify-between items-center p-3 bg-white/[0.02] rounded-lg border border-white/[0.02]">
-                            <span className="text-xs text-neutral-500">UUID del servidor</span>
-                            <span className="text-xs font-medium text-neutral-300 truncate max-w-[200px]">{uuid}</span>
+                        <div className="flex justify-between items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] transition-colors rounded-xl border border-white/[0.02]">
+                            <span className="text-xs font-medium text-neutral-500">UUID del servidor</span>
+                            <span className="text-xs font-bold text-neutral-200 truncate max-w-[200px]">{uuid}</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-5">
-                    <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-4 flex items-center">
-                        <FontAwesomeIcon icon={faBolt} className="text-primary-500 mr-2" />
-                        Acciones rápidas
+                <div className="bg-[#050505] border border-white/5 rounded-2xl p-6 shadow-xl hover:border-white/10 transition-colors">
+                    <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-5 flex items-center">
+                        <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center mr-3">
+                            <FontAwesomeIcon icon={faBolt} className="text-primary-500 text-sm" />
+                        </div>
+                        Acciones Rápidas
                     </h3>
-                    <div className="grid grid-cols-2 gap-3">
-                        <Link to={`/server/${id}/console`} className="flex items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.02] hover:border-white/[0.05] rounded-lg transition-all">
-                            <FontAwesomeIcon icon={faTerminal} className="text-primary-400 mr-3" />
-                            <span className="text-sm font-medium text-neutral-300">Console</span>
+                    <div className="grid grid-cols-2 gap-4">
+                        <Link to={`/server/${id}/console`} className="flex flex-col justify-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
+                            <FontAwesomeIcon icon={faTerminal} className="text-neutral-400 group-hover:text-primary-400 mb-2 text-lg transition-colors" />
+                            <span className="text-xs font-bold text-neutral-300 group-hover:text-white transition-colors">Consola</span>
                         </Link>
-                        <Link to={`/server/${id}/files`} className="flex items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.02] hover:border-white/[0.05] rounded-lg transition-all">
-                            <FontAwesomeIcon icon={faFolder} className="text-primary-400 mr-3" />
-                            <span className="text-sm font-medium text-neutral-300">Files</span>
+                        <Link to={`/server/${id}/files`} className="flex flex-col justify-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
+                            <FontAwesomeIcon icon={faFolder} className="text-neutral-400 group-hover:text-primary-400 mb-2 text-lg transition-colors" />
+                            <span className="text-xs font-bold text-neutral-300 group-hover:text-white transition-colors">Archivos</span>
                         </Link>
-                        <Link to={`/server/${id}/backups`} className="flex items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.02] hover:border-white/[0.05] rounded-lg transition-all">
-                            <FontAwesomeIcon icon={faBoxOpen} className="text-primary-400 mr-3" />
-                            <span className="text-sm font-medium text-neutral-300">Backups</span>
+                        <Link to={`/server/${id}/backups`} className="flex flex-col justify-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
+                            <FontAwesomeIcon icon={faBoxOpen} className="text-neutral-400 group-hover:text-primary-400 mb-2 text-lg transition-colors" />
+                            <span className="text-xs font-bold text-neutral-300 group-hover:text-white transition-colors">Backups</span>
                         </Link>
-                        <Link to={`/server/${id}/settings`} className="flex items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.02] hover:border-white/[0.05] rounded-lg transition-all">
-                            <FontAwesomeIcon icon={faCog} className="text-primary-400 mr-3" />
-                            <span className="text-sm font-medium text-neutral-300">Settings</span>
+                        <Link to={`/server/${id}/settings`} className="flex flex-col justify-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
+                            <FontAwesomeIcon icon={faCog} className="text-neutral-400 group-hover:text-primary-400 mb-2 text-lg transition-colors" />
+                            <span className="text-xs font-bold text-neutral-300 group-hover:text-white transition-colors">Ajustes</span>
                         </Link>
                     </div>
                 </div>
