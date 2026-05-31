@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation, useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCogs, faLayerGroup, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { useStoreState } from 'easy-peasy';
@@ -27,9 +27,16 @@ const GlobalA = styled.a`
 export default ({ children }: { children?: React.ReactNode }) => {
     const name = useStoreState((state: ApplicationStore) => state.settings.data!.name);
     const rootAdmin = useStoreState((state: ApplicationStore) => state.user.data!.rootAdmin);
+    const user = useStoreState((state: ApplicationStore) => state.user.data!);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const location = useLocation();
+    const history = useHistory();
 
-    const onTriggerLogout = () => {
+    const isServerRoute = location.pathname.startsWith('/server/');
+
+    const onTriggerLogout = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
         setIsLoggingOut(true);
         http.post('/auth/logout').finally(() => {
             // @ts-expect-error this is valid
@@ -51,38 +58,49 @@ export default ({ children }: { children?: React.ReactNode }) => {
                 </Link>
             </div>
 
-            <div className={'flex flex-col px-4 mt-6 gap-y-1'}>
-                <div className={'text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 px-4'}>
-                    Navegación
+            {!isServerRoute && (
+                <div className={'flex flex-col px-4 mt-6 gap-y-1'}>
+                    <div className={'text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 px-4'}>
+                        Navegación
+                    </div>
+                    <GlobalLink to={'/'} exact>
+                        <FontAwesomeIcon icon={faLayerGroup} />
+                        Servidores
+                    </GlobalLink>
+                    {rootAdmin && (
+                        <GlobalA href={'/admin'} rel={'noreferrer'}>
+                            <FontAwesomeIcon icon={faCogs} />
+                            Administración
+                        </GlobalA>
+                    )}
                 </div>
-                <GlobalLink to={'/'} exact>
-                    <FontAwesomeIcon icon={faLayerGroup} />
-                    Servidores
-                </GlobalLink>
-                <GlobalLink to={'/account'}>
-                    <span className={'flex items-center w-5 h-5 mr-3 opacity-80'}><Avatar.User /></span>
-                    Cuenta
-                </GlobalLink>
-                {rootAdmin && (
-                    <GlobalA href={'/admin'} rel={'noreferrer'}>
-                        <FontAwesomeIcon icon={faCogs} />
-                        Administración
-                    </GlobalA>
-                )}
-            </div>
+            )}
 
             <div className={'flex-1 overflow-y-auto mt-2'}>
                  {children}
             </div>
 
-            <div className={'mt-auto p-4 border-t border-white/5'}>
-                <div className={'flex items-center justify-between px-4 py-2'}>
-                    <div className={'flex items-center'}>
-                        <div className={'flex flex-col'}>
-                             <span className={'text-sm font-medium text-neutral-200'}>Conectado</span>
-                             <button onClick={onTriggerLogout} className={'text-xs text-neutral-500 hover:text-red-400 text-left transition-colors'}>Cerrar Sesión</button>
+            <div 
+                className={'mt-auto p-4 border-t border-white/5 hover:bg-white/5 cursor-pointer transition-colors'} 
+                onClick={() => history.push('/account')}
+            >
+                <div className={'flex items-center justify-between px-2 py-2'}>
+                    <div className={'flex items-center gap-x-3'}>
+                        <div className={'w-9 h-9 rounded-full overflow-hidden border border-white/10 shrink-0 bg-neutral-800'}>
+                            <Avatar.User />
+                        </div>
+                        <div className={'flex flex-col overflow-hidden truncate max-w-[120px]'}>
+                             <span className={'text-sm font-bold text-white truncate'}>{user.username}</span>
+                             <span className={'text-xs text-neutral-400 truncate'}>{user.email}</span>
                         </div>
                     </div>
+                    <button 
+                        onClick={onTriggerLogout} 
+                        className={'text-neutral-500 hover:text-red-400 transition-colors p-2 rounded-full hover:bg-red-500/10'} 
+                        title="Cerrar Sesión"
+                    >
+                        <FontAwesomeIcon icon={faSignOutAlt} />
+                    </button>
                 </div>
             </div>
         </div>

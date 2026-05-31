@@ -6,44 +6,31 @@ import { Server } from '@/api/server/getServer';
 import getServerResourceUsage, { ServerPowerState, ServerStats } from '@/api/server/getServerResourceUsage';
 import { bytesToString, ip, mbToBytes } from '@/lib/formatters';
 import tw from 'twin.macro';
-import GreyRowBox from '@/components/elements/GreyRowBox';
 import Spinner from '@/components/elements/Spinner';
 import styled from 'styled-components/macro';
 import isEqual from 'react-fast-compare';
+import classNames from 'classnames';
 
 // Determines if the current value is in an alarm threshold so we can show it in red rather
 // than the more faded default style.
 const isAlarmState = (current: number, limit: number): boolean => limit > 0 && current / (limit * 1024 * 1024) >= 0.9;
 
-const Icon = memo(
-    styled(FontAwesomeIcon)<{ $alarm: boolean }>`
-        ${(props) => (props.$alarm ? tw`text-red-400` : tw`text-neutral-500`)};
-    `,
-    isEqual
-);
-
-const IconDescription = styled.p<{ $alarm: boolean }>`
-    ${tw`text-sm ml-2`};
-    ${(props) => (props.$alarm ? tw`text-white` : tw`text-neutral-400`)};
-`;
-
-const StatusIndicatorBox = styled(GreyRowBox)<{ $status: ServerPowerState | undefined }>`
-    ${tw`grid grid-cols-12 gap-4 relative`};
+const StatusIndicatorBox = styled(Link)<{ $status: ServerPowerState | undefined }>`
+    ${tw`flex flex-col lg:flex-row items-center gap-y-4 gap-x-6 relative bg-[#0a0a0c] border border-white/5 rounded-2xl shadow-2xl p-4 hover:bg-white/5 hover:border-white/10 transition-all duration-300 overflow-hidden no-underline`};
 
     & .status-bar {
-        ${tw`w-2 bg-red-500 absolute right-0 z-20 rounded-full m-1 opacity-50 transition-all duration-150`};
-        height: calc(100% - 0.5rem);
-
+        ${tw`w-1.5 absolute right-0 top-0 bottom-0 z-20 transition-all duration-300`};
+        
         ${({ $status }) =>
             !$status || $status === 'offline'
-                ? tw`bg-red-500`
+                ? tw`bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.6)]`
                 : $status === 'running'
-                ? tw`bg-green-500`
-                : tw`bg-yellow-500`};
+                ? tw`bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)]`
+                : tw`bg-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.6)]`};
     }
 
     &:hover .status-bar {
-        ${tw`opacity-75`};
+        ${tw`w-2 brightness-125`};
     }
 `;
 
@@ -84,27 +71,30 @@ export default ({ server, className }: { server: Server; className?: string }) =
         alarms.disk = server.limits.disk === 0 ? false : isAlarmState(stats.diskUsageInBytes, server.limits.disk);
     }
 
-    const diskLimit = server.limits.disk !== 0 ? bytesToString(mbToBytes(server.limits.disk)) : 'Unlimited';
-    const memoryLimit = server.limits.memory !== 0 ? bytesToString(mbToBytes(server.limits.memory)) : 'Unlimited';
-    const cpuLimit = server.limits.cpu !== 0 ? server.limits.cpu + ' %' : 'Unlimited';
+    const diskLimit = server.limits.disk !== 0 ? bytesToString(mbToBytes(server.limits.disk)) : 'Ilimitado';
+    const memoryLimit = server.limits.memory !== 0 ? bytesToString(mbToBytes(server.limits.memory)) : 'Ilimitado';
+    const cpuLimit = server.limits.cpu !== 0 ? server.limits.cpu + ' %' : 'Ilimitado';
 
     return (
-        <StatusIndicatorBox as={Link} to={`/server/${server.id}`} className={className} $status={stats?.status}>
-            <div css={tw`flex items-center col-span-12 sm:col-span-5 lg:col-span-6`}>
-                <div className={'icon mr-4'}>
-                    <FontAwesomeIcon icon={faServer} />
+        <StatusIndicatorBox to={`/server/${server.id}`} className={className} $status={stats?.status}>
+            {/* Lado Izquierdo: Icono y Nombre */}
+            <div className="flex items-center gap-x-4 w-full lg:w-1/3 shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 shadow-inner">
+                    <FontAwesomeIcon icon={faServer} className="text-xl text-neutral-400" />
                 </div>
-                <div>
-                    <p css={tw`text-lg break-words`}>{server.name}</p>
+                <div className="flex flex-col overflow-hidden">
+                    <p className="text-lg font-bold text-white truncate">{server.name}</p>
                     {!!server.description && (
-                        <p css={tw`text-sm text-neutral-300 break-words line-clamp-2`}>{server.description}</p>
+                        <p className="text-xs text-neutral-400 truncate mt-0.5">{server.description}</p>
                     )}
                 </div>
             </div>
-            <div css={tw`flex-1 ml-4 lg:block lg:col-span-2 hidden`}>
-                <div css={tw`flex justify-center`}>
-                    <FontAwesomeIcon icon={faEthernet} css={tw`text-neutral-500`} />
-                    <p css={tw`text-sm text-neutral-400 ml-2`}>
+
+            {/* Centro: IP Address */}
+            <div className="w-full lg:w-auto lg:flex-1 flex items-center lg:justify-center">
+                <div className="flex items-center gap-x-2 bg-[#050505] px-3 py-1.5 rounded-lg border border-white/5 shadow-inner">
+                    <FontAwesomeIcon icon={faEthernet} className="text-xs text-neutral-500" />
+                    <p className="text-xs font-mono font-medium text-neutral-300 truncate">
                         {server.allocations
                             .filter((alloc) => alloc.isDefault)
                             .map((allocation) => (
@@ -115,62 +105,67 @@ export default ({ server, className }: { server: Server; className?: string }) =
                     </p>
                 </div>
             </div>
-            <div css={tw`hidden col-span-7 lg:col-span-4 sm:flex items-baseline justify-center`}>
+
+            {/* Derecha: Recursos */}
+            <div className="w-full lg:w-5/12 flex items-center justify-start lg:justify-end gap-x-6 lg:pr-6">
                 {!stats || isSuspended ? (
                     isSuspended ? (
-                        <div css={tw`flex-1 text-center`}>
-                            <span css={tw`bg-red-500 rounded px-2 py-1 text-red-100 text-xs`}>
-                                {server.status === 'suspended' ? 'Suspended' : 'Connection Error'}
-                            </span>
-                        </div>
+                        <span className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs px-3 py-1 rounded-md font-medium">
+                            {server.status === 'suspended' ? 'Suspendido' : 'Error de Conexión'}
+                        </span>
                     ) : server.isTransferring || server.status ? (
-                        <div css={tw`flex-1 text-center`}>
-                            <span css={tw`bg-neutral-500 rounded px-2 py-1 text-neutral-100 text-xs`}>
-                                {server.isTransferring
-                                    ? 'Transferring'
-                                    : server.status === 'installing'
-                                    ? 'Installing'
-                                    : server.status === 'restoring_backup'
-                                    ? 'Restoring Backup'
-                                    : 'Unavailable'}
-                            </span>
-                        </div>
+                        <span className="bg-neutral-500/10 border border-neutral-500/20 text-neutral-400 text-xs px-3 py-1 rounded-md font-medium">
+                            {server.isTransferring
+                                ? 'Transfiriendo'
+                                : server.status === 'installing'
+                                ? 'Instalando'
+                                : server.status === 'restoring_backup'
+                                ? 'Restaurando Backup'
+                                : 'No Disponible'}
+                        </span>
                     ) : (
-                        <Spinner size={'small'} />
+                        <Spinner size="small" />
                     )
                 ) : (
                     <React.Fragment>
-                        <div css={tw`flex-1 ml-4 sm:block hidden`}>
-                            <div css={tw`flex justify-center`}>
-                                <Icon icon={faMicrochip} $alarm={alarms.cpu} />
-                                <IconDescription $alarm={alarms.cpu}>
+                        {/* CPU */}
+                        <div className="flex items-center gap-x-2">
+                            <FontAwesomeIcon icon={faMicrochip} className={alarms.cpu ? 'text-red-400' : 'text-neutral-500'} />
+                            <div className="flex flex-col">
+                                <span className={classNames("text-xs font-bold", alarms.cpu ? "text-red-400" : "text-white")}>
                                     {stats.cpuUsagePercent.toFixed(2)} %
-                                </IconDescription>
+                                </span>
+                                <span className="text-[10px] text-neutral-500 font-medium tracking-wide">de {cpuLimit}</span>
                             </div>
-                            <p css={tw`text-xs text-neutral-600 text-center mt-1`}>of {cpuLimit}</p>
                         </div>
-                        <div css={tw`flex-1 ml-4 sm:block hidden`}>
-                            <div css={tw`flex justify-center`}>
-                                <Icon icon={faMemory} $alarm={alarms.memory} />
-                                <IconDescription $alarm={alarms.memory}>
+
+                        {/* RAM */}
+                        <div className="flex items-center gap-x-2">
+                            <FontAwesomeIcon icon={faMemory} className={alarms.memory ? 'text-red-400' : 'text-neutral-500'} />
+                            <div className="flex flex-col">
+                                <span className={classNames("text-xs font-bold", alarms.memory ? "text-red-400" : "text-white")}>
                                     {bytesToString(stats.memoryUsageInBytes)}
-                                </IconDescription>
+                                </span>
+                                <span className="text-[10px] text-neutral-500 font-medium tracking-wide">de {memoryLimit}</span>
                             </div>
-                            <p css={tw`text-xs text-neutral-600 text-center mt-1`}>of {memoryLimit}</p>
                         </div>
-                        <div css={tw`flex-1 ml-4 sm:block hidden`}>
-                            <div css={tw`flex justify-center`}>
-                                <Icon icon={faHdd} $alarm={alarms.disk} />
-                                <IconDescription $alarm={alarms.disk}>
+
+                        {/* DISK */}
+                        <div className="flex items-center gap-x-2">
+                            <FontAwesomeIcon icon={faHdd} className={alarms.disk ? 'text-red-400' : 'text-neutral-500'} />
+                            <div className="flex flex-col">
+                                <span className={classNames("text-xs font-bold", alarms.disk ? "text-red-400" : "text-white")}>
                                     {bytesToString(stats.diskUsageInBytes)}
-                                </IconDescription>
+                                </span>
+                                <span className="text-[10px] text-neutral-500 font-medium tracking-wide">de {diskLimit}</span>
                             </div>
-                            <p css={tw`text-xs text-neutral-600 text-center mt-1`}>of {diskLimit}</p>
                         </div>
                     </React.Fragment>
                 )}
             </div>
-            <div className={'status-bar'} />
+            
+            {/* Barra de estado en el borde derecho */}
+            <div className="status-bar" />
         </StatusIndicatorBox>
     );
 };
