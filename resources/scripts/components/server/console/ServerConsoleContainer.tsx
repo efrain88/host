@@ -71,7 +71,7 @@ const ServerConsoleContainer = () => {
             {/* Server Header Block */}
             <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-6 mb-6 relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between shadow-lg">
                 <div className="absolute -top-12 -right-4 opacity-[0.03] pointer-events-none text-[120px] font-black italic select-none leading-none tracking-tighter w-full text-right">
-                    NEOVEX MINECRAFT PANEL
+                    LUMENCRAFT MINECRAFT PANEL
                 </div>
                 
                 <div className="z-10 flex flex-col mb-4 md:mb-0">
