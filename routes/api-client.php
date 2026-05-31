@@ -150,4 +150,9 @@ Route::group([
         Route::post('/reinstall', [Client\Servers\SettingsController::class, 'reinstall']);
         Route::put('/docker-image', [Client\Servers\SettingsController::class, 'dockerImage']);
     });
+
+    Route::group(['prefix' => '/importer'], function () {
+        Route::post('/test', [Client\Servers\ImporterController::class, 'testConnection']);
+        Route::post('/run', [Client\Servers\ImporterController::class, 'runImport']);
+    });
 });

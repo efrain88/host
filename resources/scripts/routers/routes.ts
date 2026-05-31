@@ -22,6 +22,7 @@ import ServerInformation from '@/components/server/console/ServerInformationCont
 // for the server dashboard when they're only needed for specific instances.
 const FileEditContainer = lazy(() => import('@/components/server/files/FileEditContainer'));
 const ScheduleEditContainer = lazy(() => import('@/components/server/schedules/ScheduleEditContainer'));
+const ImporterContainer = lazy(() => import('@/components/server/importer/ImporterContainer'));
 
 interface RouteDefinition {
     path: string;
@@ -146,6 +147,12 @@ export default {
             permission: ['settings.*', 'file.sftp'],
             name: 'Configuración',
             component: SettingsContainer,
+        },
+        {
+            path: '/importer',
+            permission: ['settings.*'],
+            name: 'Importador',
+            component: ImporterContainer,
         },
         {
             path: '/activity',

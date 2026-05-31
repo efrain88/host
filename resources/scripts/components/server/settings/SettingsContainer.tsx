@@ -5,7 +5,6 @@ import RenameServerBox from '@/components/server/settings/RenameServerBox';
 import FlashMessageRender from '@/components/FlashMessageRender';
 import Can from '@/components/elements/Can';
 import ReinstallServerBox from '@/components/server/settings/ReinstallServerBox';
-import ImporterBox from '@/components/server/settings/ImporterBox';
 import tw from 'twin.macro';
 import Input from '@/components/elements/Input';
 import Label from '@/components/elements/Label';
@@ -15,7 +14,7 @@ import CopyOnClick from '@/components/elements/CopyOnClick';
 import { ip } from '@/lib/formatters';
 import { Button } from '@/components/elements/button/index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWrench, faNetworkWired, faSync, faPencilAlt, faServer, faTerminal, faCopy, faCloudDownloadAlt } from '@fortawesome/free-solid-svg-icons';
+import { faWrench, faNetworkWired, faSync, faPencilAlt, faServer, faTerminal, faCopy } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components/macro';
 
 const TabButton = styled.button<{ $active?: boolean; $danger?: boolean }>`
@@ -45,7 +44,7 @@ export default () => {
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const node = ServerContext.useStoreState((state) => state.server.data!.node);
     const sftp = ServerContext.useStoreState((state) => state.server.data!.sftpDetails, isEqual);
-    const [activeTab, setActiveTab] = useState<'general' | 'sftp' | 'importer' | 'reinstall'>('general');
+    const [activeTab, setActiveTab] = useState<'general' | 'sftp' | 'reinstall'>('general');
 
     return (
         <ServerContentBlock title={'Configuración'}>
@@ -65,9 +64,6 @@ export default () => {
                     </TabButton>
                     <TabButton $active={activeTab === 'sftp'} onClick={() => setActiveTab('sftp')}>
                         <FontAwesomeIcon icon={faNetworkWired} className="w-4 h-4" /> Acceso SFTP
-                    </TabButton>
-                    <TabButton $active={activeTab === 'importer'} onClick={() => setActiveTab('importer')}>
-                        <FontAwesomeIcon icon={faCloudDownloadAlt} className="w-4 h-4" /> Importar Servidor
                     </TabButton>
                     <TabButton $active={activeTab === 'reinstall'} $danger onClick={() => setActiveTab('reinstall')}>
                         <FontAwesomeIcon icon={faSync} className="w-4 h-4" /> Reinstalar Servidor
@@ -182,12 +178,6 @@ export default () => {
                                     </div>
                                 </ContentBox>
                             </Can>
-                        </div>
-                    )}
-
-                    {activeTab === 'importer' && (
-                        <div className="animate-fade-in">
-                            <ImporterBox />
                         </div>
                     )}
 
