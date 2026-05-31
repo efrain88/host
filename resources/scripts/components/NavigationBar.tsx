@@ -29,10 +29,25 @@ export default ({ children }: { children?: React.ReactNode }) => {
     const rootAdmin = useStoreState((state: ApplicationStore) => state.user.data!.rootAdmin);
     const user = useStoreState((state: ApplicationStore) => state.user.data!);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [avatar, setAvatar] = useState<string | null>(null);
     const location = useLocation();
     const history = useHistory();
 
     const isServerRoute = location.pathname.startsWith('/server/');
+
+    React.useEffect(() => {
+        const savedAvatar = localStorage.getItem('user_avatar');
+        if (savedAvatar) setAvatar(savedAvatar);
+        
+        // Polling to detect changes in localStorage from the same window
+        const interval = setInterval(() => {
+            const currentAvatar = localStorage.getItem('user_avatar');
+            if (currentAvatar !== avatar) {
+                setAvatar(currentAvatar);
+            }
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [avatar]);
 
     const onTriggerLogout = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -87,7 +102,7 @@ export default ({ children }: { children?: React.ReactNode }) => {
                 <div className={'flex items-center justify-between px-2 py-2'}>
                     <div className={'flex items-center gap-x-3'}>
                         <div className={'w-9 h-9 rounded-full overflow-hidden border border-white/10 shrink-0 bg-neutral-800'}>
-                            <Avatar.User />
+                            {avatar ? <img src={avatar} className="w-full h-full object-cover" /> : <Avatar.User />}
                         </div>
                         <div className={'flex flex-col overflow-hidden truncate max-w-[120px]'}>
                              <span className={'text-sm font-bold text-white truncate'}>{user.username}</span>

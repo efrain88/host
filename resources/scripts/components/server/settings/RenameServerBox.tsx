@@ -20,25 +20,61 @@ interface Values {
     description: string;
 }
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import styled from 'styled-components/macro';
+
+const ContentBox = styled.div`
+    ${tw`bg-[#0a0a0c] border border-white/5 rounded-2xl p-6 shadow-2xl mb-6 relative overflow-hidden`};
+`;
+
+const BoxHeader = styled.div`
+    ${tw`flex items-center gap-x-3 mb-6 pb-4 border-b border-white/5`};
+    h2 {
+        ${tw`text-lg font-bold text-white tracking-wide`};
+    }
+    svg {
+        ${tw`text-primary-400 text-xl`};
+    }
+`;
+
 const RenameServerBox = () => {
     const { isSubmitting } = useFormikContext<Values>();
 
     return (
-        <TitledGreyBox title={'Change Server Details'} css={tw`relative`}>
+        <ContentBox>
+            <BoxHeader>
+                <FontAwesomeIcon icon={faPencilAlt} />
+                <h2>Detalles del servidor</h2>
+            </BoxHeader>
             <SpinnerOverlay visible={isSubmitting} />
-            <Form css={tw`mb-0`}>
-                <Field id={'name'} name={'name'} label={'Server Name'} type={'text'} />
-                <div css={tw`mt-6`}>
-                    <Label>Server Description</Label>
-                    <FormikFieldWrapper name={'description'}>
-                        <FormikField as={Textarea} name={'description'} rows={3} />
-                    </FormikFieldWrapper>
+            <Form className="mb-0 bg-[#050505] p-5 rounded-xl border border-white/5">
+                <div className="flex flex-col md:flex-row gap-6">
+                    <div className="flex-1">
+                        <Field id={'name'} name={'name'} label={'Nombre del servidor'} type={'text'} />
+                    </div>
+                    <div className="flex-1">
+                        <Label>Descripción</Label>
+                        <FormikFieldWrapper name={'description'}>
+                            <FormikField as={Textarea} name={'description'} rows={1} />
+                        </FormikFieldWrapper>
+                    </div>
                 </div>
-                <div css={tw`mt-6 text-right`}>
-                    <Button type={'submit'}>Save</Button>
+                
+                <div className="mt-6">
+                    <Field id={'ip_alias'} name={'ip_alias'} label={'IP Alias'} type={'text'} placeholder={'mc.lumencraft.lat'} />
+                </div>
+
+                <div className="mt-6 flex flex-col sm:flex-row gap-y-4 justify-between sm:items-end border-t border-white/5 pt-6">
+                    <p className="text-xs text-neutral-500">
+                        Optional display name for your server IP (e.g., play.minecraftserver.net)
+                    </p>
+                    <Button type={'submit'} className="bg-primary-600 hover:bg-primary-500 text-white rounded-xl shadow-lg border-0 px-8 py-2.5">
+                        Guardar
+                    </Button>
                 </div>
             </Form>
-        </TitledGreyBox>
+        </ContentBox>
     );
 };
 
