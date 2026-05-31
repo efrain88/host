@@ -1,29 +1,27 @@
 import styled from 'styled-components/macro';
-import tw, { theme } from 'twin.macro';
+import tw from 'twin.macro';
 
 const SubNavigation = styled.div`
-    ${tw`w-full bg-neutral-700 shadow overflow-x-auto`};
+    ${tw`w-full flex flex-col mt-4`};
 
     & > div {
-        ${tw`flex items-center text-sm mx-auto px-2`};
-        max-width: 1200px;
+        ${tw`flex flex-col w-full px-4 gap-y-1`};
 
         & > a,
         & > div {
-            ${tw`inline-block py-3 px-4 text-neutral-300 no-underline whitespace-nowrap transition-all duration-150`};
-
-            &:not(:first-of-type) {
-                ${tw`ml-2`};
-            }
+            ${tw`flex items-center py-2.5 px-4 text-neutral-400 no-underline transition-all duration-200 rounded-xl font-medium text-sm`};
 
             &:hover {
-                ${tw`text-neutral-100`};
+                ${tw`text-neutral-100 bg-white/5`};
             }
 
             &:active,
             &.active {
-                ${tw`text-neutral-100`};
-                box-shadow: inset 0 -2px ${theme`colors.cyan.600`.toString()};
+                ${tw`text-primary-400 bg-primary-500/10`};
+            }
+            
+            svg {
+                ${tw`mr-3 text-lg opacity-80`};
             }
         }
     }

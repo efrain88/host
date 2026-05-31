@@ -63,18 +63,14 @@ export default () => {
     }, [match.params.id]);
 
     return (
-        <React.Fragment key={'server-router'}>
-            <NavigationBar />
-            {!uuid || !id ? (
-                error ? (
-                    <ServerError message={error} />
-                ) : (
-                    <Spinner size={'large'} centered />
-                )
-            ) : (
-                <>
+        <div className="flex w-full h-screen overflow-hidden" key={'server-router'}>
+            <NavigationBar>
+                {uuid && id && (
                     <CSSTransition timeout={150} classNames={'fade'} appear in>
                         <SubNavigation>
+                            <div className={'text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 px-4 mt-2'}>
+                                Servidor
+                            </div>
                             <div>
                                 {routes.server
                                     .filter((route) => !!route.name)
@@ -94,35 +90,48 @@ export default () => {
                                 {rootAdmin && (
                                     // eslint-disable-next-line react/jsx-no-target-blank
                                     <a href={`/admin/servers/view/${serverId}`} target={'_blank'}>
-                                        <FontAwesomeIcon icon={faExternalLinkAlt} />
+                                        <FontAwesomeIcon icon={faExternalLinkAlt} /> Administración Panel
                                     </a>
                                 )}
                             </div>
                         </SubNavigation>
                     </CSSTransition>
-                    <InstallListener />
-                    <TransferListener />
-                    <WebsocketHandler />
-                    {inConflictState && (!rootAdmin || (rootAdmin && !location.pathname.endsWith(`/server/${id}`))) ? (
-                        <ConflictStateRenderer />
+                )}
+            </NavigationBar>
+            
+            <div className="flex-1 flex flex-col h-screen overflow-y-auto overflow-x-hidden relative">
+                {!uuid || !id ? (
+                    error ? (
+                        <ServerError message={error} />
                     ) : (
-                        <ErrorBoundary>
-                            <TransitionRouter>
-                                <Switch location={location}>
-                                    {routes.server.map(({ path, permission, component: Component }) => (
-                                        <PermissionRoute key={path} permission={permission} path={to(path)} exact>
-                                            <Spinner.Suspense>
-                                                <Component />
-                                            </Spinner.Suspense>
-                                        </PermissionRoute>
-                                    ))}
-                                    <Route path={'*'} component={NotFound} />
-                                </Switch>
-                            </TransitionRouter>
-                        </ErrorBoundary>
-                    )}
-                </>
-            )}
-        </React.Fragment>
+                        <Spinner size={'large'} centered />
+                    )
+                ) : (
+                    <>
+                        <InstallListener />
+                        <TransferListener />
+                        <WebsocketHandler />
+                        {inConflictState && (!rootAdmin || (rootAdmin && !location.pathname.endsWith(`/server/${id}`))) ? (
+                            <ConflictStateRenderer />
+                        ) : (
+                            <ErrorBoundary>
+                                <TransitionRouter>
+                                    <Switch location={location}>
+                                        {routes.server.map(({ path, permission, component: Component }) => (
+                                            <PermissionRoute key={path} permission={permission} path={to(path)} exact>
+                                                <Spinner.Suspense>
+                                                    <Component />
+                                                </Spinner.Suspense>
+                                            </PermissionRoute>
+                                        ))}
+                                        <Route path={'*'} component={NotFound} />
+                                    </Switch>
+                                </TransitionRouter>
+                            </ErrorBoundary>
+                        )}
+                    </>
+                )}
+            </div>
+        </div>
     );
 };

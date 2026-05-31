@@ -1,21 +1,15 @@
 import tw from 'twin.macro';
 import { createGlobalStyle } from 'styled-components/macro';
-// @ts-expect-error untyped font file
-import font from '@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2';
 
 export default createGlobalStyle`
-    @font-face {
-        font-family: 'IBM Plex Sans';
-        font-style: normal;
-        font-display: swap;
-        font-weight: 100 700;
-        src: url(${font}) format('woff2-variations');
-        unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
 
     body {
-        ${tw`font-sans bg-neutral-800 text-neutral-200`};
+        ${tw`font-sans bg-black text-neutral-200`};
         letter-spacing: 0.015em;
+        background-color: #050505;
+        background-image: radial-gradient(circle at 50% 0%, #1a1b23 0%, #050505 60%);
+        background-attachment: fixed;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -47,16 +41,16 @@ export default createGlobalStyle`
     /* Scroll Bar Style */
     ::-webkit-scrollbar {
         background: none;
-        width: 16px;
-        height: 16px;
+        width: 12px;
+        height: 12px;
     }
 
     ::-webkit-scrollbar-thumb {
         border: solid 0 rgb(0 0 0 / 0%);
-        border-right-width: 4px;
-        border-left-width: 4px;
-        -webkit-border-radius: 9px 4px;
-        -webkit-box-shadow: inset 0 0 0 1px hsl(211, 10%, 53%), inset 0 0 0 4px hsl(209deg 18% 30%);
+        border-right-width: 3px;
+        border-left-width: 3px;
+        -webkit-border-radius: 9px;
+        -webkit-box-shadow: inset 0 0 0 1px #2a2b36, inset 0 0 0 4px #1a1b23;
     }
 
     ::-webkit-scrollbar-track-piece {
@@ -66,9 +60,9 @@ export default createGlobalStyle`
     ::-webkit-scrollbar-thumb:horizontal {
         border-right-width: 0;
         border-left-width: 0;
-        border-top-width: 4px;
-        border-bottom-width: 4px;
-        -webkit-border-radius: 4px 9px;
+        border-top-width: 3px;
+        border-bottom-width: 3px;
+        -webkit-border-radius: 9px;
     }
 
     ::-webkit-scrollbar-corner {
