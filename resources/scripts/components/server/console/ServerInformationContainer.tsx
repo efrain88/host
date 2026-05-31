@@ -42,34 +42,35 @@ const ServerInformationContainer = () => {
 
     return (
         <ServerContentBlock title={'Información'}>
-            {/* Server Header Strip */}
+            {/* Top Bar (Name & Actions) */}
             <div className="flex flex-col md:flex-row items-center justify-between mb-4">
-                <div className="flex items-center space-x-3 mb-4 md:mb-0">
-                    <h1 className="text-xl font-bold text-white tracking-tight">{name}</h1>
-                    <div className="flex items-center text-xs font-medium bg-white/5 px-2 py-1 rounded-md">
-                        <span className={`w-2 h-2 rounded-full mr-2 ${status === 'running' ? 'bg-green-500' : status === 'offline' ? 'bg-red-500' : 'bg-yellow-500'}`}></span>
+                <h1 className="text-lg font-bold text-white tracking-tight mb-4 md:mb-0">{name}</h1>
+                <PowerButtons />
+            </div>
+
+            {/* Banner Image */}
+            <div className="relative w-full h-32 md:h-48 rounded-xl overflow-hidden mb-6 shadow-lg border border-white/5 bg-[#0a0a0a]">
+                <div 
+                    className="absolute inset-0 bg-cover bg-center opacity-70" 
+                    style={{ backgroundImage: 'url(/assets/server_banner.png)' }}
+                ></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/20 to-black/80"></div>
+                
+                {/* Left Side Info */}
+                <div className="absolute bottom-6 left-6 flex flex-col z-10">
+                    <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 tracking-tight">{name}</h2>
+                    <div className="flex items-center text-xs font-medium">
+                        <span className={`w-2 h-2 rounded-full mr-2 shadow-[0_0_8px_rgba(0,0,0,0.5)] ${status === 'running' ? 'bg-green-500 shadow-green-500/50' : status === 'offline' ? 'bg-red-500 shadow-red-500/50' : 'bg-yellow-500 shadow-yellow-500/50'}`}></span>
                         <span className="text-neutral-300 mr-2">{status === 'running' ? 'En línea' : status === 'offline' ? 'Apagado' : capitalize(status || 'Cargando')}</span>
-                        <span className="text-neutral-500 mr-2">•</span>
+                        <span className="text-neutral-600 mr-2">•</span>
                         <span className="text-neutral-400">Uptime: {uptime > 0 ? <UptimeDuration uptime={uptime / 1000} /> : '0s'}</span>
                     </div>
                 </div>
 
-                <div className="flex items-center">
-                    <PowerButtons className="flex space-x-2" />
-                </div>
-            </div>
-
-            {/* Banner Image */}
-            <div className="relative w-full h-32 md:h-48 rounded-xl overflow-hidden mb-6 shadow-lg border border-white/5">
-                <div 
-                    className="absolute inset-0 bg-cover bg-center" 
-                    style={{ backgroundImage: 'url(/assets/server_banner.png)' }}
-                ></div>
-                <div className="absolute inset-0 bg-black/40 bg-gradient-to-r from-[#0a0a0a] to-transparent"></div>
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <h2 className="text-4xl md:text-5xl font-black italic text-white/10 tracking-tighter text-center select-none uppercase">
-                        LUMENCRAFT MINECRAFT PANEL
-                    </h2>
+                {/* Right Side Watermark */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-6 pointer-events-none flex flex-col items-end opacity-[0.15]">
+                    <span className="text-2xl md:text-3xl font-bold text-white tracking-widest uppercase leading-none">LUMENCRAFT</span>
+                    <span className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none mt-1">MINECRAFT PANEL</span>
                 </div>
             </div>
 
