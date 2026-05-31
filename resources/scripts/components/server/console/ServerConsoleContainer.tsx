@@ -60,7 +60,7 @@ const ServerConsoleContainer = () => {
                         <span className={`w-2.5 h-2.5 rounded-full mr-2 shadow-[0_0_8px_rgba(0,0,0,0.5)] ${status === 'running' ? 'bg-green-500 shadow-green-500/50' : status === 'offline' ? 'bg-red-500 shadow-red-500/50' : 'bg-yellow-500 shadow-yellow-500/50'}`}></span>
                         <span className="text-neutral-300 mr-2 drop-shadow-sm">{status === 'running' ? 'En línea' : status === 'offline' ? 'Apagado' : capitalize(status || 'Cargando')}</span>
                         <span className="text-neutral-600 mr-2 drop-shadow-sm">•</span>
-                        <span className="text-neutral-400 drop-shadow-sm">Uptime: {uptime > 0 ? <UptimeDuration uptime={uptime / 1000} /> : '0s'}</span>
+                        <span className="text-neutral-400 drop-shadow-sm">Activo: {uptime > 0 ? <UptimeDuration uptime={uptime / 1000} /> : '0s'}</span>
                     </div>
                 </div>
                 <PowerButtons />

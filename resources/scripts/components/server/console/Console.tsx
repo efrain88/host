@@ -16,6 +16,8 @@ import { usePersistedState } from '@/plugins/usePersistedState';
 import { SocketEvent, SocketRequest } from '@/components/server/events';
 import classNames from 'classnames';
 import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPause, faPlay, faShareAlt, faTrashAlt, faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import 'xterm/css/xterm.css';
 import styles from './style.module.css';
@@ -48,7 +50,7 @@ const terminalProps: ITerminalOptions = {
     allowTransparency: true,
     fontSize: 12,
     fontFamily: th('fontFamily.mono'),
-    rows: 30,
+    rows: 40,
     theme: theme,
 };
 
@@ -68,14 +70,50 @@ export default () => {
     const isTransferring = ServerContext.useStoreState((state) => state.server.data!.isTransferring);
     const [history, setHistory] = usePersistedState<string[]>(`${serverId}:command_history`, []);
     const [historyIndex, setHistoryIndex] = useState(-1);
+    const [isPaused, setIsPaused] = useState(false);
+    const isPausedRef = useRef(isPaused);
+    const [showHistory, setShowHistory] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        isPausedRef.current = isPaused;
+    }, [isPaused]);
+
+    const uploadToMclogs = async () => {
+        let logContent = '';
+        const buffer = terminal.buffer.active;
+        for (let i = 0; i < buffer.length; i++) {
+            const line = buffer.getLine(i);
+            if (line) {
+                logContent += line.translateToString(true) + '\n';
+            }
+        }
+        if (!logContent.trim()) return;
+        try {
+            const res = await fetch('https://api.mclo.gs/1/log', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `content=${encodeURIComponent(logContent)}`,
+            });
+            const json = await res.json();
+            if (json.success) {
+                window.open(json.url, '_blank');
+            }
+        } catch (e) {
+            console.error('Failed to upload logs', e);
+        }
+    };
+
     // SearchBarAddon has hardcoded z-index: 999 :(
     const zIndex = `
     .xterm-search-bar__addon {
         z-index: 10;
     }`;
 
-    const handleConsoleOutput = (line: string, prelude = false) =>
+    const handleConsoleOutput = (line: string, prelude = false) => {
+        if (isPausedRef.current) return;
         terminal.writeln((prelude ? TERMINAL_PRELUDE : '') + line.replace(/(?:\r\n|\r|\n)$/im, '') + '\u001b[0m');
+    };
 
     const handleTransferStatus = (status: string) => {
         switch (status) {
@@ -210,7 +248,17 @@ export default () => {
                 <div className="flex-1 text-center text-[10px] font-bold text-neutral-600 tracking-widest uppercase">
                     Consola del Servidor
                 </div>
-                <div className="w-12"></div> {/* Spacer for centering */}
+                <div className="flex space-x-3 text-neutral-500">
+                    <button onClick={() => setIsPaused(!isPaused)} className="hover:text-primary-400 transition-colors outline-none" title={isPaused ? "Reanudar Registros" : "Pausar Registros"}>
+                        <FontAwesomeIcon icon={isPaused ? faPlay : faPause} className="w-3 h-3" />
+                    </button>
+                    <button onClick={uploadToMclogs} className="hover:text-blue-400 transition-colors outline-none" title="Compartir en mclo.gs">
+                        <FontAwesomeIcon icon={faShareAlt} className="w-3 h-3" />
+                    </button>
+                    <button onClick={() => terminal.clear()} className="hover:text-red-400 transition-colors outline-none" title="Limpiar Consola">
+                        <FontAwesomeIcon icon={faTrashAlt} className="w-3 h-3" />
+                    </button>
+                </div>
             </div>
 
             <div className={classNames(styles.terminal, 'relative p-2')}>
@@ -227,6 +275,7 @@ export default () => {
             {canSendCommands && (
                 <div className={classNames('relative bg-[#080808] border-t border-white/[0.02] p-2', styles.overflows_container)}>
                     <input
+                        ref={inputRef}
                         className={classNames('peer w-full bg-transparent text-white font-mono text-sm px-8 py-2 outline-none placeholder-neutral-600', styles.command_input)}
                         type={'text'}
                         placeholder={'Escribe un comando...'}
@@ -239,6 +288,34 @@ export default () => {
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-500 peer-focus:text-primary-400 peer-focus:animate-pulse">
                         <ChevronDoubleRightIcon className={'w-4 h-4'} />
                     </div>
+                    <button 
+                        onClick={() => setShowHistory(!showHistory)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-primary-400 transition-colors outline-none"
+                        title="Historial de comandos"
+                    >
+                        <FontAwesomeIcon icon={faHistory} className="w-4 h-4" />
+                    </button>
+                    {showHistory && history && history.length > 0 && (
+                        <div className="absolute right-4 bottom-full mb-2 w-64 bg-[#0a0a0c] border border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
+                            <div className="max-h-48 overflow-y-auto">
+                                {history.map((cmd, idx) => (
+                                    <div 
+                                        key={idx} 
+                                        className="px-4 py-2 hover:bg-white/5 cursor-pointer text-xs font-mono text-neutral-300 truncate transition-colors"
+                                        onClick={() => {
+                                            if (inputRef.current) {
+                                                inputRef.current.value = cmd;
+                                                inputRef.current.focus();
+                                            }
+                                            setShowHistory(false);
+                                        }}
+                                    >
+                                        {cmd}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
