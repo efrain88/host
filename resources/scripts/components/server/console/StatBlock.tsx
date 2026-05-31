@@ -18,19 +18,19 @@ interface StatBlockProps {
 export default ({ title, copyOnClick, icon, color, className, children }: StatBlockProps) => {
     return (
         <CopyOnClick text={copyOnClick}>
-            <div className={classNames('group flex items-center bg-[#050505] border border-white/5 hover:border-white/10 rounded-2xl p-5 shadow-xl transition-all duration-300', className)}>
-                <div className={classNames('w-12 h-12 rounded-xl flex items-center justify-center mr-4 shadow-inner transition-colors duration-300', color ? color : 'bg-white/[0.02] group-hover:bg-white/[0.04]')}>
+            <div className={classNames('group flex items-center bg-[#0a0a0c] bg-gradient-to-br from-white/[0.02] to-transparent border border-white/[0.05] hover:border-primary-500/40 rounded-2xl p-5 shadow-lg hover:shadow-primary-500/10 transition-all duration-500', className)}>
+                <div className={classNames('w-14 h-14 rounded-2xl flex items-center justify-center mr-5 shadow-inner transition-colors duration-500', color ? color : 'bg-primary-500/10 group-hover:bg-primary-500/20')}>
                     <Icon
                         icon={icon}
-                        className={classNames('text-xl drop-shadow-sm transition-colors duration-300', {
-                            'text-neutral-400 group-hover:text-neutral-300': !color || color.includes('bg-white'),
+                        className={classNames('text-2xl drop-shadow-md transition-colors duration-500', {
+                            'text-primary-400 group-hover:text-primary-300': !color || color.includes('bg-white'),
                             'text-white': color && !color.includes('bg-white'),
                         })}
                     />
                 </div>
                 <div className="flex flex-col overflow-hidden">
-                    <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.15em] mb-1">{title}</p>
-                    <div className="font-bold text-[15px] text-neutral-100 truncate tracking-tight group-hover:text-white transition-colors duration-300">
+                    <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-[0.15em] mb-1.5">{title}</p>
+                    <div className="font-black text-lg text-neutral-100 truncate tracking-tight group-hover:text-white transition-colors duration-500">
                         {children}
                     </div>
                 </div>
