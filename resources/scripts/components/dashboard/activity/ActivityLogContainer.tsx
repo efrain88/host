@@ -31,41 +31,52 @@ export default () => {
     }, [error]);
 
     return (
-        <PageContentBlock title={'Account Activity Log'}>
+        <PageContentBlock title={'Registro de actividad'}>
+            <div className="mb-8">
+                <h1 className="text-2xl font-bold text-white mb-2 tracking-tight">Registro de actividad</h1>
+                <p className="text-sm text-neutral-400">Consulta la actividad reciente y el historial de inicios de sesión de tu cuenta.</p>
+            </div>
             <FlashMessageRender byKey={'account'} />
+            
             {(filters.filters?.event || filters.filters?.ip) && (
-                <div className={'flex justify-end mb-2'}>
+                <div className={'flex justify-end mb-4'}>
                     <Link
                         to={'#'}
-                        className={classNames(btnStyles.button, btnStyles.text, 'w-full sm:w-auto')}
+                        className={classNames(btnStyles.button, btnStyles.text, 'w-full sm:w-auto bg-[#0a0a0c] border border-white/5 hover:bg-white/5')}
                         onClick={() => setFilters((value) => ({ ...value, filters: {} }))}
                     >
-                        Clear Filters <XCircleIcon className={'w-4 h-4 ml-2'} />
+                        Limpiar Filtros <XCircleIcon className={'w-4 h-4 ml-2'} />
                     </Link>
                 </div>
             )}
+            
             {!data && isValidating ? (
                 <Spinner centered />
             ) : (
-                <div className={'bg-gray-700'}>
-                    {data?.items.map((activity) => (
-                        <ActivityLogEntry key={activity.id} activity={activity}>
-                            {typeof activity.properties.useragent === 'string' && (
-                                <Tooltip content={activity.properties.useragent} placement={'top'}>
-                                    <span>
-                                        <DesktopComputerIcon />
-                                    </span>
-                                </Tooltip>
-                            )}
-                        </ActivityLogEntry>
-                    ))}
+                <div className="bg-[#0a0a0c] border border-white/5 rounded-xl shadow-2xl p-6">
+                    <div className="flex flex-col gap-y-2 relative">
+                        {data?.items.map((activity) => (
+                            <ActivityLogEntry key={activity.id} activity={activity}>
+                                {typeof activity.properties.useragent === 'string' && (
+                                    <Tooltip content={activity.properties.useragent} placement={'top'}>
+                                        <span className="text-neutral-500 hover:text-white transition-colors cursor-help">
+                                            <DesktopComputerIcon />
+                                        </span>
+                                    </Tooltip>
+                                )}
+                            </ActivityLogEntry>
+                        ))}
+                    </div>
                 </div>
             )}
+            
             {data && (
-                <PaginationFooter
-                    pagination={data.pagination}
-                    onPageSelect={(page) => setFilters((value) => ({ ...value, page }))}
-                />
+                <div className="mt-6">
+                    <PaginationFooter
+                        pagination={data.pagination}
+                        onPageSelect={(page) => setFilters((value) => ({ ...value, page }))}
+                    />
+                </div>
             )}
         </PageContentBlock>
     );

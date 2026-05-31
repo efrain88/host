@@ -115,10 +115,11 @@ export default () => {
     const handleConsoleOutput = (line: string, prelude = false) => {
         if (isPausedRef.current) return;
         let formattedLine = line.replace(/(?:\r\n|\r|\n)$/im, '');
-        // Magic coloring for Minecraft logs [HH:MM:SS INFO]
-        formattedLine = formattedLine.replace(/^\[(\d{2}:\d{2}:\d{2}) ([^\]]+)\]/g, (match, time, level) => {
-            const color = level === 'ERROR' ? '\u001b[31m' : level === 'WARN' ? '\u001b[33m' : '\u001b[36m';
-            return `\u001b[90m[\u001b[35m${time}\u001b[90m]\u001b[0m ${color}[${level}]\u001b[0m`;
+        // Magic coloring for Minecraft logs [HH:MM:SS INFO] or [HH:MM:SS] [thread/INFO]:
+        formattedLine = formattedLine.replace(/^\[(\d{2}:\d{2}:\d{2})(?:\] \[| )([^\]]+)\]:?/g, (match, time, fullLevel) => {
+            const level = fullLevel.toUpperCase();
+            const color = level.includes('ERROR') || level.includes('FATAL') ? '\u001b[31m' : level.includes('WARN') ? '\u001b[33m' : '\u001b[36m';
+            return `\u001b[90m[\u001b[35m${time}\u001b[90m]\u001b[0m ${color}[${fullLevel}]\u001b[0m:`;
         });
         terminal.writeln((prelude ? TERMINAL_PRELUDE : '') + formattedLine + '\u001b[0m');
     };

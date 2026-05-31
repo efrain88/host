@@ -1,6 +1,8 @@
 import React from 'react';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import NavigationBar from '@/components/NavigationBar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faShieldAlt, faKey, faTerminal, faHistory } from '@fortawesome/free-solid-svg-icons';
 import DashboardContainer from '@/components/dashboard/DashboardContainer';
 import { NotFound } from '@/components/elements/ScreenBlock';
 import TransitionRouter from '@/TransitionRouter';
@@ -20,11 +22,20 @@ export default () => {
                         <div>
                             {routes.account
                                 .filter((route) => !!route.name)
-                                .map(({ path, name, exact = false }) => (
-                                    <NavLink key={path} to={`/account/${path}`.replace('//', '/')} exact={exact}>
-                                        {name}
-                                    </NavLink>
-                                ))}
+                                .map(({ path, name, exact = false }) => {
+                                    let icon = faUser;
+                                    if (path === '/security') icon = faShieldAlt;
+                                    if (path === '/api') icon = faKey;
+                                    if (path === '/ssh') icon = faTerminal;
+                                    if (path === '/activity') icon = faHistory;
+                                    
+                                    return (
+                                        <NavLink key={path} to={`/account/${path}`.replace('//', '/')} exact={exact}>
+                                            <FontAwesomeIcon icon={icon} />
+                                            {name}
+                                        </NavLink>
+                                    );
+                                })}
                         </div>
                     </SubNavigation>
                 )}

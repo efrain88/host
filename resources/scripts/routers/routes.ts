@@ -47,23 +47,28 @@ export default {
     account: [
         {
             path: '/',
-            name: 'Account',
+            name: 'Perfil',
             component: AccountOverviewContainer,
             exact: true,
         },
         {
+            path: '/security',
+            name: 'Seguridad',
+            component: lazy(() => import('@/components/dashboard/SecurityContainer')),
+        },
+        {
             path: '/api',
-            name: 'API Credentials',
+            name: 'Credenciales de la API',
             component: AccountApiContainer,
         },
         {
             path: '/ssh',
-            name: 'SSH Keys',
+            name: 'Claves SSH',
             component: AccountSSHContainer,
         },
         {
             path: '/activity',
-            name: 'Activity',
+            name: 'Actividad',
             component: ActivityLogContainer,
         },
     ],
