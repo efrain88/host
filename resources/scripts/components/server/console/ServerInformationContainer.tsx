@@ -8,7 +8,7 @@ import PowerButtons from '@/components/server/console/PowerButtons';
 import ServerDetailsBlock from '@/components/server/console/ServerDetailsBlock';
 import { Alert } from '@/components/elements/alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBullhorn, faTerminal, faFolder, faBoxOpen, faCog } from '@fortawesome/free-solid-svg-icons';
+import { faTerminal, faFolder, faBoxOpen, faCog, faInfoCircle, faBolt } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import useWebsocketEvent from '@/plugins/useWebsocketEvent';
 import { SocketEvent, SocketRequest } from '@/components/server/events';
@@ -42,40 +42,34 @@ const ServerInformationContainer = () => {
 
     return (
         <ServerContentBlock title={'Información'}>
-            {/* Promotional Banner */}
-            <div className="bg-primary-900/40 border border-primary-500/30 rounded-xl p-4 mb-6 flex items-center justify-between">
-                <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center mr-4">
-                        <FontAwesomeIcon icon={faBullhorn} className="text-primary-400 text-lg" />
-                    </div>
-                    <div>
-                        <h3 className="text-white font-bold text-sm">Descuento del 15%</h3>
-                        <p className="text-neutral-400 text-xs mt-0.5">Puedes obtener un 15% de descuento en tu factura de pago. Únicamente si se paga por tateo. Código: MC-15</p>
-                    </div>
-                </div>
-                <a href="#" className="px-6 py-2 bg-primary-600 hover:bg-primary-500 text-white text-xs font-bold rounded-lg transition-colors">
-                    Click aquí
-                </a>
-            </div>
-
-            {/* Server Header Block */}
-            <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-6 mb-6 relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between shadow-lg">
-                <div className="absolute -top-12 -right-4 opacity-[0.03] pointer-events-none text-[120px] font-black italic select-none leading-none tracking-tighter w-full text-right">
-                    LUMENCRAFT MINECRAFT PANEL
-                </div>
-                
-                <div className="z-10 flex flex-col mb-4 md:mb-0">
-                    <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">{name}</h1>
-                    <div className="flex items-center text-xs font-medium">
+            {/* Server Header Strip */}
+            <div className="flex flex-col md:flex-row items-center justify-between mb-4">
+                <div className="flex items-center space-x-3 mb-4 md:mb-0">
+                    <h1 className="text-xl font-bold text-white tracking-tight">{name}</h1>
+                    <div className="flex items-center text-xs font-medium bg-white/5 px-2 py-1 rounded-md">
                         <span className={`w-2 h-2 rounded-full mr-2 ${status === 'running' ? 'bg-green-500' : status === 'offline' ? 'bg-red-500' : 'bg-yellow-500'}`}></span>
-                        <span className="text-neutral-300 mr-3">{status === 'running' ? 'En línea' : status === 'offline' ? 'Apagado' : capitalize(status || 'Cargando')}</span>
-                        <span className="text-neutral-600 mr-3">•</span>
+                        <span className="text-neutral-300 mr-2">{status === 'running' ? 'En línea' : status === 'offline' ? 'Apagado' : capitalize(status || 'Cargando')}</span>
+                        <span className="text-neutral-500 mr-2">•</span>
                         <span className="text-neutral-400">Uptime: {uptime > 0 ? <UptimeDuration uptime={uptime / 1000} /> : '0s'}</span>
                     </div>
                 </div>
 
-                <div className="z-10">
+                <div className="flex items-center">
                     <PowerButtons className="flex space-x-2" />
+                </div>
+            </div>
+
+            {/* Banner Image */}
+            <div className="relative w-full h-32 md:h-48 rounded-xl overflow-hidden mb-6 shadow-lg border border-white/5">
+                <div 
+                    className="absolute inset-0 bg-cover bg-center" 
+                    style={{ backgroundImage: 'url(/assets/server_banner.png)' }}
+                ></div>
+                <div className="absolute inset-0 bg-black/40 bg-gradient-to-r from-[#0a0a0a] to-transparent"></div>
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <h2 className="text-4xl md:text-5xl font-black italic text-white/10 tracking-tighter text-center select-none uppercase">
+                        LUMENCRAFT MINECRAFT PANEL
+                    </h2>
                 </div>
             </div>
 
@@ -92,7 +86,10 @@ const ServerInformationContainer = () => {
             {/* Bottom Actions & Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-5">
-                    <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-4">Información del servidor</h3>
+                    <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-4 flex items-center">
+                        <FontAwesomeIcon icon={faInfoCircle} className="text-primary-500 mr-2" />
+                        Información del servidor
+                    </h3>
                     <div className="space-y-3">
                         <div className="flex justify-between items-center p-3 bg-white/[0.02] rounded-lg border border-white/[0.02]">
                             <span className="text-xs text-neutral-500">Nodo</span>
@@ -106,7 +103,10 @@ const ServerInformationContainer = () => {
                 </div>
 
                 <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-5">
-                    <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-4">Acciones rápidas</h3>
+                    <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-4 flex items-center">
+                        <FontAwesomeIcon icon={faBolt} className="text-primary-500 mr-2" />
+                        Acciones rápidas
+                    </h3>
                     <div className="grid grid-cols-2 gap-3">
                         <Link to={`/server/${id}/console`} className="flex items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.02] hover:border-white/[0.05] rounded-lg transition-all">
                             <FontAwesomeIcon icon={faTerminal} className="text-primary-400 mr-3" />

@@ -16,28 +16,21 @@ interface StatBlockProps {
 }
 
 export default ({ title, copyOnClick, icon, color, className, children }: StatBlockProps) => {
-    const { fontSize, ref } = useFitText({ minFontSize: 8, maxFontSize: 500 });
-
     return (
         <CopyOnClick text={copyOnClick}>
-            <div className={classNames(styles.stat_block, 'bg-gray-600', className)}>
-                <div className={classNames(styles.status_bar, color || 'bg-gray-700')} />
-                <div className={classNames(styles.icon, color || 'bg-gray-700')}>
+            <div className={classNames('flex items-center bg-[#0a0a0a] border border-white/5 rounded-xl p-4 transition-colors hover:bg-white/[0.02]', className)}>
+                <div className={classNames('w-12 h-12 rounded-lg flex items-center justify-center mr-4', color || 'bg-white/5')}>
                     <Icon
                         icon={icon}
-                        className={classNames({
-                            'text-gray-100': !color || color === 'bg-gray-700',
-                            'text-gray-50': color && color !== 'bg-gray-700',
+                        className={classNames('text-lg', {
+                            'text-neutral-400': !color || color === 'bg-white/5',
+                            'text-white': color && color !== 'bg-white/5',
                         })}
                     />
                 </div>
-                <div className={'flex flex-col justify-center overflow-hidden w-full'}>
-                    <p className={'font-header font-medium leading-tight text-xs md:text-sm text-gray-200'}>{title}</p>
-                    <div
-                        ref={ref}
-                        className={'h-[1.75rem] w-full font-semibold text-gray-50 truncate'}
-                        style={{ fontSize }}
-                    >
+                <div className="flex flex-col overflow-hidden">
+                    <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">{title}</p>
+                    <div className="font-bold text-sm text-neutral-200 truncate">
                         {children}
                     </div>
                 </div>
