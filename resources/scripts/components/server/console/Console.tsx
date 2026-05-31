@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useStoreState } from 'easy-peasy';
 import { ITerminalOptions, Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { SearchAddon } from 'xterm-addon-search';
@@ -68,7 +69,8 @@ export default () => {
     const [canSendCommands] = usePermissions(['control.console']);
     const serverId = ServerContext.useStoreState((state) => state.server.data!.id);
     const isTransferring = ServerContext.useStoreState((state) => state.server.data!.isTransferring);
-    const [history, setHistory] = usePersistedState<string[]>(`${serverId}:command_history`, []);
+    const user = useStoreState((state) => state.user.data);
+    const [history, setHistory] = usePersistedState<any[]>(`${serverId}:command_history`, []);
     const [historyIndex, setHistoryIndex] = useState(-1);
     const [isPaused, setIsPaused] = useState(false);
     const isPausedRef = useRef(isPaused);
@@ -112,7 +114,13 @@ export default () => {
 
     const handleConsoleOutput = (line: string, prelude = false) => {
         if (isPausedRef.current) return;
-        terminal.writeln((prelude ? TERMINAL_PRELUDE : '') + line.replace(/(?:\r\n|\r|\n)$/im, '') + '\u001b[0m');
+        let formattedLine = line.replace(/(?:\r\n|\r|\n)$/im, '');
+        // Magic coloring for Minecraft logs [HH:MM:SS INFO]
+        formattedLine = formattedLine.replace(/^\[(\d{2}:\d{2}:\d{2}) ([^\]]+)\]/g, (match, time, level) => {
+            const color = level === 'ERROR' ? '\u001b[31m' : level === 'WARN' ? '\u001b[33m' : '\u001b[36m';
+            return `\u001b[90m[\u001b[35m${time}\u001b[90m]\u001b[0m ${color}[${level}]\u001b[0m`;
+        });
+        terminal.writeln((prelude ? TERMINAL_PRELUDE : '') + formattedLine + '\u001b[0m');
     };
 
     const handleTransferStatus = (status: string) => {
@@ -137,10 +145,8 @@ export default () => {
             const newIndex = Math.min(historyIndex + 1, history!.length - 1);
 
             setHistoryIndex(newIndex);
-            e.currentTarget.value = history![newIndex] || '';
+            e.currentTarget.value = history![newIndex]?.cmd || '';
 
-            // By default up arrow will also bring the cursor to the start of the line,
-            // so we'll preventDefault to keep it at the end.
             e.preventDefault();
         }
 
@@ -148,12 +154,13 @@ export default () => {
             const newIndex = Math.max(historyIndex - 1, -1);
 
             setHistoryIndex(newIndex);
-            e.currentTarget.value = history![newIndex] || '';
+            e.currentTarget.value = history![newIndex]?.cmd || '';
         }
 
         const command = e.currentTarget.value;
         if (e.key === 'Enter' && command.length > 0) {
-            setHistory((prevHistory) => [command, ...prevHistory!].slice(0, 32));
+            const newEntry = { cmd: command, user: user?.username || 'Usuario', time: new Date().toLocaleTimeString() };
+            setHistory((prevHistory) => [newEntry, ...prevHistory!].slice(0, 32));
             setHistoryIndex(-1);
 
             instance && instance.send('send command', command);
@@ -296,21 +303,29 @@ export default () => {
                         <FontAwesomeIcon icon={faHistory} className="w-4 h-4" />
                     </button>
                     {showHistory && history && history.length > 0 && (
-                        <div className="absolute right-4 bottom-full mb-2 w-64 bg-[#0a0a0c] border border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
+                        <div className="absolute right-4 bottom-full mb-2 w-72 bg-[#0a0a0c] border border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
+                            <div className="bg-white/5 px-3 py-2 border-b border-white/10 text-xs font-bold text-neutral-400 uppercase tracking-widest flex justify-between">
+                                <span>Comando</span>
+                                <span>Ejecutado por</span>
+                            </div>
                             <div className="max-h-48 overflow-y-auto">
-                                {history.map((cmd, idx) => (
+                                {history.map((entry, idx) => (
                                     <div 
                                         key={idx} 
-                                        className="px-4 py-2 hover:bg-white/5 cursor-pointer text-xs font-mono text-neutral-300 truncate transition-colors"
+                                        className="px-3 py-2 hover:bg-white/5 cursor-pointer text-xs flex justify-between items-center transition-colors border-b border-white/[0.02] last:border-0"
                                         onClick={() => {
                                             if (inputRef.current) {
-                                                inputRef.current.value = cmd;
+                                                inputRef.current.value = entry.cmd || entry;
                                                 inputRef.current.focus();
                                             }
                                             setShowHistory(false);
                                         }}
                                     >
-                                        {cmd}
+                                        <span className="font-mono text-primary-400 truncate w-3/5" title={entry.cmd || entry}>{entry.cmd || entry}</span>
+                                        <div className="flex flex-col items-end w-2/5">
+                                            <span className="text-white truncate">{entry.user || 'Desconocido'}</span>
+                                            <span className="text-neutral-500 text-[9px]">{entry.time || 'Anterior'}</span>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
