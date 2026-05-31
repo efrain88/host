@@ -59,24 +59,24 @@ export default ({ onKeyCreated }: { onKeyCreated: (key: ApiKey) => void }) => {
                     <Form>
                         <SpinnerOverlay visible={isSubmitting} />
                         <FormikFieldWrapper
-                            label={'Description'}
+                            label={'Descripción'}
                             name={'description'}
-                            description={'A description of this API key.'}
+                            description={'Una descripción de esta clave de API.'}
                             css={tw`mb-6`}
                         >
                             <Field name={'description'} as={Input} />
                         </FormikFieldWrapper>
                         <FormikFieldWrapper
-                            label={'Allowed IPs'}
+                            label={'IPs Permitidas'}
                             name={'allowedIps'}
                             description={
-                                'Leave blank to allow any IP address to use this API key, otherwise provide each IP address on a new line.'
+                                'Déjalo en blanco para permitir cualquier dirección IP, de lo contrario proporciona cada dirección IP en una nueva línea.'
                             }
                         >
                             <Field name={'allowedIps'} as={CustomTextarea} />
                         </FormikFieldWrapper>
                         <div css={tw`flex justify-end mt-6`}>
-                            <Button>Create</Button>
+                            <Button type="submit">Crear</Button>
                         </div>
                     </Form>
                 )}

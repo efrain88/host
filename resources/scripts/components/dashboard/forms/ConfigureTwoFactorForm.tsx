@@ -30,16 +30,16 @@ export default () => {
             <SetupTOTPDialog open={visible === 'enable'} onClose={() => setVisible(null)} onTokens={onTokens} />
             <RecoveryTokensDialog tokens={tokens} open={tokens.length > 0} onClose={() => setTokens([])} />
             <DisableTOTPDialog open={visible === 'disable'} onClose={() => setVisible(null)} />
-            <p css={tw`text-sm`}>
+            <p css={tw`text-sm text-neutral-400`}>
                 {isEnabled
-                    ? 'Two-step verification is currently enabled on your account.'
-                    : 'You do not currently have two-step verification enabled on your account. Click the button below to begin configuring it.'}
+                    ? 'La verificación en dos pasos está habilitada en tu cuenta actualmente.'
+                    : 'Actualmente no tienes habilitada la verificación en dos pasos en tu cuenta. Haz clic en el botón de abajo para comenzar a configurarla.'}
             </p>
             <div css={tw`mt-6`}>
                 {isEnabled ? (
-                    <Button.Danger onClick={() => setVisible('disable')}>Disable Two-Step</Button.Danger>
+                    <Button.Danger onClick={() => setVisible('disable')}>Deshabilitar Dos Pasos</Button.Danger>
                 ) : (
-                    <Button onClick={() => setVisible('enable')}>Enable Two-Step</Button>
+                    <Button onClick={() => setVisible('enable')}>Habilitar Dos Pasos</Button>
                 )}
             </div>
         </div>

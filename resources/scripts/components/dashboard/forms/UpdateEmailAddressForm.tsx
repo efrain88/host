@@ -33,7 +33,7 @@ export default () => {
                 addFlash({
                     type: 'success',
                     key: 'account:email',
-                    message: 'Your primary email has been updated.',
+                    message: 'Tu correo electrónico principal ha sido actualizado.',
                 })
             )
             .catch((error) =>
@@ -56,17 +56,17 @@ export default () => {
                 <React.Fragment>
                     <SpinnerOverlay size={'large'} visible={isSubmitting} />
                     <Form css={tw`m-0`}>
-                        <Field id={'current_email'} type={'email'} name={'email'} label={'Email'} />
+                        <Field id={'current_email'} type={'email'} name={'email'} label={'Correo Electrónico'} />
                         <div css={tw`mt-6`}>
                             <Field
                                 id={'confirm_password'}
                                 type={'password'}
                                 name={'password'}
-                                label={'Confirm Password'}
+                                label={'Contraseña Actual'}
                             />
                         </div>
-                        <div css={tw`mt-6`}>
-                            <Button disabled={isSubmitting || !isValid}>Update Email</Button>
+                        <div css={tw`mt-6 text-right`}>
+                            <Button type="submit" disabled={isSubmitting || !isValid}>Actualizar Correo</Button>
                         </div>
                     </Form>
                 </React.Fragment>

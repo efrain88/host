@@ -69,16 +69,16 @@ export default () => {
                                 id={'current_password'}
                                 type={'password'}
                                 name={'current'}
-                                label={'Current Password'}
+                                label={'Contraseña Actual'}
                             />
                             <div css={tw`mt-6`}>
                                 <Field
                                     id={'new_password'}
                                     type={'password'}
                                     name={'password'}
-                                    label={'New Password'}
+                                    label={'Nueva Contraseña'}
                                     description={
-                                        'Your new password should be at least 8 characters in length and unique to this website.'
+                                        'Tu nueva contraseña debe tener al menos 8 caracteres de longitud.'
                                     }
                                 />
                             </div>
@@ -87,11 +87,11 @@ export default () => {
                                     id={'confirm_new_password'}
                                     type={'password'}
                                     name={'confirmPassword'}
-                                    label={'Confirm New Password'}
+                                    label={'Confirmar Nueva Contraseña'}
                                 />
                             </div>
-                            <div css={tw`mt-6`}>
-                                <Button disabled={isSubmitting || !isValid}>Update Password</Button>
+                            <div css={tw`mt-6 text-right`}>
+                                <Button type="submit" disabled={isSubmitting || !isValid}>Actualizar Contraseña</Button>
                             </div>
                         </Form>
                     </React.Fragment>

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import UpdateEmailAddressForm from '@/components/dashboard/forms/UpdateEmailAddressForm';
 import PageContentBlock from '@/components/elements/PageContentBlock';
 import tw from 'twin.macro';
@@ -9,6 +9,56 @@ const Container = styled.div`
 `;
 
 export default () => {
+    // LocalStorage states
+    const [avatar, setAvatar] = useState<string | null>(null);
+    const [appearance, setAppearance] = useState<'dark' | 'light' | 'system'>('dark');
+    const [language, setLanguage] = useState('es');
+    
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Initialize from localStorage
+    useEffect(() => {
+        const savedAvatar = localStorage.getItem('user_avatar');
+        if (savedAvatar) setAvatar(savedAvatar);
+
+        const savedAppearance = localStorage.getItem('user_appearance') as any;
+        if (savedAppearance) setAppearance(savedAppearance);
+
+        const savedLanguage = localStorage.getItem('user_language');
+        if (savedLanguage) setLanguage(savedLanguage);
+    }, []);
+
+    const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const base64 = event.target?.result as string;
+            setAvatar(base64);
+            localStorage.setItem('user_avatar', base64);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleRemoveAvatar = () => {
+        setAvatar(null);
+        localStorage.removeItem('user_avatar');
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const handleAppearanceChange = (mode: 'dark' | 'light' | 'system') => {
+        setAppearance(mode);
+        localStorage.setItem('user_appearance', mode);
+        // Optionally add a toast here
+    };
+
+    const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const lang = e.target.value;
+        setLanguage(lang);
+        localStorage.setItem('user_language', lang);
+    };
+
     return (
         <PageContentBlock title={'Ajustes del perfil'}>
             <div className="mb-8">
@@ -30,15 +80,34 @@ export default () => {
                         Sube un avatar personalizado para tu cuenta. Se admiten PNG, JPG, WEBP y GIF de hasta 4 MB.
                     </p>
                     <div className="flex items-center gap-x-4">
-                        <div className="w-16 h-16 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 text-3xl font-bold shadow-[0_0_15px_rgba(var(--color-primary-500),0.3)]">
-                            U
-                        </div>
-                        <button className="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-lg font-semibold text-sm transition-colors shadow-lg shadow-primary-500/20">
+                        <input 
+                            type="file" 
+                            accept="image/png, image/jpeg, image/webp, image/gif" 
+                            ref={fileInputRef}
+                            className="hidden"
+                            onChange={handleAvatarUpload}
+                        />
+                        {avatar ? (
+                            <img src={avatar} alt="Avatar" className="w-16 h-16 rounded-full object-cover shadow-[0_0_15px_rgba(var(--color-primary-500),0.3)]" />
+                        ) : (
+                            <div className="w-16 h-16 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 text-3xl font-bold shadow-[0_0_15px_rgba(var(--color-primary-500),0.3)]">
+                                U
+                            </div>
+                        )}
+                        <button 
+                            onClick={() => fileInputRef.current?.click()}
+                            className="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-lg font-semibold text-sm transition-colors shadow-lg shadow-primary-500/20"
+                        >
                             Subir avatar
                         </button>
-                        <button className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg font-semibold text-sm transition-colors border border-red-500/20">
-                            Quitar avatar
-                        </button>
+                        {avatar && (
+                            <button 
+                                onClick={handleRemoveAvatar}
+                                className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg font-semibold text-sm transition-colors border border-red-500/20"
+                            >
+                                Quitar avatar
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -64,9 +133,13 @@ export default () => {
                     <p className="text-sm text-neutral-400 mb-6">
                         Selecciona tu idioma preferido para la interfaz del panel.
                     </p>
-                    <select className="w-full bg-[#050505] border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-primary-500 transition-colors">
-                        <option>Spanish</option>
-                        <option>English</option>
+                    <select 
+                        value={language}
+                        onChange={handleLanguageChange}
+                        className="w-full bg-[#050505] border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-primary-500 transition-colors"
+                    >
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
                     </select>
                 </div>
 
@@ -82,19 +155,28 @@ export default () => {
                         Elige el esquema de color preferido para la interfaz del panel.
                     </p>
                     <div className="grid grid-cols-3 gap-4">
-                        <div className="border border-primary-500 bg-primary-500/10 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-colors shadow-[0_0_15px_rgba(var(--color-primary-500),0.1)] text-primary-400">
+                        <div 
+                            onClick={() => handleAppearanceChange('dark')}
+                            className={`border rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-colors shadow-lg ${appearance === 'dark' ? 'border-primary-500 bg-primary-500/10 text-primary-400 shadow-primary-500/10' : 'border-white/10 bg-[#050505] text-neutral-400 hover:bg-white/5'}`}
+                        >
                             <svg className="w-6 h-6 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                             </svg>
                             <span className="text-sm font-semibold">Oscuro</span>
                         </div>
-                        <div className="border border-white/10 bg-[#050505] hover:bg-white/5 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-colors text-neutral-400">
+                        <div 
+                            onClick={() => handleAppearanceChange('light')}
+                            className={`border rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-colors shadow-lg ${appearance === 'light' ? 'border-primary-500 bg-primary-500/10 text-primary-400 shadow-primary-500/10' : 'border-white/10 bg-[#050505] text-neutral-400 hover:bg-white/5'}`}
+                        >
                             <svg className="w-6 h-6 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
                             <span className="text-sm font-semibold">Claro</span>
                         </div>
-                        <div className="border border-white/10 bg-[#050505] hover:bg-white/5 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-colors text-neutral-400">
+                        <div 
+                            onClick={() => handleAppearanceChange('system')}
+                            className={`border rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-colors shadow-lg ${appearance === 'system' ? 'border-primary-500 bg-primary-500/10 text-primary-400 shadow-primary-500/10' : 'border-white/10 bg-[#050505] text-neutral-400 hover:bg-white/5'}`}
+                        >
                             <svg className="w-6 h-6 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
