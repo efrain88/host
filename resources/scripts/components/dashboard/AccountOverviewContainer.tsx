@@ -3,12 +3,15 @@ import UpdateEmailAddressForm from '@/components/dashboard/forms/UpdateEmailAddr
 import PageContentBlock from '@/components/elements/PageContentBlock';
 import tw from 'twin.macro';
 import styled from 'styled-components/macro';
+import { useTranslation } from 'react-i18next';
 
 const Container = styled.div`
     ${tw`flex flex-col gap-y-6 max-w-4xl`};
 `;
 
 export default () => {
+    const { i18n } = useTranslation();
+    
     // LocalStorage states
     const [avatar, setAvatar] = useState<string | null>(null);
     const [appearance, setAppearance] = useState<'dark' | 'light' | 'system'>('dark');
@@ -22,10 +25,18 @@ export default () => {
         if (savedAvatar) setAvatar(savedAvatar);
 
         const savedAppearance = localStorage.getItem('user_appearance') as any;
-        if (savedAppearance) setAppearance(savedAppearance);
+        if (savedAppearance) {
+            setAppearance(savedAppearance);
+            if (savedAppearance === 'light') {
+                document.documentElement.classList.add('light-theme');
+            }
+        }
 
         const savedLanguage = localStorage.getItem('user_language');
-        if (savedLanguage) setLanguage(savedLanguage);
+        if (savedLanguage) {
+            setLanguage(savedLanguage);
+            i18n.changeLanguage(savedLanguage);
+        }
     }, []);
 
     const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,13 +61,18 @@ export default () => {
     const handleAppearanceChange = (mode: 'dark' | 'light' | 'system') => {
         setAppearance(mode);
         localStorage.setItem('user_appearance', mode);
-        // Optionally add a toast here
+        if (mode === 'light') {
+            document.documentElement.classList.add('light-theme');
+        } else {
+            document.documentElement.classList.remove('light-theme');
+        }
     };
 
     const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const lang = e.target.value;
         setLanguage(lang);
         localStorage.setItem('user_language', lang);
+        i18n.changeLanguage(lang);
     };
 
     return (

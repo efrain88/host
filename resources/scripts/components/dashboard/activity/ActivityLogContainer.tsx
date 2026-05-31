@@ -53,14 +53,17 @@ export default () => {
             {!data && isValidating ? (
                 <Spinner centered />
             ) : (
-                <div className="bg-[#0a0a0c] border border-white/5 rounded-xl shadow-2xl p-6">
-                    <div className="flex flex-col gap-y-2 relative">
+                <div className="relative mt-8">
+                    {/* Línea vertical central para el timeline */}
+                    <div className="absolute left-[130px] top-4 bottom-0 w-px bg-white/10 hidden sm:block z-0"></div>
+                    
+                    <div className="flex flex-col gap-y-6 relative z-10">
                         {data?.items.map((activity) => (
                             <ActivityLogEntry key={activity.id} activity={activity}>
                                 {typeof activity.properties.useragent === 'string' && (
                                     <Tooltip content={activity.properties.useragent} placement={'top'}>
-                                        <span className="text-neutral-500 hover:text-white transition-colors cursor-help">
-                                            <DesktopComputerIcon />
+                                        <span className="text-neutral-500 hover:text-white transition-colors cursor-help ml-2">
+                                            <DesktopComputerIcon className="w-5 h-5" />
                                         </span>
                                     </Tooltip>
                                 )}
