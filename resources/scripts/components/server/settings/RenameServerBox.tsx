@@ -67,7 +67,7 @@ const RenameServerBox = () => {
 
                 <div className="mt-6 flex flex-col sm:flex-row gap-y-4 justify-between sm:items-end border-t border-white/5 pt-6">
                     <p className="text-xs text-neutral-500">
-                        Optional display name for your server IP (e.g., play.minecraftserver.net)
+                        Nombre opcional para mostrar la IP de tu servidor (ej. play.miservidor.com)
                     </p>
                     <Button type={'submit'} className="bg-primary-600 hover:bg-primary-500 text-white rounded-xl shadow-lg border-0 px-8 py-2.5">
                         Guardar
