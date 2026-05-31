@@ -199,33 +199,44 @@ export default () => {
     }, [connected, instance]);
 
     return (
-        <div className={classNames(styles.terminal, 'relative')}>
-            <SpinnerOverlay visible={!connected} size={'large'} />
-            <div
-                className={classNames(styles.container, styles.overflows_container, { 'rounded-b': !canSendCommands })}
-            >
-                <div className={'h-full'}>
-                    <div id={styles.terminal} ref={ref} />
+        <div className="relative rounded-xl overflow-hidden border border-white/5 shadow-2xl bg-[#050505] flex flex-col">
+            {/* Mac Title Bar */}
+            <div className="bg-[#0a0a0c] border-b border-white/[0.02] flex items-center px-4 py-2.5">
+                <div className="flex space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500/80 shadow-[0_0_8px_rgba(239,68,68,0.3)]"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500/80 shadow-[0_0_8px_rgba(234,179,8,0.3)]"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500/80 shadow-[0_0_8px_rgba(34,197,94,0.3)]"></div>
+                </div>
+                <div className="flex-1 text-center text-[10px] font-bold text-neutral-600 tracking-widest uppercase">
+                    Consola del Servidor
+                </div>
+                <div className="w-12"></div> {/* Spacer for centering */}
+            </div>
+
+            <div className={classNames(styles.terminal, 'relative p-2')}>
+                <SpinnerOverlay visible={!connected} size={'large'} />
+                <div
+                    className={classNames(styles.container, styles.overflows_container, { 'rounded-b': !canSendCommands })}
+                >
+                    <div className={'h-full'}>
+                        <div id={styles.terminal} ref={ref} />
+                    </div>
                 </div>
             </div>
+
             {canSendCommands && (
-                <div className={classNames('relative', styles.overflows_container)}>
+                <div className={classNames('relative bg-[#080808] border-t border-white/[0.02] p-2', styles.overflows_container)}>
                     <input
-                        className={classNames('peer', styles.command_input)}
+                        className={classNames('peer w-full bg-transparent text-white font-mono text-sm px-8 py-2 outline-none placeholder-neutral-600', styles.command_input)}
                         type={'text'}
-                        placeholder={'Type a command...'}
+                        placeholder={'Escribe un comando...'}
                         aria-label={'Console command input.'}
                         disabled={!instance || !connected}
                         onKeyDown={handleCommandKeyDown}
                         autoCorrect={'off'}
                         autoCapitalize={'none'}
                     />
-                    <div
-                        className={classNames(
-                            'text-gray-100 peer-focus:text-gray-50 peer-focus:animate-pulse',
-                            styles.command_icon
-                        )}
-                    >
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-500 peer-focus:text-primary-400 peer-focus:animate-pulse">
                         <ChevronDoubleRightIcon className={'w-4 h-4'} />
                     </div>
                 </div>
