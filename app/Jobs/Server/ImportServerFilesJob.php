@@ -33,96 +33,57 @@ class ImportServerFilesJob implements ShouldQueue
     public function handle()
     {
         try {
-            $sftp = new SFTP($this->credentials['host'], $this->credentials['port']);
-            if (!$sftp->login($this->credentials['username'], $this->credentials['password'])) {
-                \Log::error("ImportServerFilesJob: Error de autenticación SFTP para el servidor {$this->server->uuid}");
-                return;
+            \Log::info("ImportServerFilesJob: Iniciando transferencia NATIVA para el servidor {$this->server->uuid}");
+            
+            $nodeIp = $this->server->node->fqdn;
+            $uuid = $this->server->uuid;
+            
+            $username = $this->credentials['username'];
+            $password = $this->credentials['password'];
+            $host = $this->credentials['host'];
+            $port = $this->credentials['port'] ?? 22;
+            
+            // Build the target directory
+            $targetDir = '/var/lib/pterodactyl/volumes/' . $uuid;
+            if ($this->destPath !== '/' && $this->destPath !== '') {
+                $targetDir .= '/' . trim($this->destPath, '/');
             }
+            
+            $sourcePath = $this->sourcePath;
 
-            \Log::info("ImportServerFilesJob: Iniciando transferencia para el servidor {$this->server->uuid} desde {$this->sourcePath}");
-            $this->transferDirectory($sftp, rtrim($this->sourcePath, '/'), rtrim($this->destPath, '/'));
-            \Log::info("ImportServerFilesJob: Transferencia completada para el servidor {$this->server->uuid}");
+            // Secure lftp command to run on the node
+            $lftpCommand = sprintf(
+                'lftp -u %s,%s sftp://%s:%s -e \'mirror -c -P 5 %s %s; quit\'',
+                escapeshellarg($username),
+                escapeshellarg($password),
+                $host,
+                $port,
+                escapeshellarg($sourcePath),
+                escapeshellarg($targetDir)
+            );
+
+            // Command that the panel will execute to SSH into the node
+            $sshCommand = sprintf(
+                'ssh -i /var/www/.ssh/id_rsa -o StrictHostKeyChecking=no root@%s %s && ssh -i /var/www/.ssh/id_rsa -o StrictHostKeyChecking=no root@%s "chown -R pterodactyl:pterodactyl /var/lib/pterodactyl/volumes/%s"',
+                escapeshellarg($nodeIp),
+                escapeshellarg($lftpCommand),
+                escapeshellarg($nodeIp),
+                escapeshellarg($uuid)
+            );
+
+            $process = \Symfony\Component\Process\Process::fromShellCommandline($sshCommand);
+            $process->setTimeout(null); // Infinite timeout
+            $process->run();
+
+            if (!$process->isSuccessful()) {
+                \Log::error("ImportServerFilesJob: Error en transferencia nativa - " . $process->getErrorOutput());
+            } else {
+                \Log::info("ImportServerFilesJob: Transferencia nativa completada para {$uuid}");
+            }
         } catch (\Exception $e) {
             \Log::error("ImportServerFilesJob: Error crítico en la transferencia - " . $e->getMessage());
         } finally {
-            // Siempre restaurar el estado del servidor a normal al finalizar (o fallar)
             $this->server->update(['status' => null]);
-        }
-    }
-
-    protected function transferDirectory(SFTP $sftp, string $remoteDir, string $localDir)
-    {
-        $files = $sftp->nlist($remoteDir);
-        if ($files === false) return;
-
-        foreach ($files as $file) {
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
-
-            $remoteFilePath = $remoteDir . '/' . $file;
-            $localFilePath = $localDir === '' || $localDir === '/' ? '/' . $file : $localDir . '/' . $file;
-
-            $type = $sftp->stat($remoteFilePath);
-            if (!$type) continue;
-
-            if ($type['type'] === 2) { // Directorio
-                $this->createDirectoryInWings($localFilePath);
-                $this->transferDirectory($sftp, $remoteFilePath, $localFilePath);
-            } else { // Archivo regular
-                $this->transferFile($sftp, $remoteFilePath, $localFilePath);
-            }
-        }
-    }
-
-    protected function transferFile(SFTP $sftp, string $remoteFile, string $targetFile)
-    {
-        $tempFile = tempnam(sys_get_temp_dir(), 'sftp_import_');
-        if (!$tempFile) return;
-
-        try {
-            $sftp->get($remoteFile, $tempFile);
-
-            $stream = fopen($tempFile, 'r');
-            if ($stream) {
-                // Obtener cliente HTTP dinámicamente
-                $repo = app(DaemonFileRepository::class)->setServer($this->server);
-                
-                $repo->getHttpClient([
-                    'Content-Type' => 'application/octet-stream',
-                ])->post(sprintf('/api/servers/%s/files/write', $this->server->uuid), [
-                    'query' => ['file' => $targetFile],
-                    'body' => $stream,
-                ]);
-                if (is_resource($stream)) {
-                    fclose($stream);
-                }
-            }
-        } catch (\Throwable $e) {
-            \Log::error("ImportServerFilesJob: Error transfiriendo {$remoteFile} a {$targetFile} - " . $e->getMessage());
-        } finally {
-            if (file_exists($tempFile)) {
-                unlink($tempFile);
-            }
-        }
-    }
-
-    protected function createDirectoryInWings(string $path)
-    {
-        $parts = explode('/', trim($path, '/'));
-        $name = array_pop($parts);
-        $base = '/' . implode('/', $parts);
-
-        try {
-            $repo = app(DaemonFileRepository::class)->setServer($this->server);
-            $repo->getHttpClient()->post(sprintf('/api/servers/%s/files/create-directory', $this->server->uuid), [
-                'json' => [
-                    'name' => $name,
-                    'path' => $base,
-                ],
-            ]);
-        } catch (\Exception $e) {
-            // Es posible que el directorio ya exista
         }
     }
 }
