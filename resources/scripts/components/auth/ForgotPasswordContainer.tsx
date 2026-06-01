@@ -47,7 +47,7 @@ export default () => {
         requestPasswordResetEmail(email, token)
             .then((response) => {
                 resetForm();
-                addFlash({ type: 'success', title: 'Success', message: response });
+                addFlash({ type: 'success', title: 'Éxito', message: response });
             })
             .catch((error) => {
                 console.error(error);
@@ -67,24 +67,29 @@ export default () => {
             initialValues={{ email: '' }}
             validationSchema={object().shape({
                 email: string()
-                    .email('A valid email address must be provided to continue.')
-                    .required('A valid email address must be provided to continue.'),
+                    .email('Debe proporcionar un correo válido para continuar.')
+                    .required('Debe proporcionar un correo válido para continuar.'),
             })}
         >
             {({ isSubmitting, setSubmitting, submitForm }) => (
-                <LoginFormContainer title={'Request Password Reset'} css={tw`w-full flex`}>
+                <LoginFormContainer title={'Recuperar Contraseña'} css={tw`w-full flex`}>
                     <Field
-                        light
-                        label={'Email'}
+                        label={'Correo Electrónico'}
                         description={
-                            'Enter your account email address to receive instructions on resetting your password.'
+                            'Ingresa el correo electrónico de tu cuenta para recibir instrucciones de cómo restablecer tu contraseña.'
                         }
                         name={'email'}
                         type={'email'}
                     />
-                    <div css={tw`mt-6`}>
-                        <Button type={'submit'} size={'xlarge'} disabled={isSubmitting} isLoading={isSubmitting}>
-                            Send Email
+                    <div className="mt-8">
+                        <Button
+                            type={'submit'}
+                            size={'xlarge'}
+                            disabled={isSubmitting}
+                            isLoading={isSubmitting}
+                            className="w-full justify-center bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 border-none shadow-[0_0_15px_rgba(251,191,36,0.3)] hover:shadow-[0_0_25px_rgba(251,191,36,0.5)] transition-all duration-300"
+                        >
+                            Enviar Correo
                         </Button>
                     </div>
                     {recaptchaEnabled && (
@@ -102,12 +107,12 @@ export default () => {
                             }}
                         />
                     )}
-                    <div css={tw`mt-6 text-center`}>
+                    <div className="mt-6 text-center">
                         <Link
                             to={'/auth/login'}
-                            css={tw`text-xs text-neutral-500 tracking-wide uppercase no-underline hover:text-neutral-700`}
+                            className="text-xs text-neutral-400 tracking-wide uppercase no-underline hover:text-yellow-400 transition-colors"
                         >
-                            Return to Login
+                            Volver al Inicio
                         </Link>
                     </div>
                 </LoginFormContainer>

@@ -52,43 +52,48 @@ export default ({ match, location }: RouteComponentProps<{ token: string }>) => 
             }}
             validationSchema={object().shape({
                 password: string()
-                    .required('A new password is required.')
-                    .min(8, 'Your new password should be at least 8 characters in length.'),
+                    .required('Se requiere una nueva contraseña.')
+                    .min(8, 'Tu nueva contraseña debe tener al menos 8 caracteres.'),
                 passwordConfirmation: string()
-                    .required('Your new password does not match.')
+                    .required('Tu nueva contraseña no coincide.')
                     // @ts-expect-error this is valid
-                    .oneOf([ref('password'), null], 'Your new password does not match.'),
+                    .oneOf([ref('password'), null], 'Tu nueva contraseña no coincide.'),
             })}
         >
             {({ isSubmitting }) => (
-                <LoginFormContainer title={'Reset Password'} css={tw`w-full flex`}>
+                <LoginFormContainer title={'Restablecer Contraseña'} css={tw`w-full flex`}>
                     <div>
-                        <label>Email</label>
-                        <Input value={email} isLight disabled />
+                        <label>Correo Electrónico</label>
+                        <Input value={email} disabled className="bg-[#0a0a0c]/80 text-white" />
                     </div>
-                    <div css={tw`mt-6`}>
+                    <div className="mt-6">
                         <Field
-                            light
-                            label={'New Password'}
+                            label={'Nueva Contraseña'}
                             name={'password'}
                             type={'password'}
-                            description={'Passwords must be at least 8 characters in length.'}
+                            description={'Las contraseñas deben tener al menos 8 caracteres.'}
                         />
                     </div>
-                    <div css={tw`mt-6`}>
-                        <Field light label={'Confirm New Password'} name={'passwordConfirmation'} type={'password'} />
+                    <div className="mt-6">
+                        <Field label={'Confirmar Nueva Contraseña'} name={'passwordConfirmation'} type={'password'} />
                     </div>
-                    <div css={tw`mt-6`}>
-                        <Button size={'xlarge'} type={'submit'} disabled={isSubmitting} isLoading={isSubmitting}>
-                            Reset Password
+                    <div className="mt-8">
+                        <Button
+                            size={'xlarge'}
+                            type={'submit'}
+                            disabled={isSubmitting}
+                            isLoading={isSubmitting}
+                            className="w-full justify-center bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 border-none shadow-[0_0_15px_rgba(251,191,36,0.3)] hover:shadow-[0_0_25px_rgba(251,191,36,0.5)] transition-all duration-300"
+                        >
+                            Restablecer Contraseña
                         </Button>
                     </div>
-                    <div css={tw`mt-6 text-center`}>
+                    <div className="mt-6 text-center">
                         <Link
                             to={'/auth/login'}
-                            css={tw`text-xs text-neutral-500 tracking-wide no-underline uppercase hover:text-neutral-600`}
+                            className="text-xs text-neutral-400 tracking-wide no-underline uppercase hover:text-yellow-400 transition-colors"
                         >
-                            Return to Login
+                            Volver al Inicio
                         </Link>
                     </div>
                 </LoginFormContainer>

@@ -69,19 +69,25 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
             onSubmit={onSubmit}
             initialValues={{ username: '', password: '' }}
             validationSchema={object().shape({
-                username: string().required('A username or email must be provided.'),
-                password: string().required('Please enter your account password.'),
+                username: string().required('Debe proporcionar un usuario o correo.'),
+                password: string().required('Por favor ingrese su contraseña.'),
             })}
         >
             {({ isSubmitting, setSubmitting, submitForm }) => (
-                <LoginFormContainer title={'Login to Continue'} css={tw`w-full flex`}>
-                    <Field light type={'text'} label={'Username or Email'} name={'username'} disabled={isSubmitting} />
-                    <div css={tw`mt-6`}>
-                        <Field light type={'password'} label={'Password'} name={'password'} disabled={isSubmitting} />
+                <LoginFormContainer title={'Iniciar Sesión'} css={tw`w-full flex`}>
+                    <Field type={'text'} label={'Usuario o Correo'} name={'username'} disabled={isSubmitting} />
+                    <div className="mt-6">
+                        <Field type={'password'} label={'Contraseña'} name={'password'} disabled={isSubmitting} />
                     </div>
-                    <div css={tw`mt-6`}>
-                        <Button type={'submit'} size={'xlarge'} isLoading={isSubmitting} disabled={isSubmitting}>
-                            Login
+                    <div className="mt-8">
+                        <Button
+                            type={'submit'}
+                            size={'xlarge'}
+                            isLoading={isSubmitting}
+                            disabled={isSubmitting}
+                            className="w-full justify-center bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 border-none shadow-[0_0_15px_rgba(251,191,36,0.3)] hover:shadow-[0_0_25px_rgba(251,191,36,0.5)] transition-all duration-300"
+                        >
+                            Ingresar
                         </Button>
                     </div>
                     {recaptchaEnabled && (
@@ -99,12 +105,12 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                             }}
                         />
                     )}
-                    <div css={tw`mt-6 text-center`}>
+                    <div className="mt-6 text-center">
                         <Link
                             to={'/auth/password'}
-                            css={tw`text-xs text-neutral-500 tracking-wide no-underline uppercase hover:text-neutral-600`}
+                            className="text-xs text-neutral-400 tracking-wide no-underline uppercase hover:text-yellow-400 transition-colors"
                         >
-                            Forgot password?
+                            ¿Olvidaste tu contraseña?
                         </Link>
                     </div>
                 </LoginFormContainer>
