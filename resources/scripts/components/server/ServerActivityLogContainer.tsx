@@ -55,9 +55,10 @@ export default () => {
                 <div className="flex items-center gap-4 w-full sm:w-auto">
                     <div className="relative w-full sm:w-64">
                         <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" />
-                        <Input
+                        <input
+                            type="text"
                             placeholder="Buscar usuario o evento..."
-                            className="pl-10 bg-[#0a0a0c] border-white/5 focus:border-primary-500/50 rounded-xl"
+                            className="w-full pl-10 pr-4 py-2 bg-[#0a0a0c] border border-white/5 focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/50 rounded-xl text-sm text-white placeholder-neutral-500 transition-all outline-none"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />

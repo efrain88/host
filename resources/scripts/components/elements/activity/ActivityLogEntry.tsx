@@ -38,36 +38,6 @@ function wrapProperties(value: unknown): any {
     return value;
 }
 
-const EventDictionary: Record<string, string> = {
-    'auth:success': 'Sesión iniciada con éxito',
-    'auth:fail': 'Inicio de sesión fallido',
-    'auth:recovery-token': 'Sesión iniciada con token de recuperación',
-    'user:account:language-changed': 'Idioma de la cuenta cambiado',
-    'user:account:password-changed': 'Contraseña de la cuenta cambiada',
-    'user:account:email-changed': 'Correo de la cuenta cambiado',
-    'user:account:api-key-created': 'Clave de API creada',
-    'user:account:api-key-deleted': 'Clave de API eliminada',
-    'user:account:ssh-key-created': 'Clave SSH añadida',
-    'user:account:ssh-key-deleted': 'Clave SSH eliminada',
-    'user:account:two-factor-enabled': 'Autenticación en dos pasos activada',
-    'user:account:two-factor-disabled': 'Autenticación en dos pasos desactivada',
-    'server:subuser:create': 'Subusuario añadido al servidor',
-    'server:subuser:update': 'Permisos de subusuario actualizados',
-    'server:subuser:delete': 'Subusuario eliminado del servidor',
-    'server:database:create': 'Base de datos creada',
-    'server:database:delete': 'Base de datos eliminada',
-    'server:schedule:create': 'Tarea programada creada',
-    'server:schedule:update': 'Tarea programada actualizada',
-    'server:schedule:delete': 'Tarea programada eliminada',
-    'server:file:read': 'Archivo leído',
-    'server:file:write': 'Archivo modificado',
-    'server:file:delete': 'Archivo eliminado',
-    'server:console:command': 'Comando de consola ejecutado',
-    'server:power:start': 'Servidor iniciado',
-    'server:power:stop': 'Servidor detenido',
-    'server:power:restart': 'Servidor reiniciado',
-    'server:power:kill': 'Servidor forzado a detenerse',
-};
 
 export default ({ activity, children }: Props) => {
     const { pathTo } = useLocationHash();
@@ -86,24 +56,24 @@ export default ({ activity, children }: Props) => {
             </div>
 
             {/* Tarjeta de contenido */}
-            <div className="flex-1 bg-[#0a0a0c] border border-white/5 rounded-xl shadow-lg p-5 hover:bg-white/5 transition-colors relative z-20">
+            <div className="flex-1 bg-[#0a0a0c] border border-white/5 rounded-xl shadow-lg p-5 hover:bg-white/5 hover:border-primary-500/30 transition-all duration-300 relative z-20">
                 <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-x-3">
-                        <span className="text-sm font-bold text-white">{actor?.username || 'Sistema'}</span>
+                        <span className="text-sm font-bold text-primary-300">{actor?.username || 'Sistema'}</span>
                         <span className="px-2 py-0.5 rounded-md bg-primary-500/10 text-primary-400 text-[11px] font-mono font-semibold border border-primary-500/20 shadow-sm shadow-primary-500/10">
                             {activity.event}
                         </span>
                     </div>
                     {/* Botones/Iconos adicionales */}
-                    <div className={'text-neutral-500 group-hover:text-neutral-300 transition-colors flex items-center gap-x-2'}>
+                    <div className={'text-neutral-500 group-hover:text-primary-400 transition-colors flex items-center gap-x-2'}>
                         {activity.isApi && (
                             <Tooltip placement={'top'} content={'Usando API'}>
-                                <TerminalIcon className="w-4 h-4" />
+                                <TerminalIcon className="w-5 h-5 text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]" />
                             </Tooltip>
                         )}
                         {activity.event.startsWith('server:sftp.') && (
                             <Tooltip placement={'top'} content={'Usando SFTP'}>
-                                <FolderOpenIcon className="w-4 h-4" />
+                                <FolderOpenIcon className="w-5 h-5 text-emerald-400 drop-shadow-[0_0_5px_rgba(52,211,153,0.5)]" />
                             </Tooltip>
                         )}
                         {children}
@@ -112,13 +82,11 @@ export default ({ activity, children }: Props) => {
                 </div>
 
                 <div className="text-sm text-neutral-200 mb-3 font-medium">
-                    {EventDictionary[activity.event] || (
-                        <Translate ns={'activity'} values={properties} i18nKey={activity.event.replace(':', '.')} />
-                    )}
+                    <Translate ns={'activity'} values={properties} i18nKey={activity.event.replace(':', '.')} />
                 </div>
 
-                <div className="flex items-center text-xs text-neutral-500 font-semibold tracking-wide">
-                    <span>{format(activity.timestamp, 'h:mm a')}</span>
+                <div className="flex items-center text-xs font-semibold tracking-wide">
+                    <span className="text-primary-400 bg-primary-500/10 px-2 py-0.5 rounded shadow-sm">{format(activity.timestamp, 'h:mm a')}</span>
                     {activity.ip && (
                         <>
                             <span className="mx-2 text-neutral-600">•</span>
