@@ -43,7 +43,10 @@ interface Values {
 
 export default () => {
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
-    const { addFlash, clearFlashes, clearAndAddHttpError } = useFlash();
+    const server = ServerContext.useStoreState((state) => state.server.data!);
+    const setServer = ServerContext.useStoreActions((actions) => actions.server.setServer);
+    
+    const { addFlash, clearFlashes } = useFlash();
     const [testing, setTesting] = useState(false);
 
     const submit = (values: Values, { setSubmitting }: FormikHelpers<Values>) => {
@@ -52,6 +55,9 @@ export default () => {
         http.post(`/api/client/servers/${uuid}/importer/run`, values)
             .then((data) => {
                 addFlash({ type: 'success', key: 'importer', message: data.data.message || 'Importación iniciada correctamente.' });
+                // Bloquear la UI localmente sin necesidad de recargar la página
+                // @ts-ignore
+                setServer({ ...server, status: 'importing' });
             })
             .catch((error) => {
                 const msg = error.response?.data?.message || 'Ocurrió un error inesperado al procesar la solicitud.';
