@@ -164,7 +164,7 @@ export default () => {
 
             {/* ── Cabecera de columnas (solo modo lista) ── */}
             {viewMode === 'list' && (
-                <div className="flex items-center px-4 py-3 mb-1 text-[11px] font-bold text-neutral-600 uppercase tracking-widest"
+                <div className="flex items-center px-4 py-3 mb-1 text-[11px] font-bold uppercase tracking-widest"
                     style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                     <div className="mr-4 pl-2">
                         <FileActionCheckbox
@@ -176,13 +176,13 @@ export default () => {
                     </div>
                     <div className="flex-1 grid grid-cols-12 items-center">
                         <div className="col-span-12 sm:col-span-7 flex items-center gap-x-4">
-                            <span>Nombre</span>
+                            <span className="text-violet-400">Nombre</span>
                         </div>
                         <div className="hidden sm:block sm:col-span-2 text-right">
-                            <span>Tamaño</span>
+                            <span className="text-cyan-400">Tamaño</span>
                         </div>
                         <div className="hidden sm:block sm:col-span-3 text-right pr-6">
-                            <span>Modificado</span>
+                            <span className="text-amber-400">Modificado</span>
                         </div>
                     </div>
                     <div className="w-8"></div>
