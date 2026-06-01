@@ -38,7 +38,7 @@ export default ({ file }: Props) => {
         setLoading(true);
         setContent('');
         
-        const path = join(directory, file.name);
+        const path = join(directory || '/', file.name);
         getFileContents(uuid, path)
             .then((text) => setContent(text))
             .catch((error) => {
@@ -55,7 +55,7 @@ export default ({ file }: Props) => {
         clearFlashes('files:view');
         
         fetchFileContent()
-            .then((text) => saveFileContents(uuid, join(directory, file.name), text))
+            .then((text) => saveFileContents(uuid, join(directory || '/', file.name), text))
             .then(() => addError({ message: 'Archivo guardado correctamente.', key: 'files:view', type: 'success' }))
             .catch((error) => {
                 console.error(error);

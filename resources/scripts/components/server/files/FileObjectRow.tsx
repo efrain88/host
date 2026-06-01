@@ -45,7 +45,7 @@ const Clickable: React.FC<{ file: FileObject; className?: string; viewMode?: 'li
     return (
         <NavLink
             className={`${linkClasses} ${className || ''}`}
-            to={`${match.url}${file.isFile ? '/edit' : ''}#${encodePathSegments(join(directory, file.name))}`}
+            to={`${match.url}${file.isFile ? '/edit' : ''}#${encodePathSegments(join(directory || '/', file.name))}`}
         >
             {children}
         </NavLink>

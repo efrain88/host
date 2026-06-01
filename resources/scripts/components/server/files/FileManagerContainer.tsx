@@ -80,7 +80,7 @@ export default () => {
         return <ServerError message={httpErrorToHuman(error)} onRetry={() => mutate()} />;
     }
 
-    const isTrash = directory.startsWith('/.trash');
+    const isTrash = directory && directory.startsWith('/.trash');
     const filteredFiles = isTrash ? (files || []) : (files?.filter((file) => file.name !== '.trash') || []);
 
     return (

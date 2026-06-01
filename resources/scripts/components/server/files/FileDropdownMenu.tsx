@@ -68,7 +68,7 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
     const { clearAndAddHttpError, clearFlashes } = useFlash();
     const directory = ServerContext.useStoreState((state) => state.files.directory);
 
-    const isTrash = directory.startsWith('/.trash');
+    const isTrash = directory && directory.startsWith('/.trash');
 
     useEventListener(`pterodactyl:files:ctx:${file.key}`, (e: CustomEvent) => {
         setMenuPos(menuPos ? null : { x: e.detail.x, y: e.detail.y });
