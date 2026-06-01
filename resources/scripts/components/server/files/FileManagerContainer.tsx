@@ -173,7 +173,7 @@ export default () => {
                         <CSSTransition classNames={'fade'} timeout={150} appear in>
                             <div className={
                                 viewMode === 'ide' 
-                                    ? 'flex h-[600px] gap-4' 
+                                    ? 'flex items-stretch min-h-[75vh] gap-4' 
                                     : viewMode === 'grid' 
                                         ? 'grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-2' 
                                         : 'flex flex-col gap-y-[2px]'
@@ -181,13 +181,13 @@ export default () => {
                                 {viewMode === 'ide' ? (
                                     <>
                                         {/* IDE Left Sidebar: File List */}
-                                        <div className="w-1/3 border-r border-white/5 pr-4 overflow-y-auto no-scrollbar flex flex-col gap-y-1">
+                                        <div className="w-1/3 border-r border-white/5 pr-4 overflow-y-auto max-h-[75vh] no-scrollbar flex flex-col gap-y-1 relative">
                                             {sortFiles(filteredFiles).map((file) => (
                                                 <FileObjectRow key={file.key} file={file} viewMode="ide" />
                                             ))}
                                         </div>
                                         {/* IDE Right Content: Editor Placeholder */}
-                                        <div className="w-2/3 bg-[#050505] rounded-xl border border-white/5 flex flex-col items-center justify-center text-neutral-500">
+                                        <div className="w-2/3 bg-[#050505] rounded-xl border border-white/5 flex flex-col items-center justify-center text-neutral-500 shadow-inner">
                                             <FontAwesomeIcon icon={faCode} className="text-6xl mb-4 text-neutral-800" />
                                             <p className="font-medium text-lg">Seleccione un archivo para editar</p>
                                         </div>

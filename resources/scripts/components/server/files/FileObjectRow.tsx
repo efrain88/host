@@ -50,7 +50,7 @@ const FileObjectRow = ({ file, viewMode = 'list' }: { file: FileObject; viewMode
                 key={file.name}
                 onContextMenu={(e) => {
                     e.preventDefault();
-                    window.dispatchEvent(new CustomEvent(`pterodactyl:files:ctx:${file.key}`, { detail: e.clientX }));
+                    window.dispatchEvent(new CustomEvent(`pterodactyl:files:ctx:${file.key}`, { detail: { x: e.clientX, y: e.clientY } }));
                 }}
             >
                 <div className="absolute top-2 left-2 z-10">
@@ -71,8 +71,14 @@ const FileObjectRow = ({ file, viewMode = 'list' }: { file: FileObject; viewMode
                     <div className="w-full truncate font-medium text-sm text-neutral-200 group-hover:text-white transition-colors">
                         {file.name}
                     </div>
-                    <div className="text-xs text-neutral-500 mt-1">
-                        {file.isFile ? bytesToString(file.size) : '--'}
+                    <div className="flex items-center gap-x-2 text-xs text-neutral-500 mt-1">
+                        <span>{file.isFile ? bytesToString(file.size) : '--'}</span>
+                        <span className="text-neutral-700">&bull;</span>
+                        <span title={file.modifiedAt.toString()}>
+                            {Math.abs(differenceInHours(file.modifiedAt, new Date())) > 48
+                                ? format(file.modifiedAt, 'MMM d, yyyy')
+                                : formatDistanceToNow(file.modifiedAt, { addSuffix: true })}
+                        </span>
                     </div>
                 </Clickable>
             </div>
@@ -85,7 +91,7 @@ const FileObjectRow = ({ file, viewMode = 'list' }: { file: FileObject; viewMode
             key={file.name}
             onContextMenu={(e) => {
                 e.preventDefault();
-                window.dispatchEvent(new CustomEvent(`pterodactyl:files:ctx:${file.key}`, { detail: e.clientX }));
+                window.dispatchEvent(new CustomEvent(`pterodactyl:files:ctx:${file.key}`, { detail: { x: e.clientX, y: e.clientY } }));
             }}
         >
             <div className="mr-4 pl-2">

@@ -1,4 +1,5 @@
-import React, { memo, useRef, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faBoxOpen,
@@ -24,13 +25,13 @@ import getFileDownloadUrl from '@/api/server/files/getFileDownloadUrl';
 import useFlash from '@/plugins/useFlash';
 import { FileObject } from '@/api/server/files/loadDirectory';
 import useFileManagerSwr from '@/plugins/useFileManagerSwr';
-import DropdownMenu from '@/components/elements/DropdownMenu';
 import useEventListener from '@/plugins/useEventListener';
 import compressFiles from '@/api/server/files/compressFiles';
 import decompressFiles from '@/api/server/files/decompressFiles';
 import isEqual from 'react-fast-compare';
 import ChmodFileModal from '@/components/server/files/ChmodFileModal';
 import { Dialog } from '@/components/elements/dialog';
+import Fade from '@/components/elements/Fade';
 
 type ModalType = 'rename' | 'move' | 'chmod';
 
@@ -55,7 +56,7 @@ const Row = ({ icon, title, $danger, ...props }: RowProps) => (
 );
 
 const FileDropdownMenu = ({ file }: { file: FileObject }) => {
-    const onClickRef = useRef<DropdownMenu>(null);
+    const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
     const [showSpinner, setShowSpinner] = useState(false);
     const [modal, setModal] = useState<ModalType | null>(null);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -68,15 +69,28 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
     const isTrash = directory.startsWith('/.trash');
 
     useEventListener(`pterodactyl:files:ctx:${file.key}`, (e: CustomEvent) => {
-        if (onClickRef.current) {
-            onClickRef.current.triggerMenu(e.detail);
-        }
+        setMenuPos(menuPos ? null : { x: e.detail.x, y: e.detail.y });
     });
 
+    useEffect(() => {
+        if (!menuPos) return;
+
+        const handleClickOutside = () => setMenuPos(null);
+        document.addEventListener('click', handleClickOutside);
+        document.addEventListener('contextmenu', handleClickOutside);
+        
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+            document.removeEventListener('contextmenu', handleClickOutside);
+        };
+    }, [menuPos]);
+
+    const closeMenu = () => setMenuPos(null);
+
     const doDeletion = () => {
+        closeMenu();
         clearFlashes('files');
 
-        // For UI speed, immediately remove the file from the listing before calling the deletion function.
         mutate((files) => files.filter((f) => f.key !== file.key), false);
 
         if (isTrash) {
@@ -93,6 +107,7 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
     };
 
     const doCopy = () => {
+        closeMenu();
         setShowSpinner(true);
         clearFlashes('files');
 
@@ -103,6 +118,7 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
     };
 
     const doDownload = () => {
+        closeMenu();
         setShowSpinner(true);
         clearFlashes('files');
 
@@ -116,6 +132,7 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
     };
 
     const doArchive = () => {
+        closeMenu();
         setShowSpinner(true);
         clearFlashes('files');
 
@@ -126,6 +143,7 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
     };
 
     const doUnarchive = () => {
+        closeMenu();
         setShowSpinner(true);
         clearFlashes('files');
 
@@ -148,61 +166,72 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
                     ? <>No podrás recuperar <span className="font-semibold text-gray-50">{file.name}</span> una vez eliminado.</>
                     : <>El archivo <span className="font-semibold text-gray-50">{file.name}</span> se moverá a la papelera.</>}
             </Dialog.Confirm>
-            
-            {/* The actual DropdownMenu wrapper provides absolute positioning relative to click */}
-            <DropdownMenu
-                ref={onClickRef}
-                renderToggle={(onClick) => (
-                    <div className="p-2 hover:text-white hover:bg-white/5 rounded-lg cursor-pointer transition-colors" onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClick(e); }}>
-                        <FontAwesomeIcon icon={faEllipsisH} />
-                        {modal ? (
-                            modal === 'chmod' ? (
-                                <ChmodFileModal
-                                    visible
-                                    appear
-                                    files={[{ file: file.name, mode: file.modeBits }]}
-                                    onDismissed={() => setModal(null)}
-                                />
-                            ) : (
-                                <RenameFileModal
-                                    visible
-                                    appear
-                                    files={[file.name]}
-                                    useMoveTerminology={modal === 'move'}
-                                    onDismissed={() => setModal(null)}
-                                />
-                            )
-                        ) : null}
-                        <SpinnerOverlay visible={showSpinner} fixed size={'large'} />
-                    </div>
-                )}
+
+            <div 
+                className="p-2 hover:text-white hover:bg-white/5 rounded-lg cursor-pointer transition-colors" 
+                onClick={(e) => { 
+                    e.preventDefault(); 
+                    e.stopPropagation(); 
+                    setMenuPos(menuPos ? null : { x: e.clientX, y: e.clientY }); 
+                }}
             >
-                <div className="bg-[#0f0f11] border border-white/10 rounded-xl shadow-2xl p-1 w-48 z-50">
-                    <Can action={'file.update'}>
-                        <Row onClick={() => setModal('rename')} icon={faPencilAlt} title={'Renombrar'} />
-                        <Row onClick={() => setModal('move')} icon={faLevelUpAlt} title={'Mover'} />
-                        <Row onClick={() => setModal('chmod')} icon={faFileCode} title={'Permisos'} />
-                    </Can>
-                    {file.isFile && (
-                        <Can action={'file.create'}>
-                            <Row onClick={doCopy} icon={faCopy} title={'Copiar'} />
-                        </Can>
-                    )}
-                    {file.isArchiveType() ? (
-                        <Can action={'file.create'}>
-                            <Row onClick={doUnarchive} icon={faBoxOpen} title={'Descomprimir'} />
-                        </Can>
+                <FontAwesomeIcon icon={faEllipsisH} />
+                {modal ? (
+                    modal === 'chmod' ? (
+                        <ChmodFileModal
+                            visible
+                            appear
+                            files={[{ file: file.name, mode: file.modeBits }]}
+                            onDismissed={() => setModal(null)}
+                        />
                     ) : (
-                        <Can action={'file.archive'}>
-                            <Row onClick={doArchive} icon={faFileArchive} title={'Comprimir'} />
+                        <RenameFileModal
+                            visible
+                            appear
+                            files={[file.name]}
+                            useMoveTerminology={modal === 'move'}
+                            onDismissed={() => setModal(null)}
+                        />
+                    )
+                ) : null}
+                <SpinnerOverlay visible={showSpinner} fixed size={'large'} />
+            </div>
+
+            {/* Render Context Menu globally via Portal */}
+            {menuPos && createPortal(
+                <Fade timeout={150} in={!!menuPos} unmountOnExit>
+                    <div 
+                        className="fixed bg-[#0f0f11] border border-white/10 rounded-xl shadow-2xl p-1 w-48 z-[9999]"
+                        style={{ left: Math.min(menuPos.x, window.innerWidth - 200), top: Math.min(menuPos.y, window.innerHeight - 300) }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <Can action={'file.update'}>
+                            <Row onClick={() => { setModal('rename'); closeMenu(); }} icon={faPencilAlt} title={'Renombrar'} />
+                            <Row onClick={() => { setModal('move'); closeMenu(); }} icon={faLevelUpAlt} title={'Mover'} />
+                            <Row onClick={() => { setModal('chmod'); closeMenu(); }} icon={faFileCode} title={'Permisos'} />
                         </Can>
-                    )}
-                    {file.isFile && <Row onClick={doDownload} icon={faFileDownload} title={'Descargar'} />}
-                    <Can action={'file.delete'}>
-                        <Row onClick={() => setShowConfirmation(true)} icon={faTrashAlt} title={isTrash ? 'Eliminar (Permanente)' : 'Mover a Papelera'} $danger />
-                    </Can>
-                </div>
-            </DropdownMenu>
+                        {file.isFile && (
+                            <Can action={'file.create'}>
+                                <Row onClick={doCopy} icon={faCopy} title={'Copiar'} />
+                            </Can>
+                        )}
+                        {file.isArchiveType() ? (
+                            <Can action={'file.create'}>
+                                <Row onClick={doUnarchive} icon={faBoxOpen} title={'Descomprimir'} />
+                            </Can>
+                        ) : (
+                            <Can action={'file.archive'}>
+                                <Row onClick={doArchive} icon={faFileArchive} title={'Comprimir'} />
+                            </Can>
+                        )}
+                        {file.isFile && <Row onClick={doDownload} icon={faFileDownload} title={'Descargar'} />}
+                        <Can action={'file.delete'}>
+                            <Row onClick={() => { setShowConfirmation(true); closeMenu(); }} icon={faTrashAlt} title={isTrash ? 'Eliminar (Permanente)' : 'Mover a Papelera'} $danger />
+                        </Can>
+                    </div>
+                </Fade>,
+                document.body
+            )}
         </>
     );
 };
