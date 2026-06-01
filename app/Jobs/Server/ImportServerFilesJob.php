@@ -94,9 +94,11 @@ class ImportServerFilesJob implements ShouldQueue
                     'query' => ['file' => $targetFile],
                     'body' => $stream,
                 ]);
-                fclose($stream);
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \Log::error("ImportServerFilesJob: Error transfiriendo {$remoteFile} a {$targetFile} - " . $e->getMessage());
         } finally {
             if (file_exists($tempFile)) {
