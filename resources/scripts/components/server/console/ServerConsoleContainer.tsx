@@ -53,9 +53,13 @@ const ServerConsoleContainer = () => {
             )}
 
             {/* Top Bar (Name, Status & Actions) */}
-            <div className="flex flex-col md:flex-row items-center justify-between mb-6 bg-[#050505] border border-white/[0.05] p-4 rounded-xl shadow-lg">
-                <div className="flex flex-col md:items-start space-y-1 mb-4 md:mb-0">
-                    <h1 className="text-xl font-bold text-white tracking-tight">{name}</h1>
+            <div className="flex flex-col md:flex-row items-center justify-between mb-6 bg-[#050505] border border-white/[0.05] p-4 rounded-xl shadow-lg relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+                <div className="flex flex-col md:items-start space-y-1 mb-4 md:mb-0 pl-3">
+                    <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                        <FontAwesomeIcon icon={faBullhorn} className="text-blue-500 text-sm" />
+                        {name}
+                    </h1>
                     <div className="flex items-center text-xs font-medium text-neutral-400">
                         <span className={`w-2.5 h-2.5 rounded-full mr-2 shadow-[0_0_8px_rgba(0,0,0,0.5)] ${status === 'running' ? 'bg-green-500 shadow-green-500/50' : status === 'offline' ? 'bg-red-500 shadow-red-500/50' : 'bg-yellow-500 shadow-yellow-500/50'}`}></span>
                         <span className="text-neutral-300 mr-2 drop-shadow-sm">{status === 'running' ? 'En línea' : status === 'offline' ? 'Apagado' : capitalize(status || 'Cargando')}</span>

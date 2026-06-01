@@ -87,46 +87,46 @@ const ServerInformationContainer = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-[#050505] border border-white/5 rounded-2xl p-6 shadow-xl hover:border-white/10 transition-colors">
                     <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-5 flex items-center">
-                        <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center mr-3">
-                            <FontAwesomeIcon icon={faInfoCircle} className="text-primary-500 text-sm" />
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center mr-3" style={{ background: 'rgba(245,158,11,0.1)' }}>
+                            <FontAwesomeIcon icon={faInfoCircle} className="text-yellow-500 text-sm" />
                         </div>
                         Información del Servidor
                     </h3>
                     <div className="space-y-3">
                         <div className="flex justify-between items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] transition-colors rounded-xl border border-white/[0.02]">
                             <span className="text-xs font-medium text-neutral-500">Nodo</span>
-                            <span className="text-[13px] font-black text-primary-400">{node}</span>
+                            <span className="text-[13px] font-black text-yellow-500">{node}</span>
                         </div>
                         <div className="flex justify-between items-center p-3 bg-white/[0.02] hover:bg-white/[0.04] transition-colors rounded-xl border border-white/[0.02]">
                             <span className="text-xs font-medium text-neutral-500">UUID del servidor</span>
-                            <span className="text-[13px] font-black text-primary-400 truncate max-w-[200px]">{uuid}</span>
+                            <span className="text-[13px] font-black text-yellow-500 truncate max-w-[200px]">{uuid}</span>
                         </div>
                     </div>
                 </div>
 
                 <div className="bg-[#050505] border border-white/5 rounded-2xl p-6 shadow-xl hover:border-white/10 transition-colors">
                     <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-5 flex items-center">
-                        <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center mr-3">
-                            <FontAwesomeIcon icon={faBolt} className="text-primary-500 text-sm" />
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center mr-3" style={{ background: 'rgba(245,158,11,0.1)' }}>
+                            <FontAwesomeIcon icon={faBolt} className="text-yellow-500 text-sm" />
                         </div>
                         Acciones Rápidas
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
-                        <Link to={`/server/${id}/console`} className="flex flex-row items-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
-                            <FontAwesomeIcon icon={faTerminal} className="text-primary-500 group-hover:text-primary-400 mr-3 text-lg transition-colors" />
-                            <span className="text-sm font-bold text-neutral-200 group-hover:text-white transition-colors">Console</span>
+                        <Link to={`/server/${id}/console`} className="flex flex-row items-center p-4 bg-white/[0.02] hover:bg-yellow-500/10 border border-white/[0.02] hover:border-yellow-500/30 rounded-xl transition-all group">
+                            <FontAwesomeIcon icon={faTerminal} className="text-yellow-500 group-hover:text-yellow-400 mr-3 text-lg transition-colors" />
+                            <span className="text-sm font-bold text-neutral-200 group-hover:text-white transition-colors">Consola</span>
                         </Link>
-                        <Link to={`/server/${id}/files`} className="flex flex-row items-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
-                            <FontAwesomeIcon icon={faFolder} className="text-primary-500 group-hover:text-primary-400 mr-3 text-lg transition-colors" />
-                            <span className="text-sm font-bold text-neutral-200 group-hover:text-white transition-colors">Files</span>
+                        <Link to={`/server/${id}/files`} className="flex flex-row items-center p-4 bg-white/[0.02] hover:bg-yellow-500/10 border border-white/[0.02] hover:border-yellow-500/30 rounded-xl transition-all group">
+                            <FontAwesomeIcon icon={faFolder} className="text-yellow-500 group-hover:text-yellow-400 mr-3 text-lg transition-colors" />
+                            <span className="text-sm font-bold text-neutral-200 group-hover:text-white transition-colors">Archivos</span>
                         </Link>
-                        <Link to={`/server/${id}/backups`} className="flex flex-row items-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
-                            <FontAwesomeIcon icon={faBoxOpen} className="text-primary-500 group-hover:text-primary-400 mr-3 text-lg transition-colors" />
+                        <Link to={`/server/${id}/backups`} className="flex flex-row items-center p-4 bg-white/[0.02] hover:bg-yellow-500/10 border border-white/[0.02] hover:border-yellow-500/30 rounded-xl transition-all group">
+                            <FontAwesomeIcon icon={faBoxOpen} className="text-yellow-500 group-hover:text-yellow-400 mr-3 text-lg transition-colors" />
                             <span className="text-sm font-bold text-neutral-200 group-hover:text-white transition-colors">Backups</span>
                         </Link>
-                        <Link to={`/server/${id}/settings`} className="flex flex-row items-center p-4 bg-white/[0.02] hover:bg-primary-500/10 border border-white/[0.02] hover:border-primary-500/30 rounded-xl transition-all group">
-                            <FontAwesomeIcon icon={faCog} className="text-primary-500 group-hover:text-primary-400 mr-3 text-lg transition-colors" />
-                            <span className="text-sm font-bold text-neutral-200 group-hover:text-white transition-colors">Settings</span>
+                        <Link to={`/server/${id}/settings`} className="flex flex-row items-center p-4 bg-white/[0.02] hover:bg-yellow-500/10 border border-white/[0.02] hover:border-yellow-500/30 rounded-xl transition-all group">
+                            <FontAwesomeIcon icon={faCog} className="text-yellow-500 group-hover:text-yellow-400 mr-3 text-lg transition-colors" />
+                            <span className="text-sm font-bold text-neutral-200 group-hover:text-white transition-colors">Ajustes</span>
                         </Link>
                     </div>
                 </div>

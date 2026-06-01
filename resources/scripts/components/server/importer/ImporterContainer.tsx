@@ -27,7 +27,7 @@ const BoxHeader = styled.div`
         ${tw`text-lg font-bold text-white tracking-wide`};
     }
     svg {
-        ${tw`text-primary-400 text-xl`};
+        ${tw`text-cyan-400 text-xl`};
     }
 `;
 
@@ -212,7 +212,7 @@ export default () => {
                                             <Button.Text type="button" onClick={() => testConnection(values)} className="bg-white/5 hover:bg-white/10 text-white border-0 px-6 h-[42px] rounded-xl transition-colors font-semibold">
                                                 Probar Conexión
                                             </Button.Text>
-                                            <Button type="submit" className="bg-primary-600 hover:bg-primary-500 text-white border-0 shadow-[0_0_15px_rgba(var(--color-primary-500),0.4)] px-8 h-[42px] rounded-xl font-bold transition-all">
+                                            <Button type="submit" className="bg-cyan-600 hover:bg-cyan-500 text-white border-0 shadow-[0_0_15px_rgba(20,184,166,0.4)] px-8 h-[42px] rounded-xl font-bold transition-all">
                                                 Importar Datos
                                             </Button>
                                         </div>

@@ -34,7 +34,7 @@ const BoxHeader = styled.div`
         ${tw`text-lg font-bold text-white tracking-wide`};
     }
     svg {
-        ${tw`text-primary-400 text-xl`};
+        ${tw`text-pink-400 text-xl`};
     }
 `;
 
@@ -69,7 +69,7 @@ const RenameServerBox = () => {
                     <p className="text-xs text-neutral-500">
                         Nombre opcional para mostrar la IP de tu servidor (ej. play.miservidor.com)
                     </p>
-                    <Button type={'submit'} className="bg-primary-600 hover:bg-primary-500 text-white rounded-xl shadow-lg border-0 px-8 py-2.5">
+                    <Button type={'submit'} className="bg-pink-600 hover:bg-pink-500 text-white rounded-xl shadow-lg border-0 px-8 py-2.5">
                         Guardar
                     </Button>
                 </div>

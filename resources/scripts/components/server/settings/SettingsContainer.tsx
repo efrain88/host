@@ -20,7 +20,7 @@ import styled from 'styled-components/macro';
 const TabButton = styled.button<{ $active?: boolean; $danger?: boolean }>`
     ${tw`flex items-center gap-x-3 w-full px-4 py-3 rounded-xl transition-all duration-200 text-sm font-semibold`};
     ${(props) => props.$active 
-        ? (props.$danger ? tw`bg-red-500/10 text-red-400 border border-red-500/20 shadow-inner` : tw`bg-primary-500/20 text-primary-300 border border-primary-500/30 shadow-inner`) 
+        ? (props.$danger ? tw`bg-red-500/10 text-red-400 border border-red-500/20 shadow-inner` : tw`bg-pink-500/20 text-pink-400 border border-pink-500/30 shadow-inner`) 
         : tw`text-neutral-400 hover:bg-white/5 hover:text-neutral-200 border border-transparent`};
 `;
 
@@ -34,7 +34,7 @@ const BoxHeader = styled.div<{ $danger?: boolean }>`
         ${tw`text-lg font-bold text-white tracking-wide`};
     }
     svg {
-        ${(props) => props.$danger ? tw`text-red-400 text-xl` : tw`text-primary-400 text-xl`};
+        ${(props) => props.$danger ? tw`text-red-400 text-xl` : tw`text-pink-400 text-xl`};
     }
 `;
 
@@ -94,7 +94,7 @@ export default () => {
                                         </code>
                                     </div>
                                     <CopyOnClick text={uuid}>
-                                        <div className="flex items-center justify-between p-4 bg-[#050505] border border-white/5 rounded-xl cursor-pointer hover:border-primary-500/30 transition-colors">
+                                        <div className="flex items-center justify-between p-4 bg-[#050505] border border-white/5 rounded-xl cursor-pointer hover:border-pink-500/30 transition-colors">
                                             <div className="flex items-center gap-x-3 text-neutral-400">
                                                 <FontAwesomeIcon icon={faNetworkWired} />
                                                 <span className="text-sm font-semibold">ID del Servidor</span>
@@ -157,11 +157,11 @@ export default () => {
                                         </div>
                                     </div>
 
-                                    <div className="bg-primary-500/10 border border-primary-500/20 rounded-xl p-4 mb-8 flex items-center gap-x-3">
-                                        <div className="w-6 h-6 rounded-full bg-primary-500/20 flex items-center justify-center shrink-0">
-                                            <span className="text-primary-400 text-xs font-bold font-serif">i</span>
+                                    <div className="bg-pink-500/10 border border-pink-500/20 rounded-xl p-4 mb-8 flex items-center gap-x-3">
+                                        <div className="w-6 h-6 rounded-full bg-pink-500/20 flex items-center justify-center shrink-0">
+                                            <span className="text-pink-400 text-xs font-bold font-serif">i</span>
                                         </div>
-                                        <p className="text-sm text-primary-200/80">Tu contraseña SFTP es exactamente la misma que usas para iniciar sesión en este panel.</p>
+                                        <p className="text-sm text-pink-200/80">Tu contraseña SFTP es exactamente la misma que usas para iniciar sesión en este panel.</p>
                                     </div>
 
                                     <div className="flex items-center justify-between pt-6 border-t border-white/5">
@@ -170,7 +170,7 @@ export default () => {
                                             <p className="text-xs text-neutral-400">Abre tu aplicación SFTP predeterminada automáticamente.</p>
                                         </div>
                                         <a href={`sftp://${username}.${id}@${ip(sftp.ip)}:${sftp.port}`}>
-                                            <Button.Text className="bg-primary-600 hover:bg-primary-500 text-white border-0 shadow-lg px-6 rounded-xl">
+                                            <Button.Text className="bg-pink-600 hover:bg-pink-500 text-white border-0 shadow-lg px-6 rounded-xl">
                                                 <FontAwesomeIcon icon={faNetworkWired} className="mr-2" />
                                                 Abrir Cliente SFTP
                                             </Button.Text>

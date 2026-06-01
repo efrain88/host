@@ -18,12 +18,12 @@ interface StatBlockProps {
 export default ({ title, copyOnClick, icon, color, className, children }: StatBlockProps) => {
     return (
         <CopyOnClick text={copyOnClick}>
-            <div className={classNames('group flex items-center bg-[#0a0a0c] bg-gradient-to-br from-white/[0.02] to-transparent border border-white/[0.05] hover:border-primary-500/40 rounded-xl p-3.5 shadow-lg hover:shadow-primary-500/10 transition-all duration-500', className)}>
-                <div className={classNames('w-10 h-10 rounded-lg flex items-center justify-center mr-4 shadow-inner transition-colors duration-500', color ? color : 'bg-primary-500/10 group-hover:bg-primary-500/20')}>
+            <div className={classNames('group flex items-center bg-[#0a0a0c] bg-gradient-to-br from-white/[0.02] to-transparent border border-white/[0.05] hover:border-white/20 rounded-xl p-3.5 shadow-lg hover:shadow-white/5 transition-all duration-500', className)}>
+                <div className={classNames('w-10 h-10 rounded-lg flex items-center justify-center mr-4 shadow-inner transition-colors duration-500', color ? color : 'bg-white/5 group-hover:bg-white/10')}>
                     <Icon
                         icon={icon}
                         className={classNames('text-base drop-shadow-md transition-colors duration-500', {
-                            'text-primary-400 group-hover:text-primary-300': !color || color.includes('bg-white'),
+                            'text-neutral-400 group-hover:text-white': !color || color.includes('bg-white'),
                             'text-white': color && !color.includes('bg-white'),
                         })}
                     />

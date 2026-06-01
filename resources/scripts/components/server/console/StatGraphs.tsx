@@ -37,8 +37,8 @@ export default () => {
             return {
                 ...opts,
                 label: !index ? 'Red Entrada' : 'Red Salida',
-                borderColor: !index ? theme('colors.primary.400') : theme('colors.primary.700'),
-                backgroundColor: hexToRgba(!index ? theme('colors.primary.600') : theme('colors.primary.900'), 0.2),
+                borderColor: !index ? theme('colors.blue.400') : theme('colors.blue.700'),
+                backgroundColor: hexToRgba(!index ? theme('colors.blue.600') : theme('colors.blue.900'), 0.2),
             };
         },
     });
@@ -74,7 +74,7 @@ export default () => {
                 title={'Carga de CPU'}
                 legend={
                     <Tooltip arrow content={'CPU Usage'}>
-                        <FontAwesomeIcon icon={faMicrochip} className="text-primary-500 w-4 h-4" />
+                        <FontAwesomeIcon icon={faMicrochip} className="text-blue-500 w-4 h-4" />
                     </Tooltip>
                 }
             >
@@ -84,7 +84,7 @@ export default () => {
                 title={'Memoria'}
                 legend={
                     <Tooltip arrow content={'Memory Usage'}>
-                        <FontAwesomeIcon icon={faMemory} className="text-primary-500 w-4 h-4" />
+                        <FontAwesomeIcon icon={faMemory} className="text-blue-500 w-4 h-4" />
                     </Tooltip>
                 }
             >
@@ -95,10 +95,10 @@ export default () => {
                 legend={
                     <>
                         <Tooltip arrow content={'Entrada'}>
-                            <CloudDownloadIcon className={'mr-2 w-4 h-4 text-primary-400'} />
+                            <CloudDownloadIcon className={'mr-2 w-4 h-4 text-blue-400'} />
                         </Tooltip>
                         <Tooltip arrow content={'Salida'}>
-                            <CloudUploadIcon className={'w-4 h-4 text-primary-700'} />
+                            <CloudUploadIcon className={'w-4 h-4 text-blue-700'} />
                         </Tooltip>
                     </>
                 }

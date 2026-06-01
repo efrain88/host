@@ -257,7 +257,7 @@ export default () => {
                     Consola del Servidor
                 </div>
                 <div className="flex space-x-3 text-neutral-500">
-                    <button onClick={() => setIsPaused(!isPaused)} className="hover:text-primary-400 transition-colors outline-none" title={isPaused ? "Reanudar Registros" : "Pausar Registros"}>
+                    <button onClick={() => setIsPaused(!isPaused)} className="hover:text-blue-400 transition-colors outline-none" title={isPaused ? "Reanudar Registros" : "Pausar Registros"}>
                         <FontAwesomeIcon icon={isPaused ? faPlay : faPause} className="w-3 h-3" />
                     </button>
                     <button onClick={uploadToMclogs} className="hover:text-blue-400 transition-colors outline-none" title="Compartir en mclo.gs">
@@ -293,12 +293,12 @@ export default () => {
                         autoCorrect={'off'}
                         autoCapitalize={'none'}
                     />
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-500 peer-focus:text-primary-400 peer-focus:animate-pulse">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 peer-focus:text-blue-400 peer-focus:animate-pulse">
                         <ChevronDoubleRightIcon className={'w-4 h-4'} />
                     </div>
                     <button 
                         onClick={() => setShowHistory(!showHistory)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-primary-400 transition-colors outline-none"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-blue-400 transition-colors outline-none"
                         title="Historial de comandos"
                     >
                         <FontAwesomeIcon icon={faHistory} className="w-4 h-4" />
@@ -322,7 +322,7 @@ export default () => {
                                             setShowHistory(false);
                                         }}
                                     >
-                                        <span className="font-mono text-primary-400 truncate w-3/5" title={entry.cmd || entry}>{entry.cmd || entry}</span>
+                                        <span className="font-mono text-blue-400 truncate w-3/5" title={entry.cmd || entry}>{entry.cmd || entry}</span>
                                         <div className="flex flex-col items-end w-2/5">
                                             <span className="text-white truncate">{entry.user || 'Desconocido'}</span>
                                             <span className="text-neutral-500 text-[9px]">{entry.time || 'Anterior'}</span>
