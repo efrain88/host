@@ -11,6 +11,7 @@ import {
     faLevelUpAlt,
     faPencilAlt,
     faTrashAlt,
+    faTrashRestore,
     IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 import RenameFileModal from '@/components/server/files/RenameFileModal';
@@ -60,6 +61,7 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
     const [showSpinner, setShowSpinner] = useState(false);
     const [modal, setModal] = useState<ModalType | null>(null);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [showPermDeleteConfirmation, setShowPermDeleteConfirmation] = useState(false);
 
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const { mutate } = useFileManagerSwr();
@@ -90,20 +92,34 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
     const doDeletion = () => {
         closeMenu();
         clearFlashes('files');
-
         mutate((files) => files.filter((f) => f.key !== file.key), false);
 
-        if (isTrash) {
-            deleteFiles(uuid, directory, [file.name]).catch((error) => {
-                mutate();
-                clearAndAddHttpError({ key: 'files', error });
-            });
-        } else {
-            renameFiles(uuid, '/', [{ from: join(directory, file.name), to: `/.trash/${file.name}` }]).catch((error) => {
-                mutate();
-                clearAndAddHttpError({ key: 'files', error });
-            });
-        }
+        renameFiles(uuid, '/', [{ from: join(directory, file.name), to: `/.trash/${file.name}` }]).catch((error) => {
+            mutate();
+            clearAndAddHttpError({ key: 'files', error });
+        });
+    };
+
+    const doPermDeletion = () => {
+        closeMenu();
+        clearFlashes('files');
+        mutate((files) => files.filter((f) => f.key !== file.key), false);
+
+        deleteFiles(uuid, directory, [file.name]).catch((error) => {
+            mutate();
+            clearAndAddHttpError({ key: 'files', error });
+        });
+    };
+
+    const doRestore = () => {
+        closeMenu();
+        clearFlashes('files');
+        mutate((files) => files.filter((f) => f.key !== file.key), false);
+
+        renameFiles(uuid, '/', [{ from: join(directory, file.name), to: `/${file.name}` }]).catch((error) => {
+            mutate();
+            clearAndAddHttpError({ key: 'files', error });
+        });
     };
 
     const doCopy = () => {
@@ -158,13 +174,21 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
             <Dialog.Confirm
                 open={showConfirmation}
                 onClose={() => setShowConfirmation(false)}
-                title={isTrash ? `Eliminar permanentemente ${file.isFile ? 'el archivo' : 'la carpeta'}` : `Mover a papelera ${file.isFile ? 'el archivo' : 'la carpeta'}`}
-                confirm={isTrash ? 'Eliminar permanentemente' : 'Mover a papelera'}
+                title={`Mover a papelera ${file.isFile ? 'el archivo' : 'la carpeta'}`}
+                confirm={'Mover a papelera'}
                 onConfirmed={doDeletion}
             >
-                {isTrash 
-                    ? <>No podrás recuperar <span className="font-semibold text-gray-50">{file.name}</span> una vez eliminado.</>
-                    : <>El archivo <span className="font-semibold text-gray-50">{file.name}</span> se moverá a la papelera.</>}
+                El archivo <span className="font-semibold text-gray-50">{file.name}</span> se moverá a la papelera.
+            </Dialog.Confirm>
+
+            <Dialog.Confirm
+                open={showPermDeleteConfirmation}
+                onClose={() => setShowPermDeleteConfirmation(false)}
+                title={`Eliminar permanentemente ${file.isFile ? 'el archivo' : 'la carpeta'}`}
+                confirm={'Eliminar permanentemente'}
+                onConfirmed={doPermDeletion}
+            >
+                No podrás recuperar <span className="font-semibold text-gray-50">{file.name}</span> una vez eliminado.
             </Dialog.Confirm>
 
             <div 
@@ -201,8 +225,8 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
             {menuPos && createPortal(
                 <Fade timeout={150} in={!!menuPos} unmountOnExit>
                     <div 
-                        className="fixed bg-[#0f0f11] border border-white/10 rounded-xl shadow-2xl p-1 w-48 z-[9999]"
-                        style={{ left: Math.min(menuPos.x, window.innerWidth - 200), top: Math.min(menuPos.y, window.innerHeight - 300) }}
+                        className="fixed bg-[#0f0f11] border border-white/10 rounded-xl shadow-2xl p-1 w-52 z-[9999]"
+                        style={{ left: Math.min(menuPos.x, window.innerWidth - 220), top: Math.min(menuPos.y, window.innerHeight - 350) }}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <Can action={'file.update'}>
@@ -225,9 +249,22 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
                             </Can>
                         )}
                         {file.isFile && <Row onClick={doDownload} icon={faFileDownload} title={'Descargar'} />}
-                        <Can action={'file.delete'}>
-                            <Row onClick={() => { setShowConfirmation(true); closeMenu(); }} icon={faTrashAlt} title={isTrash ? 'Eliminar (Permanente)' : 'Mover a Papelera'} $danger />
-                        </Can>
+                        
+                        <div className="h-px bg-white/5 my-1 mx-2" />
+                        
+                        {isTrash ? (
+                            <Can action={'file.update'}>
+                                <Row onClick={doRestore} icon={faTrashRestore} title={'Restaurar a principal'} />
+                                <Can action={'file.delete'}>
+                                    <Row onClick={() => { setShowPermDeleteConfirmation(true); closeMenu(); }} icon={faTrashAlt} title={'Eliminar Permanente'} $danger />
+                                </Can>
+                            </Can>
+                        ) : (
+                            <Can action={'file.delete'}>
+                                <Row onClick={() => { setShowConfirmation(true); closeMenu(); }} icon={faTrashAlt} title={'Mover a Papelera'} $danger />
+                                <Row onClick={() => { setShowPermDeleteConfirmation(true); closeMenu(); }} icon={faTrashAlt} title={'Eliminar Permanente'} $danger />
+                            </Can>
+                        )}
                     </div>
                 </Fade>,
                 document.body

@@ -21,6 +21,8 @@ const Clickable: React.FC<{ file: FileObject; className?: string; viewMode?: 'li
     const match = useRouteMatch();
 
     const isGrid = viewMode === 'grid';
+    const isIde = viewMode === 'ide';
+    
     const defaultClasses = isGrid 
         ? "flex flex-col items-center justify-center text-center w-full h-full cursor-default"
         : "flex-1 grid grid-cols-12 items-center cursor-default";
@@ -28,9 +30,19 @@ const Clickable: React.FC<{ file: FileObject; className?: string; viewMode?: 'li
         ? "flex flex-col items-center justify-center text-center w-full h-full cursor-pointer transition-colors"
         : "flex-1 grid grid-cols-12 items-center cursor-pointer transition-colors";
 
-    return (file.isFile && (!file.isEditable() || !canReadContents)) || (!file.isFile && !canRead) ? (
-        <div className={`${defaultClasses} ${className || ''}`}>{children}</div>
-    ) : (
+    if ((file.isFile && (!file.isEditable() || !canReadContents)) || (!file.isFile && !canRead)) {
+        return <div className={`${defaultClasses} ${className || ''}`}>{children}</div>;
+    }
+
+    if (isIde && file.isFile) {
+        return (
+            <div className={`${linkClasses} ${className || ''}`}>
+                {children}
+            </div>
+        );
+    }
+
+    return (
         <NavLink
             className={`${linkClasses} ${className || ''}`}
             to={`${match.url}${file.isFile ? '/edit' : ''}#${encodePathSegments(join(directory, file.name))}`}
@@ -40,7 +52,7 @@ const Clickable: React.FC<{ file: FileObject; className?: string; viewMode?: 'li
     );
 }, isEqual);
 
-const FileObjectRow = ({ file, viewMode = 'list' }: { file: FileObject; viewMode?: 'list' | 'grid' | 'ide' }) => {
+const FileObjectRow = ({ file, viewMode = 'list', isIdeSelected }: { file: FileObject; viewMode?: 'list' | 'grid' | 'ide'; isIdeSelected?: boolean }) => {
     const isGrid = viewMode === 'grid';
 
     if (isGrid) {
@@ -87,7 +99,7 @@ const FileObjectRow = ({ file, viewMode = 'list' }: { file: FileObject; viewMode
 
     return (
         <div
-            className="group flex items-center px-4 py-2 border-b border-white/5 hover:bg-white/5 transition-colors duration-200"
+            className={`group flex items-center px-4 py-2 border-b border-white/5 hover:bg-white/5 transition-colors duration-200 ${isIdeSelected ? 'bg-primary-500/10' : ''}`}
             key={file.name}
             onContextMenu={(e) => {
                 e.preventDefault();
@@ -107,7 +119,7 @@ const FileObjectRow = ({ file, viewMode = 'list' }: { file: FileObject; viewMode
                             <FontAwesomeIcon icon={faFolder} />
                         )}
                     </div>
-                    <div className="flex-1 truncate font-medium text-sm text-neutral-200 group-hover:text-white transition-colors">{file.name}</div>
+                    <div className={`flex-1 truncate font-medium text-sm transition-colors ${isIdeSelected ? 'text-white' : 'text-neutral-200 group-hover:text-white'}`}>{file.name}</div>
                 </div>
                 
                 {viewMode === 'list' && (
@@ -138,5 +150,5 @@ export default memo(FileObjectRow, (prevProps, nextProps) => {
     const { isArchiveType: nextIsArchiveType, isEditable: nextIsEditable, ...nextFile } = nextProps.file;
     /* eslint-enable @typescript-eslint/no-unused-vars */
 
-    return isEqual(prevFile, nextFile) && prevProps.viewMode === nextProps.viewMode;
+    return isEqual(prevFile, nextFile) && prevProps.viewMode === nextProps.viewMode && prevProps.isIdeSelected === nextProps.isIdeSelected;
 });
