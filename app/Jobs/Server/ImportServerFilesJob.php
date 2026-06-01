@@ -32,15 +32,22 @@ class ImportServerFilesJob implements ShouldQueue
 
     public function handle()
     {
-        $sftp = new SFTP($this->credentials['host'], $this->credentials['port']);
-        if (!$sftp->login($this->credentials['username'], $this->credentials['password'])) {
-            \Log::error("ImportServerFilesJob: Error de autenticación SFTP para el servidor {$this->server->uuid}");
-            return;
-        }
+        try {
+            $sftp = new SFTP($this->credentials['host'], $this->credentials['port']);
+            if (!$sftp->login($this->credentials['username'], $this->credentials['password'])) {
+                \Log::error("ImportServerFilesJob: Error de autenticación SFTP para el servidor {$this->server->uuid}");
+                return;
+            }
 
-        \Log::info("ImportServerFilesJob: Iniciando transferencia para el servidor {$this->server->uuid} desde {$this->sourcePath}");
-        $this->transferDirectory($sftp, rtrim($this->sourcePath, '/'), rtrim($this->destPath, '/'));
-        \Log::info("ImportServerFilesJob: Transferencia completada para el servidor {$this->server->uuid}");
+            \Log::info("ImportServerFilesJob: Iniciando transferencia para el servidor {$this->server->uuid} desde {$this->sourcePath}");
+            $this->transferDirectory($sftp, rtrim($this->sourcePath, '/'), rtrim($this->destPath, '/'));
+            \Log::info("ImportServerFilesJob: Transferencia completada para el servidor {$this->server->uuid}");
+        } catch (\Exception $e) {
+            \Log::error("ImportServerFilesJob: Error crítico en la transferencia - " . $e->getMessage());
+        } finally {
+            // Siempre restaurar el estado del servidor a normal al finalizar (o fallar)
+            $this->server->update(['status' => null]);
+        }
     }
 
     protected function transferDirectory(SFTP $sftp, string $remoteDir, string $localDir)

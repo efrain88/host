@@ -12,7 +12,13 @@ export default () => {
         (state) => state.server.data?.isNodeUnderMaintenance || false
     );
 
-    return status === 'installing' || status === 'install_failed' || status === 'reinstall_failed' ? (
+    return status === 'importing' ? (
+        <ScreenBlock
+            title={'Importando Datos'}
+            image={ServerRestoreSvg}
+            message={'Tu servidor está importando datos desde un servidor remoto. Este proceso puede tomar varios minutos, por favor no recargues ni modifiques el servidor hasta que termine.'}
+        />
+    ) : status === 'installing' || status === 'install_failed' || status === 'reinstall_failed' ? (
         <ScreenBlock
             title={'Running Installer'}
             image={ServerInstallSvg}

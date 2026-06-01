@@ -91,6 +91,9 @@ class ImporterController extends ClientApiController
                 ], 404);
             }
 
+            // Actualizar estado del servidor para bloquear UI
+            $server->update(['status' => Server::STATUS_IMPORTING]);
+
             // Despachar el Job a la cola en segundo plano
             dispatch(new ImportServerFilesJob(
                 $server,

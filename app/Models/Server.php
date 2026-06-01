@@ -124,6 +124,7 @@ class Server extends Model implements Identifiable
     public const STATUS_REINSTALL_FAILED = 'reinstall_failed';
     public const STATUS_SUSPENDED = 'suspended';
     public const STATUS_RESTORING_BACKUP = 'restoring_backup';
+    public const STATUS_IMPORTING = 'importing';
 
     /**
      * The table associated with the model.
