@@ -102,16 +102,32 @@ const EditSubuserModal = ({ subuser }: Props) => {
                 permissions: array().of(string()),
             })}
         >
+            {({ values, setFieldValue }) => (
             <Form>
-                <div css={tw`flex justify-between`}>
+                <div css={tw`flex justify-between items-center`}>
                     <h2 css={tw`text-2xl`} ref={ref}>
                         {subuser
-                            ? `${canEditUser ? 'Modify' : 'View'} permissions for ${subuser.email}`
-                            : 'Create new subuser'}
+                            ? `${canEditUser ? 'Modificar' : 'Ver'} permisos de ${subuser.email}`
+                            : 'Crear nuevo subusuario'}
                     </h2>
-                    <div>
+                    <div css={tw`flex gap-2`}>
+                        {canEditUser && (
+                            <Button 
+                                type="button" 
+                                css={tw`w-full sm:w-auto bg-neutral-600 hover:bg-neutral-500`}
+                                onClick={() => {
+                                    if (values.permissions.length === editablePermissions.length) {
+                                        setFieldValue('permissions', []);
+                                    } else {
+                                        setFieldValue('permissions', editablePermissions);
+                                    }
+                                }}
+                            >
+                                {values.permissions.length === editablePermissions.length ? 'Deseleccionar Todos' : 'Seleccionar Todos'}
+                            </Button>
+                        )}
                         <Button type={'submit'} css={tw`w-full sm:w-auto`}>
-                            {subuser ? 'Save' : 'Invite User'}
+                            {subuser ? 'Guardar' : 'Invitar Usuario'}
                         </Button>
                     </div>
                 </div>
@@ -119,8 +135,7 @@ const EditSubuserModal = ({ subuser }: Props) => {
                 {!isRootAdmin && loggedInPermissions[0] !== '*' && (
                     <div css={tw`mt-4 pl-4 py-2 border-l-4 border-cyan-400`}>
                         <p css={tw`text-sm text-neutral-300`}>
-                            Only permissions which your account is currently assigned may be selected when creating or
-                            modifying other users.
+                            Solo puedes asignar o modificar permisos que tu cuenta tiene actualmente permitidos.
                         </p>
                     </div>
                 )}
@@ -128,9 +143,9 @@ const EditSubuserModal = ({ subuser }: Props) => {
                     <div css={tw`mt-6`}>
                         <Field
                             name={'email'}
-                            label={'User Email'}
+                            label={'Correo del Usuario'}
                             description={
-                                'Enter the email address of the user you wish to invite as a subuser for this server.'
+                                'Ingresa el correo electrónico del usuario que deseas invitar como subusuario a este servidor.'
                             }
                         />
                     </div>
@@ -160,11 +175,12 @@ const EditSubuserModal = ({ subuser }: Props) => {
                 <Can action={subuser ? 'user.update' : 'user.create'}>
                     <div css={tw`pb-6 flex justify-end`}>
                         <Button type={'submit'} css={tw`w-full sm:w-auto`}>
-                            {subuser ? 'Save' : 'Invite User'}
+                            {subuser ? 'Guardar' : 'Invitar Usuario'}
                         </Button>
                     </div>
                 </Can>
             </Form>
+            )}
         </Formik>
     );
 };

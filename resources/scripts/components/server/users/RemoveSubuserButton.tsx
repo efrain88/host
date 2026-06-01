@@ -36,15 +36,14 @@ export default ({ subuser }: { subuser: Subuser }) => {
     return (
         <>
             <ConfirmationModal
-                title={'Delete this subuser?'}
-                buttonText={'Yes, remove subuser'}
+                title={'¿Eliminar este subusuario?'}
+                buttonText={'Sí, eliminar subusuario'}
                 visible={showConfirmation}
                 showSpinnerOverlay={loading}
                 onConfirmed={() => doDeletion()}
                 onModalDismissed={() => setShowConfirmation(false)}
             >
-                Are you sure you wish to remove this subuser? They will have all access to this server revoked
-                immediately.
+                ¿Estás seguro de que deseas eliminar este subusuario? Se le revocarán todos los accesos a este servidor inmediatamente.
             </ConfirmationModal>
             <button
                 type={'button'}

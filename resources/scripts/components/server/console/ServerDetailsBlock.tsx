@@ -92,7 +92,7 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
         <div className={classNames('grid grid-cols-1 md:grid-cols-4 gap-4', className)}>
             <StatBlock themeColor="cyan-500" icon={faMicrochip} title={'CPU'} color={getBackgroundColor(stats.cpu, limits.cpu)}>
                 {status === 'offline' ? (
-                    <span className={'text-gray-400'}>Offline</span>
+                    <span className={'text-gray-400'}>Apagado</span>
                 ) : (
                     <Limit limit={textLimits.cpu}>{stats.cpu.toFixed(2)}%</Limit>
                 )}
@@ -104,7 +104,7 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
                 color={getBackgroundColor(stats.memory / 1024, limits.memory * 1024)}
             >
                 {status === 'offline' ? (
-                    <span className={'text-gray-400'}>Offline</span>
+                    <span className={'text-gray-400'}>Apagado</span>
                 ) : (
                     <Limit limit={textLimits.memory}>{bytesToString(stats.memory)}</Limit>
                 )}
