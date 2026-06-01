@@ -90,7 +90,7 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
 
     return (
         <div className={classNames('grid grid-cols-1 md:grid-cols-4 gap-4', className)}>
-            <StatBlock icon={faMicrochip} title={'CPU'} color={getBackgroundColor(stats.cpu, limits.cpu)}>
+            <StatBlock themeColor="cyan-500" icon={faMicrochip} title={'CPU'} color={getBackgroundColor(stats.cpu, limits.cpu)}>
                 {status === 'offline' ? (
                     <span className={'text-gray-400'}>Offline</span>
                 ) : (
@@ -98,6 +98,7 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
                 )}
             </StatBlock>
             <StatBlock
+                themeColor="pink-500"
                 icon={faMemory}
                 title={'Memoria'}
                 color={getBackgroundColor(stats.memory / 1024, limits.memory * 1024)}
@@ -108,10 +109,10 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
                     <Limit limit={textLimits.memory}>{bytesToString(stats.memory)}</Limit>
                 )}
             </StatBlock>
-            <StatBlock icon={faHdd} title={'Disco'} color={getBackgroundColor(stats.disk / 1024, limits.disk * 1024)}>
+            <StatBlock themeColor="yellow-500" icon={faHdd} title={'Disco'} color={getBackgroundColor(stats.disk / 1024, limits.disk * 1024)}>
                 <Limit limit={textLimits.disk}>{bytesToString(stats.disk)}</Limit>
             </StatBlock>
-            <StatBlock icon={faWifi} title={'Dirección'} copyOnClick={allocation}>
+            <StatBlock themeColor="green-500" icon={faWifi} title={'Dirección'} copyOnClick={allocation}>
                 {allocation}
             </StatBlock>
         </div>

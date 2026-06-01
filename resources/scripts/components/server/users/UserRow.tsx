@@ -7,7 +7,15 @@ import EditSubuserModal from '@/components/server/users/EditSubuserModal';
 import Can from '@/components/elements/Can';
 import { useStoreState } from 'easy-peasy';
 import tw from 'twin.macro';
-import GreyRowBox from '@/components/elements/GreyRowBox';
+import styled from 'styled-components/macro';
+
+const RowBox = styled.div`
+    ${tw`flex items-center bg-[#050505] border-t border-white/5 p-4 transition-colors hover:bg-white/[0.02]`};
+    
+    &:first-of-type {
+        ${tw`border-t-0`}
+    }
+`;
 
 interface Props {
     subuser: Subuser;
@@ -18,39 +26,42 @@ export default ({ subuser }: Props) => {
     const [visible, setVisible] = useState(false);
 
     return (
-        <GreyRowBox css={tw`mb-2`}>
+        <RowBox>
             <EditSubuserModal subuser={subuser} visible={visible} onModalDismissed={() => setVisible(false)} />
-            <div css={tw`w-10 h-10 rounded-full bg-white border-2 border-neutral-800 overflow-hidden hidden md:block`}>
-                <img css={tw`w-full h-full`} src={`${subuser.image}?s=400`} />
+            
+            <div className="w-10 h-10 rounded-full border-2 border-purple-500/30 overflow-hidden shrink-0 hidden md:block">
+                <img className="w-full h-full object-cover" src={`${subuser.image}?s=400`} alt="Avatar" />
             </div>
-            <div css={tw`ml-4 flex-1 overflow-hidden`}>
-                <p css={tw`text-sm truncate`}>{subuser.email}</p>
+            
+            <div className="ml-4 flex-1 overflow-hidden">
+                <p className="text-sm font-semibold text-neutral-200 truncate">{subuser.email}</p>
             </div>
-            <div css={tw`ml-4`}>
-                <p css={tw`font-medium text-center`}>
-                    &nbsp;
+            
+            <div className="ml-4">
+                <p className="font-medium text-center">
                     <FontAwesomeIcon
                         icon={subuser.twoFactorEnabled ? faUserLock : faUnlockAlt}
                         fixedWidth
-                        css={!subuser.twoFactorEnabled ? tw`text-red-400` : undefined}
+                        className={!subuser.twoFactorEnabled ? 'text-red-400' : 'text-green-400'}
                     />
-                    &nbsp;
                 </p>
-                <p css={tw`text-2xs text-neutral-500 uppercase hidden md:block`}>2FA Enabled</p>
+                <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider hidden md:block mt-1">2FA Activo</p>
             </div>
-            <div css={tw`ml-4 hidden md:block`}>
-                <p css={tw`font-medium text-center`}>
+            
+            <div className="ml-6 hidden md:block">
+                <p className="font-bold text-center text-purple-400">
                     {subuser.permissions.filter((permission) => permission !== 'websocket.connect').length}
                 </p>
-                <p css={tw`text-2xs text-neutral-500 uppercase`}>Permissions</p>
+                <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider mt-1">Permisos</p>
             </div>
+            
             {subuser.uuid !== uuid && (
-                <>
+                <div className="ml-6 flex items-center gap-x-2">
                     <Can action={'user.update'}>
                         <button
                             type={'button'}
-                            aria-label={'Edit subuser'}
-                            css={tw`block text-sm p-1 md:p-2 text-neutral-500 hover:text-neutral-100 transition-colors duration-150 mx-4`}
+                            aria-label={'Editar usuario'}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-purple-500/20 hover:border-purple-500/30 border border-transparent transition-all"
                             onClick={() => setVisible(true)}
                         >
                             <FontAwesomeIcon icon={faPencilAlt} />
@@ -59,8 +70,8 @@ export default ({ subuser }: Props) => {
                     <Can action={'user.delete'}>
                         <RemoveSubuserButton subuser={subuser} />
                     </Can>
-                </>
+                </div>
             )}
-        </GreyRowBox>
+        </RowBox>
     );
 };

@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import TitledGreyBox from '@/components/elements/TitledGreyBox';
 import tw from 'twin.macro';
 import VariableBox from '@/components/server/startup/VariableBox';
 import ServerContentBlock from '@/components/elements/ServerContentBlock';
 import getServerStartup from '@/api/swr/getServerStartup';
-import Spinner from '@/components/elements/Spinner';
+import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import { ServerError } from '@/components/elements/ScreenBlock';
 import { httpErrorToHuman } from '@/api/http';
 import { ServerContext } from '@/state/server';
@@ -15,6 +14,23 @@ import Input from '@/components/elements/Input';
 import setSelectedDockerImage from '@/api/server/setSelectedDockerImage';
 import InputSpinner from '@/components/elements/InputSpinner';
 import useFlash from '@/plugins/useFlash';
+import styled from 'styled-components/macro';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlayCircle, faTerminal, faBoxOpen, faCogs } from '@fortawesome/free-solid-svg-icons';
+
+const ContentBox = styled.div`
+    ${tw`bg-[#0a0a0c] border border-white/5 rounded-2xl shadow-2xl relative overflow-hidden flex flex-col mb-6`};
+`;
+
+const BoxHeader = styled.div`
+    ${tw`flex items-center gap-x-3 p-6 pb-4 border-b border-white/5 bg-[#050505]`};
+    h2 {
+        ${tw`text-lg font-bold text-white tracking-wide`};
+    }
+    svg {
+        ${tw`text-green-400 text-xl`};
+    }
+`;
 
 const StartupContainer = () => {
     const [loading, setLoading] = useState(false);
@@ -43,9 +59,6 @@ const StartupContainer = () => {
             .includes(variables.dockerImage.toLowerCase());
 
     useEffect(() => {
-        // Since we're passing in initial data this will not trigger on mount automatically. We
-        // want to always fetch fresh information from the API however when we're loading the startup
-        // information.
         mutate();
     }, []);
 
@@ -78,54 +91,83 @@ const StartupContainer = () => {
 
     return !data ? (
         !error || (error && isValidating) ? (
-            <Spinner centered size={Spinner.Size.LARGE} />
+            <SpinnerOverlay visible={true} />
         ) : (
             <ServerError title={'Oops!'} message={httpErrorToHuman(error)} onRetry={() => mutate()} />
         )
     ) : (
-        <ServerContentBlock title={'Startup Settings'} showFlashKey={'startup:image'}>
-            <div css={tw`md:flex`}>
-                <TitledGreyBox title={'Startup Command'} css={tw`flex-1`}>
-                    <div css={tw`px-1 py-2`}>
-                        <p css={tw`font-mono bg-neutral-900 rounded py-2 px-4`}>{data.invocation}</p>
-                    </div>
-                </TitledGreyBox>
-                <TitledGreyBox title={'Docker Image'} css={tw`flex-1 lg:flex-none lg:w-1/3 mt-8 md:mt-0 md:ml-10`}>
-                    {Object.keys(data.dockerImages).length > 1 && !isCustomImage ? (
-                        <>
-                            <InputSpinner visible={loading}>
-                                <Select
-                                    disabled={Object.keys(data.dockerImages).length < 2}
-                                    onChange={updateSelectedDockerImage}
-                                    defaultValue={variables.dockerImage}
-                                >
-                                    {Object.keys(data.dockerImages).map((key) => (
-                                        <option key={data.dockerImages[key]} value={data.dockerImages[key]}>
-                                            {key}
-                                        </option>
-                                    ))}
-                                </Select>
-                            </InputSpinner>
-                            <p css={tw`text-xs text-neutral-300 mt-2`}>
-                                This is an advanced feature allowing you to select a Docker image to use when running
-                                this server instance.
-                            </p>
-                        </>
-                    ) : (
-                        <>
-                            <Input disabled readOnly value={variables.dockerImage} />
-                            {isCustomImage && (
-                                <p css={tw`text-xs text-neutral-300 mt-2`}>
-                                    This {"server's"} Docker image has been manually set by an administrator and cannot
-                                    be changed through this UI.
-                                </p>
-                            )}
-                        </>
-                    )}
-                </TitledGreyBox>
+        <ServerContentBlock title={'Inicio'} showFlashKey={'startup:image'}>
+            
+            <div className="mb-8">
+                <h1 className="text-2xl font-bold text-white mb-2 tracking-tight">Parámetros de Inicio</h1>
+                <p className="text-sm text-neutral-400">Configura cómo arranca tu servidor, cambia la imagen de Docker o modifica las variables de entorno.</p>
             </div>
-            <h3 css={tw`mt-8 mb-2 text-2xl`}>Variables</h3>
-            <div css={tw`grid gap-8 md:grid-cols-2`}>
+
+            <div className="flex flex-col lg:flex-row gap-6 mb-8 items-stretch">
+                <ContentBox className="flex-1 mb-0 h-full">
+                    <BoxHeader>
+                        <FontAwesomeIcon icon={faTerminal} />
+                        <h2>Comando de Inicio</h2>
+                    </BoxHeader>
+                    <div className="p-6 h-full flex flex-col justify-center">
+                        <div className="bg-[#050505] border border-green-500/20 rounded-xl p-4 shadow-inner relative overflow-hidden group">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-green-500/50 group-hover:bg-green-400 transition-colors"></div>
+                            <p className="font-mono text-green-200/90 text-sm break-all leading-relaxed pl-2">
+                                {data.invocation}
+                            </p>
+                        </div>
+                        <p className="text-xs text-neutral-500 mt-4">
+                            Este comando es ejecutado automáticamente por el panel al iniciar el servidor. Las variables encerradas en llaves son reemplazadas por sus respectivos valores debajo.
+                        </p>
+                    </div>
+                </ContentBox>
+
+                <ContentBox className="w-full lg:w-1/3 mb-0 h-full shrink-0">
+                    <BoxHeader>
+                        <FontAwesomeIcon icon={faBoxOpen} />
+                        <h2>Imagen Docker</h2>
+                    </BoxHeader>
+                    <div className="p-6 h-full flex flex-col justify-center">
+                        {Object.keys(data.dockerImages).length > 1 && !isCustomImage ? (
+                            <>
+                                <InputSpinner visible={loading}>
+                                    <Select
+                                        disabled={Object.keys(data.dockerImages).length < 2}
+                                        onChange={updateSelectedDockerImage}
+                                        defaultValue={variables.dockerImage}
+                                        className="bg-[#050505] border-white/5 h-[42px]"
+                                    >
+                                        {Object.keys(data.dockerImages).map((key) => (
+                                            <option key={data.dockerImages[key]} value={data.dockerImages[key]}>
+                                                {key}
+                                            </option>
+                                        ))}
+                                    </Select>
+                                </InputSpinner>
+                                <p className="text-xs text-neutral-500 mt-4 leading-relaxed">
+                                    Esta es una función avanzada que permite seleccionar el entorno virtual (Imagen Docker) donde se ejecutará tu servidor.
+                                </p>
+                            </>
+                        ) : (
+                            <>
+                                <Input disabled readOnly value={variables.dockerImage} className="bg-[#050505] border-white/5 opacity-70" />
+                                {isCustomImage && (
+                                    <p className="text-xs text-amber-500/80 mt-4 leading-relaxed">
+                                        La imagen Docker de este servidor ha sido configurada manualmente por un administrador y no puede cambiarse desde aquí.
+                                    </p>
+                                )}
+                            </>
+                        )}
+                    </div>
+                </ContentBox>
+            </div>
+
+            <div className="flex items-center gap-x-3 mb-6">
+                <FontAwesomeIcon icon={faCogs} className="text-emerald-500 text-xl" />
+                <h3 className="text-xl font-bold text-white tracking-tight">Variables de Entorno</h3>
+            </div>
+            
+            <div className="grid gap-6 md:grid-cols-2">
                 {data.variables.map((variable) => (
                     <VariableBox key={variable.envVariable} variable={variable} />
                 ))}
