@@ -13,7 +13,7 @@ import { usePermissions } from '@/plugins/usePermissions';
 import { join } from 'pathe';
 import { bytesToString } from '@/lib/formatters';
 
-const Clickable: React.FC<{ file: FileObject; className?: string; viewMode?: 'list' | 'grid' }> = memo(({ file, children, className, viewMode }) => {
+const Clickable: React.FC<{ file: FileObject; className?: string; viewMode?: 'list' | 'grid' | 'ide' }> = memo(({ file, children, className, viewMode }) => {
     const [canRead] = usePermissions(['file.read']);
     const [canReadContents] = usePermissions(['file.read-content']);
     const directory = ServerContext.useStoreState((state) => state.files.directory);
@@ -40,7 +40,7 @@ const Clickable: React.FC<{ file: FileObject; className?: string; viewMode?: 'li
     );
 }, isEqual);
 
-const FileObjectRow = ({ file, viewMode = 'list' }: { file: FileObject; viewMode?: 'list' | 'grid' }) => {
+const FileObjectRow = ({ file, viewMode = 'list' }: { file: FileObject; viewMode?: 'list' | 'grid' | 'ide' }) => {
     const isGrid = viewMode === 'grid';
 
     if (isGrid) {
@@ -92,8 +92,8 @@ const FileObjectRow = ({ file, viewMode = 'list' }: { file: FileObject; viewMode
                 <SelectFileCheckbox name={file.name} className="bg-[#050505] border-white/10 rounded cursor-pointer h-4 w-4 checked:bg-primary-500 transition-colors" />
             </div>
             
-            <Clickable file={file} viewMode="list">
-                <div className="col-span-12 sm:col-span-7 flex items-center gap-x-4">
+            <Clickable file={file} viewMode={viewMode}>
+                <div className={`col-span-12 ${viewMode === 'list' ? 'sm:col-span-7' : ''} flex items-center gap-x-4`}>
                     <div className={`flex-none text-xl ${file.isFile ? 'text-primary-300' : 'text-primary-500'}`}>
                         {file.isFile ? (
                             <FontAwesomeIcon icon={file.isSymlink ? faFileImport : file.isArchiveType() ? faFileArchive : faFileAlt} />
@@ -104,15 +104,19 @@ const FileObjectRow = ({ file, viewMode = 'list' }: { file: FileObject; viewMode
                     <div className="flex-1 truncate font-medium text-sm text-neutral-200 group-hover:text-white transition-colors">{file.name}</div>
                 </div>
                 
-                <div className="hidden sm:block sm:col-span-2 text-right text-xs text-neutral-400 font-mono">
-                    {file.isFile ? bytesToString(file.size) : <span className="text-neutral-600">--</span>}
-                </div>
-                
-                <div className="hidden sm:block sm:col-span-3 text-right pr-6 text-xs text-neutral-400" title={file.modifiedAt.toString()}>
-                    {Math.abs(differenceInHours(file.modifiedAt, new Date())) > 48
-                        ? format(file.modifiedAt, 'MMM do, yyyy h:mma')
-                        : formatDistanceToNow(file.modifiedAt, { addSuffix: true })}
-                </div>
+                {viewMode === 'list' && (
+                    <>
+                        <div className="hidden sm:block sm:col-span-2 text-right text-xs text-neutral-400 font-mono">
+                            {file.isFile ? bytesToString(file.size) : <span className="text-neutral-600">--</span>}
+                        </div>
+                        
+                        <div className="hidden sm:block sm:col-span-3 text-right pr-6 text-xs text-neutral-400" title={file.modifiedAt.toString()}>
+                            {Math.abs(differenceInHours(file.modifiedAt, new Date())) > 48
+                                ? format(file.modifiedAt, 'MMM do, yyyy h:mma')
+                                : formatDistanceToNow(file.modifiedAt, { addSuffix: true })}
+                        </div>
+                    </>
+                )}
             </Clickable>
             
             <div className="opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">

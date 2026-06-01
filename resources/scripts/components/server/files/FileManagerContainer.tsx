@@ -134,22 +134,28 @@ export default () => {
 
             {/* File List Header (Only visible in list mode) */}
             {viewMode === 'list' && (
-                <div className="grid grid-cols-12 items-center px-4 py-3 mb-2 border-b border-white/5 text-[11px] font-bold text-neutral-500 uppercase tracking-widest">
-                    <div className="col-span-12 sm:col-span-7 flex items-center gap-x-4">
+                <div className="flex items-center px-4 py-3 mb-2 border-b border-white/5 text-[11px] font-bold text-neutral-500 uppercase tracking-widest">
+                    <div className="mr-4 pl-2">
                         <FileActionCheckbox
                             type={'checkbox'}
                             checked={selectedFilesLength === (filteredFiles.length === 0 ? -1 : filteredFiles.length)}
                             onChange={onSelectAllClick}
                             className="bg-[#050505] border-white/10 rounded cursor-pointer h-4 w-4 checked:bg-primary-500 transition-colors"
                         />
-                        <span>Nombre</span>
                     </div>
-                    <div className="hidden sm:block sm:col-span-2 text-right">
-                        <span>Tamaño</span>
+                    <div className="flex-1 grid grid-cols-12 items-center">
+                        <div className="col-span-12 sm:col-span-7 flex items-center gap-x-4">
+                            <span>Nombre</span>
+                        </div>
+                        <div className="hidden sm:block sm:col-span-2 text-right">
+                            <span>Tamaño</span>
+                        </div>
+                        <div className="hidden sm:block sm:col-span-3 text-right pr-6">
+                            <span>Modificado</span>
+                        </div>
                     </div>
-                    <div className="hidden sm:block sm:col-span-3 text-right pr-6">
-                        <span>Modificado</span>
-                    </div>
+                    {/* Placeholder for the 3-dots menu width */}
+                    <div className="w-8"></div>
                 </div>
             )}
 
@@ -177,7 +183,7 @@ export default () => {
                                         {/* IDE Left Sidebar: File List */}
                                         <div className="w-1/3 border-r border-white/5 pr-4 overflow-y-auto no-scrollbar flex flex-col gap-y-1">
                                             {sortFiles(filteredFiles).map((file) => (
-                                                <FileObjectRow key={file.key} file={file} viewMode="list" />
+                                                <FileObjectRow key={file.key} file={file} viewMode="ide" />
                                             ))}
                                         </div>
                                         {/* IDE Right Content: Editor Placeholder */}
