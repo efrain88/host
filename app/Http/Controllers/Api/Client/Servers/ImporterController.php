@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Pterodactyl\Http\Requests\Api\Client\ClientApiRequest;
 use Pterodactyl\Http\Controllers\Api\Client\ClientApiController;
 use phpseclib3\Net\SFTP;
+use Pterodactyl\Jobs\Server\ImportServerFilesJob;
 
 class ImporterController extends ClientApiController
 {
@@ -23,12 +24,20 @@ class ImporterController extends ClientApiController
         ]);
 
         try {
-            $sftp = new SFTP($request->input('host'), $request->input('port'));
+            // Limpiar el host en caso de que el usuario pegue sftp:// o :puerto
+            $host = $request->input('host');
+            $host = preg_replace('#^sftp://#i', '', $host);
+            if (strpos($host, ':') !== false) {
+                $parts = explode(':', $host);
+                $host = $parts[0];
+            }
+
+            $sftp = new SFTP($host, $request->input('port'));
             if (!$sftp->login($request->input('username'), $request->input('password'))) {
                 return new JsonResponse([
                     'success' => false,
                     'message' => 'Autenticación fallida. Verifica tu usuario y contraseña.',
-                ], 401);
+                ], 400);
             }
 
             return new JsonResponse([
@@ -38,13 +47,13 @@ class ImporterController extends ClientApiController
         } catch (\Exception $e) {
             return new JsonResponse([
                 'success' => false,
-                'message' => 'No se pudo conectar al servidor: ' . $e->getMessage(),
-            ], 500);
+                'message' => 'No se pudo conectar al servidor remoto. Verifica la IP y el Puerto.',
+            ], 400);
         }
     }
 
     /**
-     * Run the import process (mocked for safety until full daemon integration is specified).
+     * Run the import process by dispatching a background job.
      */
     public function runImport(ClientApiRequest $request, Server $server): JsonResponse
     {
@@ -58,12 +67,20 @@ class ImporterController extends ClientApiController
         ]);
 
         try {
-            $sftp = new SFTP($request->input('host'), $request->input('port'));
+            // Limpiar el host
+            $host = $request->input('host');
+            $host = preg_replace('#^sftp://#i', '', $host);
+            if (strpos($host, ':') !== false) {
+                $parts = explode(':', $host);
+                $host = $parts[0];
+            }
+
+            $sftp = new SFTP($host, $request->input('port'));
             if (!$sftp->login($request->input('username'), $request->input('password'))) {
                 return new JsonResponse([
                     'success' => false,
                     'message' => 'Autenticación fallida. Verifica tus credenciales.',
-                ], 401);
+                ], 400);
             }
 
             // Validar si el directorio origen existe
@@ -74,18 +91,24 @@ class ImporterController extends ClientApiController
                 ], 404);
             }
 
-            // Aquí normalmente se descargarían los archivos y se enviarían al daemon (Wings)
-            // Dado el tamaño potencial de los archivos, esto requiere un job en background
-            // Por ahora registramos el inicio de la operación con éxito
+            // Despachar el Job a la cola en segundo plano
+            dispatch(new ImportServerFilesJob(
+                $server,
+                $request->only(['host', 'port', 'username', 'password']),
+                $request->input('source'),
+                $request->input('destination'),
+                app()
+            ));
+
             return new JsonResponse([
                 'success' => true,
-                'message' => 'Importación iniciada. Los archivos se están transfiriendo en segundo plano.',
+                'message' => 'Importación iniciada. Los archivos se están transfiriendo en segundo plano. Esto puede tomar varios minutos.',
             ]);
 
         } catch (\Exception $e) {
             return new JsonResponse([
                 'success' => false,
-                'message' => 'Error durante la importación: ' . $e->getMessage(),
+                'message' => 'Error al iniciar la importación: ' . $e->getMessage(),
             ], 500);
         }
     }

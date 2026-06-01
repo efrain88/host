@@ -54,7 +54,8 @@ export default () => {
                 addFlash({ type: 'success', key: 'importer', message: data.data.message || 'Importación iniciada correctamente.' });
             })
             .catch((error) => {
-                clearAndAddHttpError({ key: 'importer', error });
+                const msg = error.response?.data?.message || 'Ocurrió un error inesperado al procesar la solicitud.';
+                addFlash({ type: 'error', key: 'importer', message: msg });
             })
             .finally(() => setSubmitting(false));
     };
@@ -74,7 +75,8 @@ export default () => {
                 addFlash({ type: 'success', key: 'importer', message: data.data.message || 'Conexión exitosa al servidor remoto.' });
             })
             .catch((error) => {
-                clearAndAddHttpError({ key: 'importer', error });
+                const msg = error.response?.data?.message || 'Error de conexión. Verifica que los datos sean correctos.';
+                addFlash({ type: 'error', key: 'importer', message: msg });
             })
             .finally(() => setTesting(false));
     };
