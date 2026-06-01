@@ -25,7 +25,7 @@ import Button from '@/components/elements/Button';
 import ServerContentBlock from '@/components/elements/ServerContentBlock';
 
 const sortFiles = (files: FileObject[]): FileObject[] => {
-    const sortedFiles: FileObject[] = files
+    const sortedFiles: FileObject[] = [...files]
         .sort((a, b) => a.name.localeCompare(b.name))
         .sort((a, b) => (a.isFile === b.isFile ? 0 : a.isFile ? 1 : -1));
     return sortedFiles.filter((file, index) => index === 0 || file.name !== sortedFiles[index - 1].name);
