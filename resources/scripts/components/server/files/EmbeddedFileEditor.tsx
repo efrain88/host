@@ -115,23 +115,28 @@ export default ({ file }: Props) => {
         >
             <SpinnerOverlay visible={loading} />
 
-            {/* Barra de herramientas del editor */}
+            {/* Barra de herramientas del editor (Estilo Mac) */}
             <div
-                className="flex items-center justify-between px-4 py-2.5 shrink-0"
+                className="flex items-center justify-between px-4 py-2 shrink-0 select-none"
                 style={{
-                    background: 'linear-gradient(180deg, #0f0f14 0%, #0a0a0d 100%)',
+                    height: '42px',
+                    background: 'linear-gradient(180deg, #161620 0%, #111118 100%)',
                     borderBottom: '1px solid rgba(255,255,255,0.06)',
                 }}
             >
-                {/* Info del archivo */}
-                <div className="flex items-center gap-2.5 min-w-0">
-                    <div
-                        className="w-7 h-7 rounded-lg flex items-center justify-center flex-none"
-                        style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.2)' }}
-                    >
-                        <FontAwesomeIcon icon={faFileCode} className="text-violet-400 text-xs" />
+                {/* Izquierda: Puntos Mac e Info del archivo */}
+                <div className="flex items-center gap-3 min-w-0">
+                    {/* Puntos Mac */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#ff5f56', boxShadow: '0 0 6px rgba(255,95,86,0.3)' }} />
+                        <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#ffbd2e', boxShadow: '0 0 6px rgba(255,189,46,0.3)' }} />
+                        <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#27c93f', boxShadow: '0 0 6px rgba(39,201,63,0.3)' }} />
                     </div>
-                    <div className="min-w-0">
+
+                    <div style={{ width: '1px', height: '16px', background: 'rgba(255,255,255,0.08)' }} />
+
+                    <div className="flex items-center gap-2 min-w-0">
+                        <FontAwesomeIcon icon={faFileCode} className="text-violet-400 text-xs shrink-0" />
                         <p
                             className="text-white font-semibold text-xs truncate"
                             style={{ fontFamily: "'JetBrains Mono', 'Fira Code', monospace" }}
