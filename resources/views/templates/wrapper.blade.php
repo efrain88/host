@@ -45,5 +45,7 @@
         @section('scripts')
             {!! $asset->js('main.js') !!}
         @show
+        @include('partials.dust_background')
+        <div id="app"></div>
     </body>
 </html>

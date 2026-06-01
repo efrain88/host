@@ -36,6 +36,7 @@
         @show
     </head>
     <body class="hold-transition skin-blue fixed sidebar-mini">
+        @include('partials.dust_background')
         <div class="wrapper">
             <header class="main-header">
                 <a href="{{ route('index') }}" class="logo">
