@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import tw from 'twin.macro';
-import Icon from '@/components/elements/Icon';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ServerContext } from '@/state/server';
 import deleteServerAllocation from '@/api/server/network/deleteServerAllocation';
 import getServerAllocations from '@/api/swr/getServerAllocations';
 import { useFlashKey } from '@/plugins/useFlash';
 import { Dialog } from '@/components/elements/dialog';
-import { Button } from '@/components/elements/button/index';
 
 interface Props {
     allocation: number;
@@ -39,21 +37,19 @@ const DeleteAllocationButton = ({ allocation }: Props) => {
             <Dialog.Confirm
                 open={confirm}
                 onClose={() => setConfirm(false)}
-                title={'Remove Allocation'}
-                confirm={'Delete'}
+                title={'Eliminar Asignación'}
+                confirm={'Eliminar'}
                 onConfirmed={deleteAllocation}
             >
-                This allocation will be immediately removed from your server.
+                Esta asignación será removida inmediatamente de tu servidor.
             </Dialog.Confirm>
-            <Button.Danger
-                variant={Button.Variants.Secondary}
-                size={Button.Sizes.Small}
-                shape={Button.Shapes.IconSquare}
-                type={'button'}
+            <button
+                type="button"
                 onClick={() => setConfirm(true)}
+                className="w-[34px] h-[34px] flex items-center justify-center rounded-lg transition-all text-neutral-400 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20"
             >
-                <Icon icon={faTrashAlt} css={tw`w-3 h-auto`} />
-            </Button.Danger>
+                <FontAwesomeIcon icon={faTrashAlt} />
+            </button>
         </>
     );
 };

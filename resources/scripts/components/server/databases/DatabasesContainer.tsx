@@ -11,6 +11,7 @@ import useFlash from '@/plugins/useFlash';
 import { useDeepMemoize } from '@/plugins/useDeepMemoize';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDatabase } from '@fortawesome/free-solid-svg-icons';
+import ServerContentBlock from '@/components/elements/ServerContentBlock';
 
 export default () => {
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
@@ -36,8 +37,7 @@ export default () => {
     }, []);
 
     return (
-        <div className="flex flex-col w-full">
-            {/* Header / Título */}
+        <ServerContentBlock title="Bases de Datos">
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold flex items-center gap-3 text-white">
@@ -92,6 +92,6 @@ export default () => {
                     </div>
                 </Can>
             </div>
-        </div>
+        </ServerContentBlock>
     );
 };

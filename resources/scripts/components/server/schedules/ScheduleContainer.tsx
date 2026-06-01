@@ -11,6 +11,7 @@ import Can from '@/components/elements/Can';
 import useFlash from '@/plugins/useFlash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faPlus } from '@fortawesome/free-solid-svg-icons';
+import ServerContentBlock from '@/components/elements/ServerContentBlock';
 
 export default () => {
     const match = useRouteMatch();
@@ -36,8 +37,7 @@ export default () => {
     }, []);
 
     return (
-        <div className="flex flex-col w-full">
-            {/* Header / Título */}
+        <ServerContentBlock title="Automático">
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold flex items-center gap-3 text-white">
@@ -119,6 +119,6 @@ export default () => {
                     </div>
                 </Can>
             </div>
-        </div>
+        </ServerContentBlock>
     );
 };

@@ -17,6 +17,8 @@ import ScheduleCronRow from '@/components/server/schedules/ScheduleCronRow';
 import RunScheduleButton from '@/components/server/schedules/RunScheduleButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faPen, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faPlay, faTrashAlt, faCheck, faCopy } from '@fortawesome/free-solid-svg-icons';
+import ServerContentBlock from '@/components/elements/ServerContentBlock';
 
 interface Params {
     id: string;
@@ -60,7 +62,7 @@ export default () => {
     }, []);
 
     return (
-        <div className="flex flex-col w-full relative">
+        <ServerContentBlock title="Editar Tarea Automática">
             <SpinnerOverlay visible={!schedule || isLoading} />
             
             <FlashMessageRender byKey={'schedules'} className="mb-4" />
@@ -185,6 +187,6 @@ export default () => {
                     </div>
                 </>
             )}
-        </div>
+        </ServerContentBlock>
     );
 };

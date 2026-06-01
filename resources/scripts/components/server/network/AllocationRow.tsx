@@ -1,15 +1,11 @@
 import React, { memo, useCallback, useState } from 'react';
 import isEqual from 'react-fast-compare';
-import tw from 'twin.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faNetworkWired } from '@fortawesome/free-solid-svg-icons';
+import { faNetworkWired, faStar } from '@fortawesome/free-solid-svg-icons';
 import InputSpinner from '@/components/elements/InputSpinner';
 import { Textarea } from '@/components/elements/Input';
 import Can from '@/components/elements/Can';
-import { Button } from '@/components/elements/button/index';
-import GreyRowBox from '@/components/elements/GreyRowBox';
 import { Allocation } from '@/api/server/getServer';
-import styled from 'styled-components/macro';
 import { debounce } from 'debounce';
 import setServerAllocationNotes from '@/api/server/network/setServerAllocationNotes';
 import { useFlashKey } from '@/plugins/useFlash';
@@ -19,11 +15,6 @@ import DeleteAllocationButton from '@/components/server/network/DeleteAllocation
 import setPrimaryServerAllocation from '@/api/server/network/setPrimaryServerAllocation';
 import getServerAllocations from '@/api/swr/getServerAllocations';
 import { ip } from '@/lib/formatters';
-import Code from '@/components/elements/Code';
-
-const Label = styled.label`
-    ${tw`uppercase text-xs mt-1 text-neutral-400 block px-1 select-none transition-colors duration-150`}
-`;
 
 interface Props {
     allocation: Allocation;
@@ -60,59 +51,76 @@ const AllocationRow = ({ allocation }: Props) => {
     };
 
     return (
-        <GreyRowBox $hoverable={false} className={'flex-wrap md:flex-nowrap mt-2'}>
-            <div className={'flex items-center w-full md:w-auto'}>
-                <div className={'pl-4 pr-6 text-neutral-400'}>
-                    <FontAwesomeIcon icon={faNetworkWired} />
+        <div
+            className={`relative flex flex-col md:flex-row items-center bg-[#0a0a0d] border ${allocation.isDefault ? 'border-emerald-500/50' : 'border-white/5'} p-4 rounded-xl transition-all hover:bg-white/5 gap-4`}
+            style={allocation.isDefault ? { boxShadow: '0 0 15px rgba(16,185,129,0.1)' } : undefined}
+        >
+            <div className="flex items-center w-full md:w-auto">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${allocation.isDefault ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/5 text-neutral-400'}`}>
+                    <FontAwesomeIcon icon={faNetworkWired} className="text-lg" />
                 </div>
-                <div className={'mr-4 flex-1 md:w-40'}>
+                
+                <div className="flex-1 md:w-48 mr-4">
+                    <p className="text-xs text-neutral-400 uppercase font-bold tracking-wider mb-1">
+                        {allocation.alias ? 'Dominio' : 'Dirección IP'}
+                    </p>
                     {allocation.alias ? (
                         <CopyOnClick text={allocation.alias}>
-                            <Code dark className={'w-40 truncate'}>
+                            <p className="font-mono text-sm text-white cursor-pointer hover:text-emerald-400 transition-colors truncate">
                                 {allocation.alias}
-                            </Code>
+                            </p>
                         </CopyOnClick>
                     ) : (
                         <CopyOnClick text={ip(allocation.ip)}>
-                            <Code dark>{ip(allocation.ip)}</Code>
+                            <p className="font-mono text-sm text-white cursor-pointer hover:text-emerald-400 transition-colors truncate">
+                                {ip(allocation.ip)}
+                            </p>
                         </CopyOnClick>
                     )}
-                    <Label>{allocation.alias ? 'Hostname' : 'IP Address'}</Label>
                 </div>
-                <div className={'w-16 md:w-24 overflow-hidden'}>
-                    <Code dark>{allocation.port}</Code>
-                    <Label>Port</Label>
+                
+                <div className="w-16 md:w-24">
+                    <p className="text-xs text-neutral-400 uppercase font-bold tracking-wider mb-1">Puerto</p>
+                    <p className="font-mono text-sm text-white bg-white/10 px-2 py-0.5 rounded border border-white/5 inline-block">
+                        {allocation.port}
+                    </p>
                 </div>
             </div>
-            <div className={'mt-4 w-full md:mt-0 md:flex-1 md:w-auto'}>
+
+            <div className="w-full md:flex-1">
                 <InputSpinner visible={loading}>
                     <Textarea
-                        className={'bg-neutral-800 hover:border-neutral-600 border-transparent'}
-                        placeholder={'Notes'}
+                        className="bg-[#050505] hover:border-emerald-500/50 focus:border-emerald-500 border-white/10 text-sm py-2 px-3 rounded-lg resize-none transition-colors w-full h-[42px] min-h-[42px]"
+                        placeholder="Añadir notas opcionales..."
                         defaultValue={allocation.notes || undefined}
                         onChange={(e) => setAllocationNotes(e.currentTarget.value)}
                     />
                 </InputSpinner>
             </div>
-            <div className={'flex justify-end space-x-4 mt-4 w-full md:mt-0 md:w-48'}>
+
+            <div className="flex justify-end space-x-3 w-full md:w-auto shrink-0">
                 {allocation.isDefault ? (
-                    <Button size={Button.Sizes.Small} className={'!text-gray-50 !bg-blue-600'} disabled>
-                        Primary
-                    </Button>
+                    <div className="px-3 py-1.5 text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg flex items-center gap-2">
+                        <FontAwesomeIcon icon={faStar} />
+                        Principal
+                    </div>
                 ) : (
                     <>
+                        <Can action={'allocation.update'}>
+                            <button
+                                onClick={setPrimaryAllocation}
+                                className="px-3 py-1.5 text-xs font-bold text-neutral-400 hover:text-white hover:bg-white/10 rounded-lg transition-all border border-transparent hover:border-white/10"
+                            >
+                                Hacer Principal
+                            </button>
+                        </Can>
                         <Can action={'allocation.delete'}>
                             <DeleteAllocationButton allocation={allocation.id} />
-                        </Can>
-                        <Can action={'allocation.update'}>
-                            <Button.Text size={Button.Sizes.Small} onClick={setPrimaryAllocation}>
-                                Make Primary
-                            </Button.Text>
                         </Can>
                     </>
                 )}
             </div>
-        </GreyRowBox>
+        </div>
     );
 };
 

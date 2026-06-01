@@ -10,6 +10,7 @@ import { ServerContext } from '@/state/server';
 import Pagination from '@/components/elements/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileArchive } from '@fortawesome/free-solid-svg-icons';
+import ServerContentBlock from '@/components/elements/ServerContentBlock';
 
 const BackupContainer = () => {
     const { page, setPage } = useContext(ServerBackupContext);
@@ -28,8 +29,7 @@ const BackupContainer = () => {
     }, [error]);
 
     return (
-        <div className="flex flex-col w-full">
-            {/* Header / Título */}
+        <ServerContentBlock title="Copias de Seguridad">
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold flex items-center gap-3 text-white">
@@ -98,7 +98,7 @@ const BackupContainer = () => {
                     </div>
                 </Can>
             </div>
-        </div>
+        </ServerContentBlock>
     );
 };
 
