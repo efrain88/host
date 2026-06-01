@@ -140,13 +140,37 @@ export default () => {
                                 destination: string().required('Requerido'),
                             })}
                         >
-                            {({ isSubmitting, values }) => (
+                            {({ isSubmitting, values, setFieldValue }) => (
                                 <Form className="p-6 relative flex-1 flex flex-col">
                                     <SpinnerOverlay visible={isSubmitting || testing} />
                                     
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                                         <div>
-                                            <Field id={'host'} name={'host'} label={'Host (IP/Dominio)'} type={'text'} placeholder={'ej. sftp.server.com'} className="bg-[#050505] border-white/5" />
+                                            <Field 
+                                                id={'host'} 
+                                                name={'host'} 
+                                                label={'Host (IP/Dominio)'} 
+                                                type={'text'} 
+                                                placeholder={'ej. sftp.server.com'} 
+                                                className="bg-[#050505] border-white/5"
+                                                onChange={(e: any) => {
+                                                    let val = e.target.value;
+                                                    
+                                                    // Si pegan algo con sftp:// o :puerto, limpiarlo y asignar puerto
+                                                    if (val.includes('sftp://') || val.includes('ftp://') || val.includes(':')) {
+                                                        let cleanHost = val.replace(/^sftp:\/\//i, '').replace(/^ftp:\/\//i, '');
+                                                        if (cleanHost.includes(':')) {
+                                                            const parts = cleanHost.split(':');
+                                                            setFieldValue('host', parts[0]);
+                                                            setFieldValue('port', parts[1].replace(/[^0-9]/g, '') || '22');
+                                                        } else {
+                                                            setFieldValue('host', cleanHost);
+                                                        }
+                                                    } else {
+                                                        setFieldValue('host', val);
+                                                    }
+                                                }}
+                                            />
                                         </div>
                                         <div>
                                             <Field id={'port'} name={'port'} label={'Puerto'} type={'number'} className="bg-[#050505] border-white/5" />

@@ -9,24 +9,22 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Pterodactyl\Models\Server;
 use phpseclib3\Net\SFTP;
-use Pterodactyl\Repositories\Wings\DaemonRepository;
-use Illuminate\Contracts\Foundation\Application;
+use Pterodactyl\Repositories\Wings\DaemonFileRepository;
 
-class ImportServerFilesJob extends DaemonRepository implements ShouldQueue
+class ImportServerFilesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 0; // Tarea puede tardar horas
 
+    protected Server $server;
     protected array $credentials;
     protected string $sourcePath;
     protected string $destPath;
 
-    public function __construct(Server $server, array $credentials, string $sourcePath, string $destPath, Application $app)
+    public function __construct(Server $server, array $credentials, string $sourcePath, string $destPath)
     {
-        parent::__construct($app);
-        $this->setServer($server);
-        
+        $this->server = $server;
         $this->credentials = $credentials;
         $this->sourcePath = $sourcePath;
         $this->destPath = $destPath;
@@ -62,7 +60,6 @@ class ImportServerFilesJob extends DaemonRepository implements ShouldQueue
             if (!$type) continue;
 
             if ($type['type'] === 2) { // Directorio
-                // Enviar comando para crear directorio en Wings
                 $this->createDirectoryInWings($localFilePath);
                 $this->transferDirectory($sftp, $remoteFilePath, $localFilePath);
             } else { // Archivo regular
@@ -73,18 +70,18 @@ class ImportServerFilesJob extends DaemonRepository implements ShouldQueue
 
     protected function transferFile(SFTP $sftp, string $remoteFile, string $targetFile)
     {
-        // Crear un archivo temporal
         $tempFile = tempnam(sys_get_temp_dir(), 'sftp_import_');
         if (!$tempFile) return;
 
         try {
-            // Descargar de SFTP a local (Panel)
             $sftp->get($remoteFile, $tempFile);
 
-            // Subir a Wings mediante Stream
             $stream = fopen($tempFile, 'r');
             if ($stream) {
-                $this->getHttpClient([
+                // Obtener cliente HTTP dinámicamente
+                $repo = app(DaemonFileRepository::class)->setServer($this->server);
+                
+                $repo->getHttpClient([
                     'Content-Type' => 'application/octet-stream',
                 ])->post(sprintf('/api/servers/%s/files/write', $this->server->uuid), [
                     'query' => ['file' => $targetFile],
@@ -103,13 +100,13 @@ class ImportServerFilesJob extends DaemonRepository implements ShouldQueue
 
     protected function createDirectoryInWings(string $path)
     {
-        // Dividir el path en directorio base y nombre de carpeta
         $parts = explode('/', trim($path, '/'));
         $name = array_pop($parts);
         $base = '/' . implode('/', $parts);
 
         try {
-            $this->getHttpClient()->post(sprintf('/api/servers/%s/files/create-directory', $this->server->uuid), [
+            $repo = app(DaemonFileRepository::class)->setServer($this->server);
+            $repo->getHttpClient()->post(sprintf('/api/servers/%s/files/create-directory', $this->server->uuid), [
                 'json' => [
                     'name' => $name,
                     'path' => $base,

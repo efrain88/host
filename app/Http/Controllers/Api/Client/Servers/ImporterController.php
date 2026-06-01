@@ -96,8 +96,7 @@ class ImporterController extends ClientApiController
                 $server,
                 $request->only(['host', 'port', 'username', 'password']),
                 $request->input('source'),
-                $request->input('destination'),
-                app()
+                $request->input('destination')
             ));
 
             return new JsonResponse([
