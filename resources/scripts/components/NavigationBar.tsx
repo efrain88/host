@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { Link, NavLink, useLocation, useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCogs, faLayerGroup, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCogs, faLayerGroup, faSignOutAlt, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { useStoreState } from 'easy-peasy';
 import { ApplicationStore } from '@/state';
 import SearchContainer from '@/components/dashboard/search/SearchContainer';
@@ -80,6 +80,10 @@ export default ({ children }: { children?: React.ReactNode }) => {
                     <GlobalLink to={'/'} exact>
                         <FontAwesomeIcon icon={faLayerGroup} />
                         Servidores
+                    </GlobalLink>
+                    <GlobalLink to={'/account'}>
+                        <FontAwesomeIcon icon={faUserCircle} />
+                        Cuenta
                     </GlobalLink>
                     {rootAdmin && (
                         <GlobalA href={'/admin'} rel={'noreferrer'}>
