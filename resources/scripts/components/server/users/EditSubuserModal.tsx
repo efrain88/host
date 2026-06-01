@@ -105,16 +105,16 @@ const EditSubuserModal = ({ subuser }: Props) => {
             {({ values, setFieldValue }) => (
             <Form>
                 <div css={tw`flex justify-between items-center`}>
-                    <h2 css={tw`text-2xl`} ref={ref}>
+                    <h2 className="text-2xl font-bold text-white tracking-tight" ref={ref}>
                         {subuser
                             ? `${canEditUser ? 'Modificar' : 'Ver'} permisos de ${subuser.email}`
                             : 'Crear nuevo subusuario'}
                     </h2>
-                    <div css={tw`flex gap-2`}>
+                    <div className="flex gap-2 mt-4 sm:mt-0">
                         {canEditUser && (
-                            <Button 
+                            <button 
                                 type="button" 
-                                css={tw`w-full sm:w-auto bg-neutral-600 hover:bg-neutral-500`}
+                                className="px-4 py-2 rounded text-sm font-semibold w-full sm:w-auto bg-purple-500/10 text-purple-400 border border-purple-500/30 hover:bg-purple-500/20 hover:border-purple-500/50 transition-all shadow-[0_0_10px_rgba(168,85,247,0.1)]"
                                 onClick={() => {
                                     if (values.permissions.length === editablePermissions.length) {
                                         setFieldValue('permissions', []);
@@ -123,10 +123,10 @@ const EditSubuserModal = ({ subuser }: Props) => {
                                     }
                                 }}
                             >
-                                {values.permissions.length === editablePermissions.length ? 'Deseleccionar Todos' : 'Seleccionar Todos'}
-                            </Button>
+                                {values.permissions.length === editablePermissions.length ? 'Deseleccionar Todos' : 'SELECCIONAR TODOS'}
+                            </button>
                         )}
-                        <Button type={'submit'} css={tw`w-full sm:w-auto`}>
+                        <Button type={'submit'} className="w-full sm:w-auto bg-purple-600 hover:bg-purple-500 border border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all">
                             {subuser ? 'Guardar' : 'Invitar Usuario'}
                         </Button>
                     </div>
@@ -174,7 +174,7 @@ const EditSubuserModal = ({ subuser }: Props) => {
                 </div>
                 <Can action={subuser ? 'user.update' : 'user.create'}>
                     <div css={tw`pb-6 flex justify-end`}>
-                        <Button type={'submit'} css={tw`w-full sm:w-auto`}>
+                        <Button type={'submit'} className="w-full sm:w-auto bg-purple-600 hover:bg-purple-500 border border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all">
                             {subuser ? 'Guardar' : 'Invitar Usuario'}
                         </Button>
                     </div>

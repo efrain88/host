@@ -100,110 +100,110 @@ class Permission extends Model
      */
     protected static array $permissions = [
         'websocket' => [
-            'description' => 'Allows the user to connect to the server websocket, giving them access to view console output and realtime server stats.',
+            'description' => 'Permite al usuario conectarse al websocket del servidor, dándole acceso a la consola y a las estadísticas en tiempo real.',
             'keys' => [
-                'connect' => 'Allows a user to connect to the websocket instance for a server to stream the console.',
+                'connect' => 'Permite a un usuario conectarse al websocket para ver la consola.',
             ],
         ],
 
         'control' => [
-            'description' => 'Permissions that control a user\'s ability to control the power state of a server, or send commands.',
+            'description' => 'Permisos que controlan la capacidad del usuario para cambiar el estado de energía del servidor o enviar comandos.',
             'keys' => [
-                'console' => 'Allows a user to send commands to the server instance via the console.',
-                'start' => 'Allows a user to start the server if it is stopped.',
-                'stop' => 'Allows a user to stop a server if it is running.',
-                'restart' => 'Allows a user to perform a server restart. This allows them to start the server if it is offline, but not put the server in a completely stopped state.',
+                'console' => 'Permite a un usuario enviar comandos al servidor a través de la consola.',
+                'start' => 'Permite iniciar el servidor si está detenido.',
+                'stop' => 'Permite detener el servidor si está en ejecución.',
+                'restart' => 'Permite reiniciar el servidor. Esto permite encenderlo si está apagado, pero no detenerlo por completo.',
             ],
         ],
 
         'user' => [
-            'description' => 'Permissions that allow a user to manage other subusers on a server. They will never be able to edit their own account, or assign permissions they do not have themselves.',
+            'description' => 'Permisos para administrar a otros subusuarios en el servidor. Nunca podrán editar su propia cuenta o asignar permisos que ellos mismos no posean.',
             'keys' => [
-                'create' => 'Allows a user to create new subusers for the server.',
-                'read' => 'Allows the user to view subusers and their permissions for the server.',
-                'update' => 'Allows a user to modify other subusers.',
-                'delete' => 'Allows a user to delete a subuser from the server.',
+                'create' => 'Permite crear nuevos subusuarios.',
+                'read' => 'Permite ver los subusuarios y sus permisos.',
+                'update' => 'Permite modificar otros subusuarios.',
+                'delete' => 'Permite eliminar subusuarios del servidor.',
             ],
         ],
 
         'file' => [
-            'description' => 'Permissions that control a user\'s ability to modify the filesystem for this server.',
+            'description' => 'Permisos que controlan la capacidad del usuario para modificar los archivos de este servidor.',
             'keys' => [
-                'create' => 'Allows a user to create additional files and folders via the Panel or direct upload.',
-                'read' => 'Allows a user to view the contents of a directory, but not view the contents of or download files.',
-                'read-content' => 'Allows a user to view the contents of a given file. This will also allow the user to download files.',
-                'update' => 'Allows a user to update the contents of an existing file or directory.',
-                'delete' => 'Allows a user to delete files or directories.',
-                'archive' => 'Allows a user to archive the contents of a directory as well as decompress existing archives on the system.',
-                'sftp' => 'Allows a user to connect to SFTP and manage server files using the other assigned file permissions.',
+                'create' => 'Permite crear archivos y carpetas adicionales vía el Panel o carga directa.',
+                'read' => 'Permite ver el contenido de un directorio, pero no el contenido ni descargar los archivos.',
+                'read-content' => 'Permite ver el contenido de un archivo. También permite descargar archivos.',
+                'update' => 'Permite actualizar el contenido de un archivo o directorio existente.',
+                'delete' => 'Permite eliminar archivos o directorios.',
+                'archive' => 'Permite comprimir el contenido de un directorio y descomprimir archivos en el sistema.',
+                'sftp' => 'Permite conectarse por SFTP y gestionar los archivos usando otros permisos asignados.',
             ],
         ],
 
         'backup' => [
-            'description' => 'Permissions that control a user\'s ability to generate and manage server backups.',
+            'description' => 'Permisos que controlan la creación y gestión de respaldos del servidor.',
             'keys' => [
-                'create' => 'Allows a user to create new backups for this server.',
-                'read' => 'Allows a user to view all backups that exist for this server.',
-                'delete' => 'Allows a user to remove backups from the system.',
-                'download' => 'Allows a user to download a backup for the server. Danger: this allows a user to access all files for the server in the backup.',
-                'restore' => 'Allows a user to restore a backup for the server. Danger: this allows the user to delete all of the server files in the process.',
+                'create' => 'Permite crear nuevos respaldos para este servidor.',
+                'read' => 'Permite ver todos los respaldos existentes.',
+                'delete' => 'Permite eliminar respaldos del sistema.',
+                'download' => 'Permite descargar respaldos. Peligro: esto otorga acceso a todos los archivos del servidor dentro del respaldo.',
+                'restore' => 'Permite restaurar un respaldo. Peligro: esto permite que el usuario elimine todos los archivos actuales del servidor durante el proceso.',
             ],
         ],
 
         // Controls permissions for editing or viewing a server's allocations.
         'allocation' => [
-            'description' => 'Permissions that control a user\'s ability to modify the port allocations for this server.',
+            'description' => 'Permisos que controlan la capacidad para modificar las asignaciones de puertos.',
             'keys' => [
-                'read' => 'Allows a user to view all allocations currently assigned to this server. Users with any level of access to this server can always view the primary allocation.',
-                'create' => 'Allows a user to assign additional allocations to the server.',
-                'update' => 'Allows a user to change the primary server allocation and attach notes to each allocation.',
-                'delete' => 'Allows a user to delete an allocation from the server.',
+                'read' => 'Permite ver todas las asignaciones actuales. Los usuarios siempre pueden ver la principal.',
+                'create' => 'Permite asignar puertos adicionales al servidor.',
+                'update' => 'Permite cambiar el puerto principal y añadir notas a cada asignación.',
+                'delete' => 'Permite eliminar un puerto del servidor.',
             ],
         ],
 
         // Controls permissions for editing or viewing a server's startup parameters.
         'startup' => [
-            'description' => 'Permissions that control a user\'s ability to view this server\'s startup parameters.',
+            'description' => 'Permisos para ver y modificar los parámetros de inicio del servidor.',
             'keys' => [
-                'read' => 'Allows a user to view the startup variables for a server.',
-                'update' => 'Allows a user to modify the startup variables for the server.',
-                'docker-image' => 'Allows a user to modify the Docker image used when running the server.',
+                'read' => 'Permite ver las variables de inicio del servidor.',
+                'update' => 'Permite modificar las variables de inicio del servidor.',
+                'docker-image' => 'Permite modificar la imagen Docker usada por el servidor.',
             ],
         ],
 
         'database' => [
-            'description' => 'Permissions that control a user\'s access to the database management for this server.',
+            'description' => 'Permisos para la gestión de bases de datos.',
             'keys' => [
-                'create' => 'Allows a user to create a new database for this server.',
-                'read' => 'Allows a user to view the database associated with this server.',
-                'update' => 'Allows a user to rotate the password on a database instance. If the user does not have the view_password permission they will not see the updated password.',
-                'delete' => 'Allows a user to remove a database instance from this server.',
-                'view_password' => 'Allows a user to view the password associated with a database instance for this server.',
+                'create' => 'Permite crear una nueva base de datos para este servidor.',
+                'read' => 'Permite ver las bases de datos asociadas a este servidor.',
+                'update' => 'Permite rotar la contraseña de una base de datos. Sin el permiso de ver contraseña, no podrán verla después de rotarla.',
+                'delete' => 'Permite eliminar una base de datos.',
+                'view_password' => 'Permite ver la contraseña asociada a una base de datos.',
             ],
         ],
 
         'schedule' => [
-            'description' => 'Permissions that control a user\'s access to the schedule management for this server.',
+            'description' => 'Permisos para la gestión de tareas programadas del servidor.',
             'keys' => [
-                'create' => 'Allows a user to create new schedules for this server.', // task.create-schedule
-                'read' => 'Allows a user to view schedules and the tasks associated with them for this server.', // task.view-schedule, task.list-schedules
-                'update' => 'Allows a user to update schedules and schedule tasks for this server.', // task.edit-schedule, task.queue-schedule, task.toggle-schedule
-                'delete' => 'Allows a user to delete schedules for this server.', // task.delete-schedule
+                'create' => 'Permite crear nuevas tareas programadas.', // task.create-schedule
+                'read' => 'Permite ver tareas programadas y los trabajos asociados a ellas.', // task.view-schedule, task.list-schedules
+                'update' => 'Permite actualizar tareas programadas y sus trabajos.', // task.edit-schedule, task.queue-schedule, task.toggle-schedule
+                'delete' => 'Permite eliminar tareas programadas del servidor.', // task.delete-schedule
             ],
         ],
 
         'settings' => [
-            'description' => 'Permissions that control a user\'s access to the settings for this server.',
+            'description' => 'Permisos para acceder a los ajustes del servidor.',
             'keys' => [
-                'rename' => 'Allows a user to rename this server and change the description of it.',
-                'reinstall' => 'Allows a user to trigger a reinstall of this server.',
+                'rename' => 'Permite renombrar el servidor y cambiar su descripción.',
+                'reinstall' => 'Permite forzar una reinstalación del servidor.',
             ],
         ],
 
         'activity' => [
-            'description' => 'Permissions that control a user\'s access to the server activity logs.',
+            'description' => 'Permisos para acceder a los registros de actividad del servidor.',
             'keys' => [
-                'read' => 'Allows a user to view the activity logs for the server.',
+                'read' => 'Permite ver los registros de actividad del servidor.',
             ],
         ],
     ];
