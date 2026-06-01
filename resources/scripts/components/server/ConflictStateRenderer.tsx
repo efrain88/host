@@ -11,6 +11,18 @@ export default () => {
     const isNodeUnderMaintenance = ServerContext.useStoreState(
         (state) => state.server.data?.isNodeUnderMaintenance || false
     );
+    const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
+    const getServer = ServerContext.useStoreActions((actions) => actions.server.getServer);
+
+    React.useEffect(() => {
+        if (status === 'importing' && uuid) {
+            const interval = setInterval(() => {
+                getServer(uuid).catch(console.error);
+            }, 5000);
+            return () => clearInterval(interval);
+        }
+    }, [status, uuid]);
+
 
     return status === 'importing' ? (
         <ScreenBlock
