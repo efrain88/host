@@ -60,7 +60,7 @@ export default ({ children }: { children?: React.ReactNode }) => {
     };
 
     return (
-        <div className={'w-[270px] flex-shrink-0 h-screen bg-[#050505]/70 backdrop-blur-xl border-r border-white/5 flex flex-col z-50'}>
+        <div className={'w-[270px] flex-shrink-0 h-screen bg-[#0c1b33]/70 backdrop-blur-xl border-r border-white/5 flex flex-col z-50'}>
             <SpinnerOverlay visible={isLoggingOut} />
             
             <div className={'h-20 flex items-center justify-between px-6 border-b border-white/5'}>
