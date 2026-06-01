@@ -151,14 +151,14 @@ export default () => {
                                     <SpinnerOverlay visible={isSubmitting || testing} />
                                     
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                                        <div>
+                                        <div className="group relative">
                                             <Field 
                                                 id={'host'} 
                                                 name={'host'} 
                                                 label={'Host (IP/Dominio)'} 
                                                 type={'text'} 
                                                 placeholder={'ej. sftp.server.com'} 
-                                                className="bg-[#050505] border-white/5"
+                                                className="bg-[#050505] border-white/5 blur-sm transition-all duration-300 group-hover:blur-none focus:blur-none"
                                                 onChange={(e: any) => {
                                                     let val = e.target.value;
                                                     
@@ -178,17 +178,17 @@ export default () => {
                                                 }}
                                             />
                                         </div>
-                                        <div>
-                                            <Field id={'port'} name={'port'} label={'Puerto'} type={'number'} className="bg-[#050505] border-white/5" />
+                                        <div className="group relative">
+                                            <Field id={'port'} name={'port'} label={'Puerto'} type={'number'} className="bg-[#050505] border-white/5 blur-sm transition-all duration-300 group-hover:blur-none focus:blur-none" />
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                                        <div>
-                                            <Field id={'username'} name={'username'} label={'Usuario SFTP'} type={'text'} className="bg-[#050505] border-white/5" />
+                                        <div className="group relative">
+                                            <Field id={'username'} name={'username'} label={'Usuario SFTP'} type={'text'} className="bg-[#050505] border-white/5 blur-sm transition-all duration-300 group-hover:blur-none focus:blur-none" />
                                         </div>
-                                        <div>
-                                            <Field id={'password'} name={'password'} label={'Contraseña'} type={'password'} className="bg-[#050505] border-white/5" />
+                                        <div className="group relative">
+                                            <Field id={'password'} name={'password'} label={'Contraseña'} type={'password'} className="bg-[#050505] border-white/5 blur-sm transition-all duration-300 group-hover:blur-none focus:blur-none" />
                                         </div>
                                     </div>
 
