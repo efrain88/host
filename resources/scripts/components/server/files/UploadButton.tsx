@@ -146,8 +146,8 @@ export default ({ className }: WithClassname) => {
                 }}
                 multiple
             />
-            <Button className={className} onClick={() => fileUploadInput.current && fileUploadInput.current.click()}>
-                Upload
+            <Button className={`bg-primary-600 hover:bg-primary-500 text-white font-bold h-[46px] px-5 rounded-xl shadow-lg flex items-center gap-x-2 whitespace-nowrap ${className || ''}`} onClick={() => fileUploadInput.current && fileUploadInput.current.click()}>
+                <CloudUploadIcon className="w-5 h-5" /> Upload
             </Button>
         </>
     );

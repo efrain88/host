@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { ServerContext } from '@/state/server';
 import { NavLink, useLocation } from 'react-router-dom';
 import { encodePathSegments, hashToPath } from '@/helpers';
-import tw from 'twin.macro';
 
 interface Props {
     renderLeft?: JSX.Element;
@@ -38,32 +37,35 @@ export default ({ renderLeft, withinFileEditor, isNewFile }: Props) => {
             });
 
     return (
-        <div css={tw`flex flex-grow-0 items-center text-sm text-neutral-500 overflow-x-hidden`}>
-            {renderLeft || <div css={tw`w-12`} />}/<span css={tw`px-1 text-neutral-300`}>home</span>/
-            <NavLink to={`/server/${id}/files`} css={tw`px-1 text-neutral-200 no-underline hover:text-neutral-100`}>
+        <div className="flex flex-grow-0 items-center text-sm text-neutral-500 overflow-x-hidden font-medium font-mono">
+            {renderLeft || <div className="w-4" />}
+            <span className="mx-2 text-neutral-600">/</span>
+            <span className="px-1 text-neutral-400">home</span>
+            <span className="mx-2 text-neutral-600">/</span>
+            <NavLink to={`/server/${id}/files`} className="px-1 text-neutral-300 no-underline hover:text-white transition-colors">
                 container
             </NavLink>
-            /
+            <span className="mx-2 text-neutral-600">/</span>
             {breadcrumbs().map((crumb, index) =>
                 crumb.path ? (
                     <React.Fragment key={index}>
                         <NavLink
                             to={`/server/${id}/files#${encodePathSegments(crumb.path)}`}
-                            css={tw`px-1 text-neutral-200 no-underline hover:text-neutral-100`}
+                            className="px-1 text-neutral-300 no-underline hover:text-white transition-colors"
                         >
                             {crumb.name}
                         </NavLink>
-                        /
+                        <span className="mx-2 text-neutral-600">/</span>
                     </React.Fragment>
                 ) : (
-                    <span key={index} css={tw`px-1 text-neutral-300`}>
+                    <span key={index} className="px-1 text-white">
                         {crumb.name}
                     </span>
                 )
             )}
             {file && (
                 <React.Fragment>
-                    <span css={tw`px-1 text-neutral-300`}>{file}</span>
+                    <span className="px-1 text-white">{file}</span>
                 </React.Fragment>
             )}
         </div>

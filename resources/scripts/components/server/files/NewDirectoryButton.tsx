@@ -102,9 +102,10 @@ export default ({ className }: WithClassname) => {
     return (
         <>
             <NewDirectoryDialog open={open} onClose={setOpen.bind(this, false)} />
-            <Button.Text onClick={setOpen.bind(this, true)} className={className}>
-                Create Directory
-            </Button.Text>
+            <button onClick={setOpen.bind(this, true)} className={`flex items-center gap-x-2 bg-transparent border border-white/10 hover:border-white/20 text-neutral-300 hover:text-white px-5 h-[46px] rounded-xl transition-all duration-200 text-sm font-semibold shadow-lg whitespace-nowrap ${className || ''}`}>
+                <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>
+                Crear carpeta
+            </button>
         </>
     );
 };
