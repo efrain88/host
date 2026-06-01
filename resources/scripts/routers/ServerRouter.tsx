@@ -15,7 +15,25 @@ import SubNavigation from '@/components/elements/SubNavigation';
 import InstallListener from '@/components/server/InstallListener';
 import ErrorBoundary from '@/components/elements/ErrorBoundary';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import { faExternalLinkAlt, faInfoCircle, faTerminal, faCogs, faCloudDownloadAlt, faFolderOpen, faDatabase, faNetworkWired, faClock, faArchive, faUsers, faListAlt, faPlayCircle } from '@fortawesome/free-solid-svg-icons';
+
+const getIconForPath = (path: string) => {
+    switch(path) {
+        case '/': return faInfoCircle;
+        case '/console': return faTerminal;
+        case '/settings': return faCogs;
+        case '/importer': return faCloudDownloadAlt;
+        case '/files': return faFolderOpen;
+        case '/databases': return faDatabase;
+        case '/schedules': return faClock;
+        case '/network': return faNetworkWired;
+        case '/backups': return faArchive;
+        case '/users': return faUsers;
+        case '/activity': return faListAlt;
+        case '/startup': return faPlayCircle;
+        default: return faCogs;
+    }
+}
 import { useLocation } from 'react-router';
 import ConflictStateRenderer from '@/components/server/ConflictStateRenderer';
 import PermissionRoute from '@/components/elements/PermissionRoute';
@@ -94,11 +112,13 @@ export default () => {
                                                 route.permission ? (
                                                     <Can key={route.path} action={route.permission} matchAny>
                                                         <NavLink to={to(route.path, true)} exact={route.exact}>
+                                                            <FontAwesomeIcon icon={getIconForPath(route.path)} />
                                                             {route.name}
                                                         </NavLink>
                                                     </Can>
                                                 ) : (
                                                     <NavLink key={route.path} to={to(route.path, true)} exact={route.exact}>
+                                                        <FontAwesomeIcon icon={getIconForPath(route.path)} />
                                                         {route.name}
                                                     </NavLink>
                                                 )
