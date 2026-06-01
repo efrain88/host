@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import getServerSchedule from '@/api/server/schedules/getServerSchedule';
-import Spinner from '@/components/elements/Spinner';
+import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import FlashMessageRender from '@/components/FlashMessageRender';
 import EditScheduleModal from '@/components/server/schedules/EditScheduleModal';
 import NewTaskButton from '@/components/server/schedules/NewTaskButton';
@@ -9,36 +9,18 @@ import DeleteScheduleButton from '@/components/server/schedules/DeleteScheduleBu
 import Can from '@/components/elements/Can';
 import useFlash from '@/plugins/useFlash';
 import { ServerContext } from '@/state/server';
-import PageContentBlock from '@/components/elements/PageContentBlock';
-import tw from 'twin.macro';
-import { Button } from '@/components/elements/button/index';
 import ScheduleTaskRow from '@/components/server/schedules/ScheduleTaskRow';
 import isEqual from 'react-fast-compare';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import ScheduleCronRow from '@/components/server/schedules/ScheduleCronRow';
 import RunScheduleButton from '@/components/server/schedules/RunScheduleButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarAlt, faPen, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 
 interface Params {
     id: string;
 }
-
-const CronBox = ({ title, value }: { title: string; value: string }) => (
-    <div css={tw`bg-neutral-700 rounded p-3`}>
-        <p css={tw`text-neutral-300 text-sm`}>{title}</p>
-        <p css={tw`text-xl font-medium text-neutral-100`}>{value}</p>
-    </div>
-);
-
-const ActivePill = ({ active }: { active: boolean }) => (
-    <span
-        css={[
-            tw`rounded-full px-2 py-px text-xs ml-4 uppercase`,
-            active ? tw`bg-green-600 text-green-100` : tw`bg-red-600 text-red-100`,
-        ]}
-    >
-        {active ? 'Active' : 'Inactive'}
-    </span>
-);
 
 export default () => {
     const history = useHistory();
@@ -78,82 +60,117 @@ export default () => {
     }, []);
 
     return (
-        <PageContentBlock title={'Schedules'}>
-            <FlashMessageRender byKey={'schedules'} css={tw`mb-4`} />
-            {!schedule || isLoading ? (
-                <Spinner size={'large'} centered />
-            ) : (
+        <div className="flex flex-col w-full relative">
+            <SpinnerOverlay visible={!schedule || isLoading} />
+            
+            <FlashMessageRender byKey={'schedules'} className="mb-4" />
+
+            {schedule && !isLoading && (
                 <>
-                    <ScheduleCronRow cron={schedule.cron} css={tw`sm:hidden bg-neutral-700 rounded mb-4 p-3`} />
-                    <div css={tw`rounded shadow`}>
-                        <div
-                            css={tw`sm:flex items-center bg-neutral-900 p-3 sm:p-6 border-b-4 border-neutral-600 rounded-t`}
-                        >
-                            <div css={tw`flex-1`}>
-                                <h3 css={tw`flex items-center text-neutral-100 text-2xl`}>
-                                    {schedule.name}
-                                    {schedule.isProcessing ? (
-                                        <span
-                                            css={tw`flex items-center rounded-full px-2 py-px text-xs ml-4 uppercase bg-neutral-600 text-white`}
+                    {/* Botón Volver */}
+                    <button
+                        onClick={() => history.push(`/server/${id}/schedules`)}
+                        className="flex items-center gap-2 text-sm font-semibold text-neutral-400 hover:text-white transition-colors mb-4 w-max"
+                    >
+                        <FontAwesomeIcon icon={faChevronLeft} />
+                        Volver a Tareas
+                    </button>
+
+                    <div className="rounded-2xl shadow-2xl bg-[#0a0a0d] border border-white/5 overflow-hidden">
+                        {/* Cabecera del Schedule */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 bg-gradient-to-b from-[#111116] to-[#0a0a0d] border-b border-white/5">
+                            <div className="flex-1 min-w-0 flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                                     style={{ background: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.2)' }}>
+                                    <FontAwesomeIcon icon={faCalendarAlt} className="text-sky-400 text-xl" />
+                                </div>
+                                <div className="min-w-0">
+                                    <h3 className="flex items-center text-white text-2xl font-bold gap-3 truncate">
+                                        {schedule.name}
+                                        <div
+                                            className="px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide uppercase flex items-center gap-1.5"
+                                            style={
+                                                schedule.isProcessing
+                                                    ? { background: 'rgba(234,179,8,0.15)', color: '#facc15' }
+                                                    : schedule.isActive
+                                                        ? { background: 'rgba(34,197,94,0.15)', color: '#4ade80' }
+                                                        : { background: 'rgba(255,255,255,0.05)', color: '#a1a1aa' }
+                                            }
                                         >
-                                            <Spinner css={tw`w-3! h-3! mr-2`} />
-                                            Processing
-                                        </span>
-                                    ) : (
-                                        <ActivePill active={schedule.isActive} />
-                                    )}
-                                </h3>
-                                <p css={tw`mt-1 text-sm text-neutral-200`}>
-                                    Last run at:&nbsp;
-                                    {schedule.lastRunAt ? (
-                                        format(schedule.lastRunAt, "MMM do 'at' h:mma")
-                                    ) : (
-                                        <span css={tw`text-neutral-300`}>n/a</span>
-                                    )}
-                                    <span css={tw`ml-4 pl-4 border-l-4 border-neutral-600 py-px`}>
-                                        Next run at:&nbsp;
-                                        {schedule.nextRunAt ? (
-                                            format(schedule.nextRunAt, "MMM do 'at' h:mma")
-                                        ) : (
-                                            <span css={tw`text-neutral-300`}>n/a</span>
-                                        )}
-                                    </span>
-                                </p>
+                                            <div className={`w-1.5 h-1.5 rounded-full ${schedule.isProcessing ? 'bg-yellow-400 animate-pulse' : schedule.isActive ? 'bg-green-400' : 'bg-neutral-500'}`} />
+                                            {schedule.isProcessing ? 'Procesando' : schedule.isActive ? 'Activo' : 'Inactivo'}
+                                        </div>
+                                    </h3>
+                                    <div className="flex flex-col sm:flex-row sm:items-center mt-2 text-xs text-neutral-400 gap-2 sm:gap-6">
+                                        <p>
+                                            <span className="font-semibold text-neutral-300">Última ejecución:</span>{' '}
+                                            {schedule.lastRunAt ? format(schedule.lastRunAt, "d MMM 'a las' h:mm a", { locale: es }) : 'N/A'}
+                                        </p>
+                                        <p className="hidden sm:block text-neutral-600">•</p>
+                                        <p>
+                                            <span className="font-semibold text-neutral-300">Próxima ejecución:</span>{' '}
+                                            {schedule.nextRunAt ? format(schedule.nextRunAt, "d MMM 'a las' h:mm a", { locale: es }) : 'N/A'}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <div css={tw`flex sm:block mt-3 sm:mt-0`}>
+                            
+                            <div className="flex items-center gap-3 mt-4 sm:mt-0 w-full sm:w-auto">
                                 <Can action={'schedule.update'}>
-                                    <Button.Text className={'flex-1 mr-4'} onClick={toggleEditModal}>
-                                        Edit
-                                    </Button.Text>
-                                    <NewTaskButton schedule={schedule} />
+                                    <button
+                                        onClick={toggleEditModal}
+                                        className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all w-full sm:w-auto"
+                                        style={{ background: 'rgba(255,255,255,0.05)', color: '#d4d4d8' }}
+                                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'white'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#d4d4d8'; }}
+                                    >
+                                        <FontAwesomeIcon icon={faPen} className="text-xs" />
+                                        Editar
+                                    </button>
                                 </Can>
                             </div>
                         </div>
-                        <div css={tw`hidden sm:grid grid-cols-5 md:grid-cols-5 gap-4 mb-4 mt-4`}>
-                            <CronBox title={'Minute'} value={schedule.cron.minute} />
-                            <CronBox title={'Hour'} value={schedule.cron.hour} />
-                            <CronBox title={'Day (Month)'} value={schedule.cron.dayOfMonth} />
-                            <CronBox title={'Month'} value={schedule.cron.month} />
-                            <CronBox title={'Day (Week)'} value={schedule.cron.dayOfWeek} />
+
+                        {/* Fila del Cron */}
+                        <div className="p-4 bg-[#08080a] border-b border-white/5">
+                            <ScheduleCronRow cron={schedule.cron} className="max-w-3xl mx-auto" />
                         </div>
-                        <div css={tw`bg-neutral-700 rounded-b`}>
+
+                        {/* Botón de Nueva Tarea */}
+                        <div className="p-4 flex justify-between items-center bg-[#0d0d12] border-b border-white/5">
+                            <h4 className="text-sm font-bold text-neutral-300 uppercase tracking-widest ml-2">Lista de Tareas ({schedule.tasks.length})</h4>
+                            <Can action={'schedule.update'}>
+                                <NewTaskButton schedule={schedule} />
+                            </Can>
+                        </div>
+
+                        {/* Lista de Tareas */}
+                        <div className="bg-[#0a0a0d] flex flex-col">
                             {schedule.tasks.length > 0
                                 ? schedule.tasks
                                       .sort((a, b) =>
                                           a.sequenceId === b.sequenceId ? 0 : a.sequenceId > b.sequenceId ? 1 : -1
                                       )
-                                      .map((task) => (
+                                      .map((task, index) => (
                                           <ScheduleTaskRow
                                               key={`${schedule.id}_${task.id}`}
                                               task={task}
                                               schedule={schedule}
+                                              isLast={index === schedule.tasks.length - 1}
                                           />
                                       ))
-                                : null}
+                                : (
+                                    <div className="py-12 text-center">
+                                        <p className="text-neutral-500 text-sm">No hay acciones configuradas para esta tarea automática.</p>
+                                    </div>
+                                )}
                         </div>
                     </div>
+
                     <EditScheduleModal visible={showEditModal} schedule={schedule} onModalDismissed={toggleEditModal} />
-                    <div css={tw`mt-6 flex sm:justify-end`}>
+                    
+                    {/* Botones inferiores */}
+                    <div className="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                         <Can action={'schedule.delete'}>
                             <DeleteScheduleButton
                                 scheduleId={schedule.id}
@@ -168,6 +185,6 @@ export default () => {
                     </div>
                 </>
             )}
-        </PageContentBlock>
+        </div>
     );
 };

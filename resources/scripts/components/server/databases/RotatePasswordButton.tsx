@@ -5,8 +5,8 @@ import { ApplicationStore } from '@/state';
 import { ServerContext } from '@/state/server';
 import { ServerDatabase } from '@/api/server/databases/getServerDatabases';
 import { httpErrorToHuman } from '@/api/http';
-import Button from '@/components/elements/Button';
-import tw from 'twin.macro';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
 export default ({ databaseId, onUpdate }: { databaseId: string; onUpdate: (database: ServerDatabase) => void }) => {
     const [loading, setLoading] = useState(false);
@@ -36,8 +36,20 @@ export default ({ databaseId, onUpdate }: { databaseId: string; onUpdate: (datab
     };
 
     return (
-        <Button isSecondary color={'primary'} css={tw`mr-2`} onClick={rotate} isLoading={loading}>
-            Rotate Password
-        </Button>
+        <button
+            onClick={rotate}
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all disabled:opacity-50"
+            style={{
+                background: 'rgba(234,179,8,0.1)',
+                border: '1px solid rgba(234,179,8,0.2)',
+                color: '#facc15'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(234,179,8,0.2)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(234,179,8,0.1)'; }}
+        >
+            <FontAwesomeIcon icon={faSyncAlt} className={loading ? 'animate-spin' : ''} />
+            Rotar Contraseña
+        </button>
     );
 };

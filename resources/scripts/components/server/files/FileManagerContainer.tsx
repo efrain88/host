@@ -74,8 +74,8 @@ export default () => {
             {showTrashModal && <TrashModal onClose={() => setShowTrashModal(false)} />}
 
             <ErrorBoundary>
-                {/* ── Fila 1: Botón Papelera ── */}
-                <div className="flex items-center gap-3 mb-3">
+                {/* ── Fila 1: Botón Papelera y Vistas ── */}
+                <div className="flex items-center justify-between gap-3 mb-3">
                     <button
                         onClick={() => setShowTrashModal(true)}
                         className="flex items-center gap-x-2 text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200 shrink-0"
@@ -88,6 +88,29 @@ export default () => {
                         <FontAwesomeIcon icon={faTrashAlt} className="w-4 h-4" />
                         <span>Papelera</span>
                     </button>
+
+                    {/* Selector de vista */}
+                    <div className="flex items-center bg-[#0a0a0d] border border-white/5 rounded-xl p-1 shadow-lg shrink-0 h-[42px]">
+                        {[
+                            { mode: 'list' as const, icon: faList, label: 'Lista' },
+                            { mode: 'grid' as const, icon: faThLarge, label: 'Cuadrícula' },
+                            { mode: 'ide' as const, icon: faCode, label: 'IDE' },
+                        ].map(({ mode, icon, label }) => (
+                            <button
+                                key={mode}
+                                onClick={() => setViewMode(mode)}
+                                className={`flex items-center gap-x-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 ${
+                                    viewMode === mode
+                                        ? 'text-violet-300'
+                                        : 'text-neutral-500 hover:text-neutral-300'
+                                }`}
+                                style={viewMode === mode ? { background: 'rgba(139,92,246,0.15)' } : {}}
+                            >
+                                <FontAwesomeIcon icon={icon} />
+                                <span className="hidden xl:inline">{label}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* ── Fila 2: Breadcrumb + acciones ── */}
@@ -116,29 +139,6 @@ export default () => {
                             </NavLink>
                         </div>
                     </Can>
-
-                    {/* Selector de vista */}
-                    <div className="flex items-center bg-[#0a0a0d] border border-white/5 rounded-xl p-1 shadow-lg shrink-0 h-[42px]">
-                        {[
-                            { mode: 'list' as const, icon: faList, label: 'Lista' },
-                            { mode: 'grid' as const, icon: faThLarge, label: 'Cuadrícula' },
-                            { mode: 'ide' as const, icon: faCode, label: 'IDE' },
-                        ].map(({ mode, icon, label }) => (
-                            <button
-                                key={mode}
-                                onClick={() => setViewMode(mode)}
-                                className={`flex items-center gap-x-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 ${
-                                    viewMode === mode
-                                        ? 'text-violet-300'
-                                        : 'text-neutral-500 hover:text-neutral-300'
-                                }`}
-                                style={viewMode === mode ? { background: 'rgba(139,92,246,0.15)' } : {}}
-                            >
-                                <FontAwesomeIcon icon={icon} />
-                                <span className="hidden xl:inline">{label}</span>
-                            </button>
-                        ))}
-                    </div>
                 </div>
 
                 {/* ── Barra de búsqueda ── */}

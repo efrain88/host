@@ -122,68 +122,70 @@ export default ({ backup }: Props) => {
             <Dialog.Confirm
                 open={modal === 'unlock'}
                 onClose={() => setModal('')}
-                title={`Unlock "${backup.name}"`}
+                title={`Desbloquear "${backup.name}"`}
                 onConfirmed={onLockToggle}
+                confirm={'Desbloquear'}
             >
-                This backup will no longer be protected from automated or accidental deletions.
+                Esta copia de seguridad ya no estará protegida contra eliminaciones automáticas o accidentales.
             </Dialog.Confirm>
             <Dialog.Confirm
                 open={modal === 'restore'}
                 onClose={() => setModal('')}
-                confirm={'Restore'}
-                title={`Restore "${backup.name}"`}
+                confirm={'Restaurar'}
+                title={`Restaurar "${backup.name}"`}
                 onConfirmed={() => doRestorationAction()}
             >
-                <p>
-                    Your server will be stopped. You will not be able to control the power state, access the file
-                    manager, or create additional backups until completed.
+                <p className="text-sm text-neutral-300">
+                    Tu servidor se detendrá. No podrás controlar el estado de energía, acceder al administrador de archivos ni crear copias de seguridad adicionales hasta que se complete.
                 </p>
-                <p css={tw`mt-4 -mb-2 bg-gray-700 p-3 rounded`}>
-                    <label htmlFor={'restore_truncate'} css={tw`text-base flex items-center cursor-pointer`}>
+                <div className="mt-4 bg-[#0a0a0d] border border-white/5 p-4 rounded-xl">
+                    <label htmlFor={'restore_truncate'} className="text-sm flex items-center cursor-pointer text-white font-medium">
                         <Input
                             type={'checkbox'}
-                            css={tw`text-red-500! w-5! h-5! mr-2`}
+                            className="text-red-500 w-5 h-5 mr-3 cursor-pointer"
                             id={'restore_truncate'}
                             value={'true'}
                             checked={truncate}
                             onChange={() => setTruncate((s) => !s)}
                         />
-                        Delete all files before restoring backup.
+                        Eliminar todos los archivos antes de restaurar el backup.
                     </label>
-                </p>
+                </div>
             </Dialog.Confirm>
             <Dialog.Confirm
-                title={`Delete "${backup.name}"`}
-                confirm={'Continue'}
+                title={`Eliminar "${backup.name}"`}
+                confirm={'Eliminar Backup'}
                 open={modal === 'delete'}
                 onClose={() => setModal('')}
                 onConfirmed={doDeletion}
             >
-                This is a permanent operation. The backup cannot be recovered once deleted.
+                Esta es una operación permanente. El backup no podrá ser recuperado una vez eliminado.
             </Dialog.Confirm>
+            
             <SpinnerOverlay visible={loading} fixed />
+            
             {backup.isSuccessful ? (
                 <DropdownMenu
                     renderToggle={(onClick) => (
                         <button
                             onClick={onClick}
-                            css={tw`text-gray-200 transition-colors duration-150 hover:text-gray-100 p-2`}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg transition-all text-neutral-400 hover:text-white hover:bg-white/10"
                         >
                             <FontAwesomeIcon icon={faEllipsisH} />
                         </button>
                     )}
                 >
-                    <div css={tw`text-sm`}>
+                    <div className="text-sm">
                         <Can action={'backup.download'}>
                             <DropdownButtonRow onClick={doDownload}>
-                                <FontAwesomeIcon fixedWidth icon={faCloudDownloadAlt} css={tw`text-xs`} />
-                                <span css={tw`ml-2`}>Download</span>
+                                <FontAwesomeIcon fixedWidth icon={faCloudDownloadAlt} className="text-xs text-sky-400" />
+                                <span className="ml-2">Descargar</span>
                             </DropdownButtonRow>
                         </Can>
                         <Can action={'backup.restore'}>
                             <DropdownButtonRow onClick={() => setModal('restore')}>
-                                <FontAwesomeIcon fixedWidth icon={faBoxOpen} css={tw`text-xs`} />
-                                <span css={tw`ml-2`}>Restore</span>
+                                <FontAwesomeIcon fixedWidth icon={faBoxOpen} className="text-xs text-green-400" />
+                                <span className="ml-2">Restaurar</span>
                             </DropdownButtonRow>
                         </Can>
                         <Can action={'backup.delete'}>
@@ -192,14 +194,14 @@ export default ({ backup }: Props) => {
                                     <FontAwesomeIcon
                                         fixedWidth
                                         icon={backup.isLocked ? faUnlock : faLock}
-                                        css={tw`text-xs mr-2`}
+                                        className={`text-xs mr-2 ${backup.isLocked ? 'text-yellow-400' : 'text-neutral-400'}`}
                                     />
-                                    {backup.isLocked ? 'Unlock' : 'Lock'}
+                                    {backup.isLocked ? 'Desbloquear' : 'Bloquear'}
                                 </DropdownButtonRow>
                                 {!backup.isLocked && (
                                     <DropdownButtonRow danger onClick={() => setModal('delete')}>
-                                        <FontAwesomeIcon fixedWidth icon={faTrashAlt} css={tw`text-xs`} />
-                                        <span css={tw`ml-2`}>Delete</span>
+                                        <FontAwesomeIcon fixedWidth icon={faTrashAlt} className="text-xs text-red-400" />
+                                        <span className="ml-2">Eliminar</span>
                                     </DropdownButtonRow>
                                 )}
                             </>
@@ -209,7 +211,7 @@ export default ({ backup }: Props) => {
             ) : (
                 <button
                     onClick={() => setModal('delete')}
-                    css={tw`text-gray-200 transition-colors duration-150 hover:text-gray-100 p-2`}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg transition-all text-neutral-400 hover:text-red-400 hover:bg-red-500/10"
                 >
                     <FontAwesomeIcon icon={faTrashAlt} />
                 </button>

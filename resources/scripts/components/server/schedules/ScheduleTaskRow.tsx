@@ -17,29 +17,28 @@ import TaskDetailsModal from '@/components/server/schedules/TaskDetailsModal';
 import Can from '@/components/elements/Can';
 import useFlash from '@/plugins/useFlash';
 import { ServerContext } from '@/state/server';
-import tw from 'twin.macro';
 import ConfirmationModal from '@/components/elements/ConfirmationModal';
-import Icon from '@/components/elements/Icon';
 
 interface Props {
     schedule: Schedule;
     task: Task;
+    isLast?: boolean;
 }
 
-const getActionDetails = (action: string): [string, any] => {
+const getActionDetails = (action: string): [string, any, string] => {
     switch (action) {
         case 'command':
-            return ['Send Command', faCode];
+            return ['Ejecutar Comando', faCode, 'text-sky-400'];
         case 'power':
-            return ['Send Power Action', faToggleOn];
+            return ['Acción de Energía', faToggleOn, 'text-yellow-400'];
         case 'backup':
-            return ['Create Backup', faFileArchive];
+            return ['Crear Backup', faFileArchive, 'text-violet-400'];
         default:
-            return ['Unknown Action', faCode];
+            return ['Acción Desconocida', faCode, 'text-white'];
     }
 };
 
-export default ({ schedule, task }: Props) => {
+export default ({ schedule, task, isLast }: Props) => {
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const { clearFlashes, addError } = useFlash();
     const [visible, setVisible] = useState(false);
@@ -64,11 +63,11 @@ export default ({ schedule, task }: Props) => {
             });
     };
 
-    const [title, icon] = getActionDetails(task.action);
+    const [title, icon, iconColor] = getActionDetails(task.action);
 
     return (
-        <div css={tw`sm:flex items-center p-3 sm:p-6 border-b border-neutral-800`}>
-            <SpinnerOverlay visible={isLoading} fixed size={'large'} />
+        <div className={`relative flex flex-col sm:flex-row sm:items-center p-4 sm:p-6 transition-colors hover:bg-white/[0.02] ${!isLast ? 'border-b border-white/5' : ''}`}>
+            <SpinnerOverlay visible={isLoading} />
             <TaskDetailsModal
                 schedule={schedule}
                 task={task}
@@ -76,67 +75,73 @@ export default ({ schedule, task }: Props) => {
                 onModalDismissed={() => setIsEditing(false)}
             />
             <ConfirmationModal
-                title={'Confirm task deletion'}
-                buttonText={'Delete Task'}
+                title={'Confirmar eliminación'}
+                buttonText={'Eliminar Tarea'}
                 onConfirmed={onConfirmDeletion}
                 visible={visible}
                 onModalDismissed={() => setVisible(false)}
             >
-                Are you sure you want to delete this task? This action cannot be undone.
+                ¿Estás seguro de que quieres eliminar esta acción? Esto no se puede deshacer.
             </ConfirmationModal>
-            <FontAwesomeIcon icon={icon} css={tw`text-lg text-white hidden md:block`} />
-            <div css={tw`flex-none sm:flex-1 w-full sm:w-auto overflow-x-auto`}>
-                <p css={tw`md:ml-6 text-neutral-200 uppercase text-sm`}>{title}</p>
-                {task.payload && (
-                    <div css={tw`md:ml-6 mt-2`}>
-                        {task.action === 'backup' && (
-                            <p css={tw`text-xs uppercase text-neutral-400 mb-1`}>Ignoring files & folders:</p>
-                        )}
-                        <div
-                            css={tw`font-mono bg-neutral-800 rounded py-1 px-2 text-sm w-auto inline-block whitespace-pre-wrap break-all`}
-                        >
-                            {task.payload}
+
+            {/* Número de Secuencia */}
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-sky-500/20 to-sky-500/0 hidden sm:block" />
+
+            <div className="flex items-center gap-4 w-full sm:w-auto flex-1 min-w-0">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 bg-white/5 border border-white/10 ${iconColor}`}>
+                    <FontAwesomeIcon icon={icon} className="text-lg" />
+                </div>
+                
+                <div className="flex-1 min-w-0 overflow-hidden">
+                    <p className="text-sm font-bold text-neutral-200 uppercase tracking-wide">{title}</p>
+                    {task.payload && (
+                        <div className="mt-1.5">
+                            {task.action === 'backup' && (
+                                <p className="text-[10px] uppercase tracking-widest text-neutral-500 mb-1">Ignorando archivos:</p>
+                            )}
+                            <div className="font-mono bg-[#050505] border border-white/10 rounded-md py-1 px-2.5 text-xs inline-block max-w-full truncate text-sky-200">
+                                {task.payload}
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
-            <div css={tw`mt-3 sm:mt-0 flex items-center w-full sm:w-auto`}>
+
+            {/* Badges y Acciones */}
+            <div className="mt-4 sm:mt-0 flex items-center flex-wrap gap-3 sm:pl-4">
                 {task.continueOnFailure && (
-                    <div css={tw`mr-6`}>
-                        <div css={tw`flex items-center px-2 py-1 bg-yellow-500 text-yellow-800 text-sm rounded-full`}>
-                            <Icon icon={faArrowCircleDown} css={tw`w-3 h-3 mr-2`} />
-                            Continues on Failure
-                        </div>
+                    <div className="flex items-center px-2.5 py-1 bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-[10px] font-bold uppercase tracking-widest rounded-full">
+                        <FontAwesomeIcon icon={faArrowCircleDown} className="mr-1.5" />
+                        Ignora Errores
                     </div>
                 )}
                 {task.sequenceId > 1 && task.timeOffset > 0 && (
-                    <div css={tw`mr-6`}>
-                        <div css={tw`flex items-center px-2 py-1 bg-neutral-500 text-sm rounded-full`}>
-                            <Icon icon={faClock} css={tw`w-3 h-3 mr-2`} />
-                            {task.timeOffset}s later
-                        </div>
+                    <div className="flex items-center px-2.5 py-1 bg-white/5 border border-white/10 text-neutral-400 text-[10px] font-bold uppercase tracking-widest rounded-full">
+                        <FontAwesomeIcon icon={faClock} className="mr-1.5" />
+                        {task.timeOffset}s de retraso
                     </div>
                 )}
-                <Can action={'schedule.update'}>
-                    <button
-                        type={'button'}
-                        aria-label={'Edit scheduled task'}
-                        css={tw`block text-sm p-2 text-neutral-500 hover:text-neutral-100 transition-colors duration-150 mr-4 ml-auto sm:ml-0`}
-                        onClick={() => setIsEditing(true)}
-                    >
-                        <FontAwesomeIcon icon={faPencilAlt} />
-                    </button>
-                </Can>
-                <Can action={'schedule.update'}>
-                    <button
-                        type={'button'}
-                        aria-label={'Delete scheduled task'}
-                        css={tw`block text-sm p-2 text-neutral-500 hover:text-red-600 transition-colors duration-150`}
-                        onClick={() => setVisible(true)}
-                    >
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                    </button>
-                </Can>
+
+                <div className="flex items-center gap-2 ml-auto sm:ml-4">
+                    <Can action={'schedule.update'}>
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-white/5 hover:bg-sky-500/20 hover:text-sky-400 text-neutral-400"
+                            title="Editar"
+                        >
+                            <FontAwesomeIcon icon={faPencilAlt} className="text-xs" />
+                        </button>
+                    </Can>
+                    <Can action={'schedule.update'}>
+                        <button
+                            onClick={() => setVisible(true)}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-neutral-400"
+                            title="Eliminar"
+                        >
+                            <FontAwesomeIcon icon={faTrashAlt} className="text-xs" />
+                        </button>
+                    </Can>
+                </div>
             </div>
         </div>
     );

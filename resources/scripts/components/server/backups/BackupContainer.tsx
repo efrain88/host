@@ -1,15 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
-import Spinner from '@/components/elements/Spinner';
+import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import useFlash from '@/plugins/useFlash';
 import Can from '@/components/elements/Can';
 import CreateBackupButton from '@/components/server/backups/CreateBackupButton';
 import FlashMessageRender from '@/components/FlashMessageRender';
 import BackupRow from '@/components/server/backups/BackupRow';
-import tw from 'twin.macro';
 import getServerBackups, { Context as ServerBackupContext } from '@/api/swr/getServerBackups';
 import { ServerContext } from '@/state/server';
-import ServerContentBlock from '@/components/elements/ServerContentBlock';
 import Pagination from '@/components/elements/Pagination';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileArchive } from '@fortawesome/free-solid-svg-icons';
 
 const BackupContainer = () => {
     const { page, setPage } = useContext(ServerBackupContext);
@@ -21,57 +21,84 @@ const BackupContainer = () => {
     useEffect(() => {
         if (!error) {
             clearFlashes('backups');
-
             return;
         }
 
         clearAndAddHttpError({ error, key: 'backups' });
     }, [error]);
 
-    if (!backups || (error && isValidating)) {
-        return <Spinner size={'large'} centered />;
-    }
-
     return (
-        <ServerContentBlock title={'Backups'}>
-            <FlashMessageRender byKey={'backups'} css={tw`mb-4`} />
-            <Pagination data={backups} onPageSelect={setPage}>
-                {({ items }) =>
-                    !items.length ? (
-                        // Don't show any error messages if the server has no backups and the user cannot
-                        // create additional ones for the server.
-                        !backupLimit ? null : (
-                            <p css={tw`text-center text-sm text-neutral-300`}>
-                                {page > 1
-                                    ? "Looks like we've run out of backups to show you, try going back a page."
-                                    : 'It looks like there are no backups currently stored for this server.'}
-                            </p>
-                        )
-                    ) : (
-                        items.map((backup, index) => (
-                            <BackupRow key={backup.uuid} backup={backup} css={index > 0 ? tw`mt-2` : undefined} />
-                        ))
-                    )
-                }
-            </Pagination>
-            {backupLimit === 0 && (
-                <p css={tw`text-center text-sm text-neutral-300`}>
-                    Backups cannot be created for this server because the backup limit is set to 0.
-                </p>
-            )}
-            <Can action={'backup.create'}>
-                <div css={tw`mt-6 sm:flex items-center justify-end`}>
-                    {backupLimit > 0 && backups.backupCount > 0 && (
-                        <p css={tw`text-sm text-neutral-300 mb-4 sm:mr-6 sm:mb-0`}>
-                            {backups.backupCount} of {backupLimit} backups have been created for this server.
-                        </p>
-                    )}
-                    {backupLimit > 0 && backupLimit > backups.backupCount && (
-                        <CreateBackupButton css={tw`w-full sm:w-auto`} />
-                    )}
+        <div className="flex flex-col w-full">
+            {/* Header / Título */}
+            <div className="flex items-center justify-between mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold flex items-center gap-3 text-white">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                            style={{ background: 'linear-gradient(135deg, #8b5cf6, #d946ef)', boxShadow: '0 4px 15px rgba(139,92,246,0.3)' }}>
+                            <FontAwesomeIcon icon={faFileArchive} className="text-white text-lg" />
+                        </div>
+                        Copias de Seguridad
+                    </h1>
+                    <p className="text-neutral-400 mt-1 text-sm">
+                        Crea y administra backups completos o parciales de los archivos de tu servidor.
+                    </p>
                 </div>
-            </Can>
-        </ServerContentBlock>
+            </div>
+
+            <FlashMessageRender byKey={'backups'} className="mb-4" />
+
+            {/* Contenedor principal */}
+            <div className="relative rounded-2xl p-4 shadow-2xl" style={{ background: '#0a0a0d', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <SpinnerOverlay visible={(!backups || (error && isValidating)) && true} />
+                
+                {backups && (
+                    <Pagination data={backups} onPageSelect={setPage}>
+                        {({ items }) =>
+                            !items.length ? (
+                                !backupLimit ? null : (
+                                    <div className="py-16 flex flex-col items-center justify-center text-center">
+                                        <FontAwesomeIcon icon={faFileArchive} className="text-5xl text-neutral-800 mb-4" />
+                                        <p className="text-sm text-neutral-500 font-medium">
+                                            {page > 1
+                                                ? "Parece que no hay más backups en esta página."
+                                                : 'No hay ninguna copia de seguridad guardada para este servidor.'}
+                                        </p>
+                                    </div>
+                                )
+                            ) : (
+                                <div className="flex flex-col gap-y-3">
+                                    {items.map((backup) => (
+                                        <BackupRow key={backup.uuid} backup={backup} />
+                                    ))}
+                                </div>
+                            )
+                        }
+                    </Pagination>
+                )}
+
+                {backupLimit === 0 && (
+                    <p className="text-center text-sm text-neutral-500 mt-4">
+                        No se pueden crear copias de seguridad porque el límite del servidor es 0.
+                    </p>
+                )}
+
+                {/* Footer de acción */}
+                <Can action={'backup.create'}>
+                    <div className="mt-6 flex flex-col sm:flex-row items-center justify-between pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div className="mb-4 sm:mb-0">
+                            {backupLimit > 0 && backups && backups.backupCount > 0 && (
+                                <p className="text-sm text-neutral-400 font-medium">
+                                    <span className="text-fuchsia-400">{backups.backupCount}</span> de <span className="text-fuchsia-400">{backupLimit}</span> backups utilizados.
+                                </p>
+                            )}
+                        </div>
+                        {backupLimit > 0 && backups && backupLimit > backups.backupCount && (
+                            <CreateBackupButton />
+                        )}
+                    </div>
+                </Can>
+            </div>
+        </div>
     );
 };
 

@@ -7,13 +7,14 @@ import FormikFieldWrapper from '@/components/elements/FormikFieldWrapper';
 import useFlash from '@/plugins/useFlash';
 import createServerBackup from '@/api/server/backups/createServerBackup';
 import FlashMessageRender from '@/components/FlashMessageRender';
-import Button from '@/components/elements/Button';
 import tw from 'twin.macro';
 import { Textarea } from '@/components/elements/Input';
 import getServerBackups from '@/api/swr/getServerBackups';
 import { ServerContext } from '@/state/server';
 import FormikSwitch from '@/components/elements/FormikSwitch';
 import Can from '@/components/elements/Can';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 interface Values {
     name: string;
@@ -26,41 +27,59 @@ const ModalContent = ({ ...props }: RequiredModalProps) => {
 
     return (
         <Modal {...props} showSpinnerOverlay={isSubmitting}>
-            <Form>
-                <FlashMessageRender byKey={'backups:create'} css={tw`mb-4`} />
-                <h2 css={tw`text-2xl mb-6`}>Create server backup</h2>
-                <Field
-                    name={'name'}
-                    label={'Backup name'}
-                    description={'If provided, the name that should be used to reference this backup.'}
-                />
-                <div css={tw`mt-6`}>
+            <Form className="m-0">
+                <FlashMessageRender byKey={'backups:create'} className="mb-4" />
+                <h2 className="text-2xl font-bold mb-6 text-white">Crear copia de seguridad</h2>
+                
+                <div className="bg-[#0a0a0d] p-5 rounded-xl border border-white/5 mb-6">
+                    <Field
+                        name={'name'}
+                        label={'Nombre del Backup'}
+                        description={'Opcional. Un nombre para identificar fácilmente esta copia de seguridad.'}
+                    />
+                </div>
+
+                <div className="mb-6 bg-[#0a0a0d] p-5 rounded-xl border border-white/5">
                     <FormikFieldWrapper
                         name={'ignored'}
-                        label={'Ignored Files & Directories'}
+                        label={'Archivos y Directorios Ignorados'}
                         description={`
-                            Enter the files or folders to ignore while generating this backup. Leave blank to use
-                            the contents of the .pteroignore file in the root of the server directory if present.
-                            Wildcard matching of files and folders is supported in addition to negating a rule by
-                            prefixing the path with an exclamation point.
+                            Ingresa los archivos o carpetas a ignorar. Déjalo en blanco para usar el archivo .pteroignore. 
+                            Se admite el uso de comodines (wildcards) y se puede negar una regla anteponiendo un signo de exclamación (!).
                         `}
                     >
-                        <FormikField as={Textarea} name={'ignored'} rows={6} />
+                        <FormikField as={Textarea} name={'ignored'} rows={4} className="font-mono text-sm" />
                     </FormikFieldWrapper>
                 </div>
+
                 <Can action={'backup.delete'}>
-                    <div css={tw`mt-6 bg-neutral-700 border border-neutral-800 shadow-inner p-4 rounded`}>
+                    <div className="mb-8 bg-[#0a0a0d] p-5 rounded-xl border border-white/5">
                         <FormikSwitch
                             name={'isLocked'}
-                            label={'Locked'}
-                            description={'Prevents this backup from being deleted until explicitly unlocked.'}
+                            label={'Bloquear Backup'}
+                            description={'Evita que esta copia de seguridad sea eliminada manual o automáticamente hasta que se desbloquee explícitamente.'}
                         />
                     </div>
                 </Can>
-                <div css={tw`flex justify-end mt-6`}>
-                    <Button type={'submit'} disabled={isSubmitting}>
-                        Start backup
-                    </Button>
+
+                <div className="flex justify-end gap-3">
+                    <button
+                        type="button"
+                        onClick={props.onDismissed}
+                        className="px-4 py-2 text-sm font-semibold rounded-xl transition-all text-neutral-400 hover:text-white hover:bg-white/5"
+                        disabled={isSubmitting}
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="submit"
+                        className="flex items-center gap-2 px-6 py-2 text-sm font-bold rounded-xl transition-all text-white disabled:opacity-50"
+                        style={{ background: 'linear-gradient(135deg, #8b5cf6, #d946ef)', boxShadow: '0 4px 15px rgba(139,92,246,0.3)' }}
+                        disabled={isSubmitting}
+                    >
+                        <FontAwesomeIcon icon={faPlus} />
+                        Iniciar Backup
+                    </button>
                 </div>
             </Form>
         </Modal>
@@ -108,9 +127,19 @@ export default () => {
                     <ModalContent appear visible={visible} onDismissed={() => setVisible(false)} />
                 </Formik>
             )}
-            <Button css={tw`w-full sm:w-auto`} onClick={() => setVisible(true)}>
-                Create backup
-            </Button>
+            <button
+                onClick={() => setVisible(true)}
+                className="flex items-center justify-center gap-2 text-sm font-bold px-4 py-2.5 rounded-xl transition-all w-full sm:w-auto"
+                style={{
+                    background: 'linear-gradient(135deg, #8b5cf6, #d946ef)',
+                    color: 'white',
+                    border: '1px solid rgba(168,85,247,0.4)',
+                    boxShadow: '0 4px 15px rgba(139,92,246,0.3)',
+                }}
+            >
+                <FontAwesomeIcon icon={faPlus} />
+                Crear Backup
+            </button>
         </>
     );
 };
