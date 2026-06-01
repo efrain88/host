@@ -5,28 +5,27 @@ import Field from '@/components/elements/Field';
 import { join } from 'pathe';
 import { object, string } from 'yup';
 import createDirectory from '@/api/server/files/createDirectory';
-import tw from 'twin.macro';
-import { Button } from '@/components/elements/button/index';
 import { FileObject } from '@/api/server/files/loadDirectory';
 import { useFlashKey } from '@/plugins/useFlash';
 import useFileManagerSwr from '@/plugins/useFileManagerSwr';
 import { WithClassname } from '@/components/types';
 import FlashMessageRender from '@/components/FlashMessageRender';
 import { Dialog, DialogWrapperContext } from '@/components/elements/dialog';
-import Code from '@/components/elements/Code';
 import asDialog from '@/hoc/asDialog';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFolderPlus } from '@fortawesome/free-solid-svg-icons';
 
 interface Values {
     directoryName: string;
 }
 
 const schema = object().shape({
-    directoryName: string().required('A valid directory name must be provided.'),
+    directoryName: string().required('Debes indicar un nombre de carpeta válido.'),
 });
 
 const generateDirectoryData = (name: string): FileObject => ({
     key: `dir_${name.split('/', 1)[0] ?? name}`,
-    name: name.replace(/^(\/*)/, '').split('/', 1)[0] ?? name,
+    name: name.replace(/^(\/*)/,'').split('/', 1)[0] ?? name,
     mode: 'drwxr-xr-x',
     modeBits: '0755',
     size: 0,
@@ -40,7 +39,7 @@ const generateDirectoryData = (name: string): FileObject => ({
 });
 
 const NewDirectoryDialog = asDialog({
-    title: 'Create Directory',
+    title: 'Nueva Carpeta',
 })(() => {
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const directory = ServerContext.useStoreState((state) => state.files.directory);
@@ -50,9 +49,7 @@ const NewDirectoryDialog = asDialog({
     const { clearAndAddHttpError } = useFlashKey('files:directory-modal');
 
     useEffect(() => {
-        return () => {
-            clearAndAddHttpError();
-        };
+        return () => { clearAndAddHttpError(); };
     }, []);
 
     const submit = ({ directoryName }: Values, { setSubmitting }: FormikHelpers<Values>) => {
@@ -70,25 +67,49 @@ const NewDirectoryDialog = asDialog({
             {({ submitForm, values }) => (
                 <>
                     <FlashMessageRender key={'files:directory-modal'} />
-                    <Form css={tw`m-0`}>
-                        <Field autoFocus id={'directoryName'} name={'directoryName'} label={'Name'} />
-                        <p css={tw`mt-2 text-sm md:text-base break-all`}>
-                            <span css={tw`text-neutral-200`}>This directory will be created as&nbsp;</span>
-                            <Code>
+                    <Form className="m-0">
+                        <Field
+                            autoFocus
+                            id={'directoryName'}
+                            name={'directoryName'}
+                            label={'Nombre de la carpeta'}
+                            placeholder="mi-carpeta"
+                        />
+                        <p className="mt-3 text-sm break-all">
+                            <span className="text-neutral-400">Se creará en: </span>
+                            <code
+                                className="px-2 py-0.5 rounded text-violet-300 text-xs"
+                                style={{
+                                    background: 'rgba(139,92,246,0.1)',
+                                    border: '1px solid rgba(139,92,246,0.2)',
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                }}
+                            >
                                 /home/container/
-                                <span css={tw`text-cyan-200`}>
-                                    {join(directory, values.directoryName).replace(/^(\.\.\/|\/)+/, '')}
+                                <span className="text-violet-200">
+                                    {join(directory || '/', values.directoryName).replace(/^(\.\.\/)\/+/, '')}
                                 </span>
-                            </Code>
+                            </code>
                         </p>
                     </Form>
                     <Dialog.Footer>
-                        <Button.Text className={'w-full sm:w-auto'} onClick={close}>
-                            Cancel
-                        </Button.Text>
-                        <Button className={'w-full sm:w-auto'} onClick={submitForm}>
-                            Create
-                        </Button>
+                        <button
+                            className="px-4 py-2 text-sm font-semibold rounded-xl transition-all text-neutral-400 hover:text-white hover:bg-white/5"
+                            onClick={close}
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-xl transition-all text-white"
+                            style={{
+                                background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+                                boxShadow: '0 4px 15px rgba(109,40,217,0.3)',
+                            }}
+                            onClick={submitForm}
+                        >
+                            <FontAwesomeIcon icon={faFolderPlus} />
+                            Crear carpeta
+                        </button>
                     </Dialog.Footer>
                 </>
             )}
@@ -102,9 +123,25 @@ export default ({ className }: WithClassname) => {
     return (
         <>
             <NewDirectoryDialog open={open} onClose={setOpen.bind(this, false)} />
-            <button onClick={setOpen.bind(this, true)} className={`flex items-center justify-center gap-x-2 bg-transparent border border-white/10 hover:border-white/20 text-neutral-300 hover:text-white px-4 h-[42px] rounded-xl transition-all duration-200 text-xs font-bold shadow-lg whitespace-nowrap ${className || ''}`}>
-                <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>
-                <span className="hidden lg:inline">Crear carpeta</span>
+            <button
+                onClick={setOpen.bind(this, true)}
+                className={`flex items-center justify-center gap-x-2 transition-all duration-200 text-xs font-bold h-[42px] px-4 rounded-xl whitespace-nowrap ${className || ''}`}
+                style={{
+                    background: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    color: '#a1a1aa',
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                    e.currentTarget.style.color = '#ffffff';
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                    e.currentTarget.style.color = '#a1a1aa';
+                }}
+            >
+                <FontAwesomeIcon icon={faFolderPlus} className="w-4 h-4" />
+                <span className="hidden lg:inline">Nueva carpeta</span>
             </button>
         </>
     );

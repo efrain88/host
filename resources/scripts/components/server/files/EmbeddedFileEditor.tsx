@@ -4,7 +4,6 @@ import saveFileContents from '@/api/server/files/saveFileContents';
 import { httpErrorToHuman } from '@/api/http';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import Can from '@/components/elements/Can';
-import Select from '@/components/elements/Select';
 import modes from '@/modes';
 import useFlash from '@/plugins/useFlash';
 import { ServerContext } from '@/state/server';
@@ -144,17 +143,32 @@ export default ({ file }: Props) => {
 
                 {/* Controles */}
                 <div className="flex items-center gap-2 flex-none ml-3">
-                    <Select
-                        value={mode}
-                        onChange={(e) => setMode(e.currentTarget.value)}
-                        className="!h-8 !py-0 !text-xs !rounded-lg !border-white/10 !bg-white/5 !text-neutral-300 w-36"
-                    >
-                        {modes.map((m) => (
-                            <option key={`${m.name}_${m.mime}`} value={m.mime}>
-                                {m.name}
-                            </option>
-                        ))}
-                    </Select>
+                    <div className="relative flex-none">
+                        <select
+                            value={mode}
+                            onChange={(e) => setMode(e.currentTarget.value)}
+                            className="appearance-none text-xs font-semibold pl-3 pr-8 py-1.5 rounded-lg cursor-pointer transition-all focus:outline-none"
+                            style={{
+                                background: 'rgba(139,92,246,0.12)',
+                                border: '1px solid rgba(139,92,246,0.25)',
+                                color: '#c4b5fd',
+                                minWidth: '120px',
+                            }}
+                        >
+                            {modes.map((m) => (
+                                <option
+                                    key={`${m.name}_${m.mime}`}
+                                    value={m.mime}
+                                    style={{ background: '#1a1a22', color: '#e2e8f0' }}
+                                >
+                                    {m.name}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#8b5cf6' }}>
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                    </div>
 
                     <Can action={'file.update'}>
                         <button

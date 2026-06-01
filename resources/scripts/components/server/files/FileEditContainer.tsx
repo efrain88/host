@@ -8,11 +8,8 @@ import { useHistory, useLocation, useParams } from 'react-router';
 import FileNameModal from '@/components/server/files/FileNameModal';
 import Can from '@/components/elements/Can';
 import FlashMessageRender from '@/components/FlashMessageRender';
-import PageContentBlock from '@/components/elements/PageContentBlock';
 import { ServerError } from '@/components/elements/ScreenBlock';
-import tw from 'twin.macro';
 import Button from '@/components/elements/Button';
-import Select from '@/components/elements/Select';
 import modes from '@/modes';
 import useFlash from '@/plugins/useFlash';
 import { ServerContext } from '@/state/server';
@@ -20,6 +17,8 @@ import ErrorBoundary from '@/components/elements/ErrorBoundary';
 import { encodePathSegments, hashToPath } from '@/helpers';
 import { dirname } from 'pathe';
 import CodemirrorEditor from '@/components/elements/CodemirrorEditor';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSave, faPlus, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 export default () => {
     const [error, setError] = useState('');
@@ -28,6 +27,7 @@ export default () => {
     const [content, setContent] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [mode, setMode] = useState('text/plain');
+    const [saved, setSaved] = useState(false);
 
     const history = useHistory();
     const { hash } = useLocation();
@@ -56,9 +56,7 @@ export default () => {
     }, [action, uuid, hash]);
 
     const save = (name?: string) => {
-        if (!fetchFileContent) {
-            return;
-        }
+        if (!fetchFileContent) return;
 
         setLoading(true);
         clearFlashes('files:view');
@@ -69,8 +67,8 @@ export default () => {
                     history.push(`/server/${id}/files/edit#/${encodePathSegments(name)}`);
                     return;
                 }
-
-                return Promise.resolve();
+                setSaved(true);
+                setTimeout(() => setSaved(false), 2500);
             })
             .catch((error) => {
                 console.error(error);
@@ -83,76 +81,194 @@ export default () => {
         return <ServerError message={error} onBack={() => history.goBack()} />;
     }
 
+    const currentModeName = modes.find(m => m.mime === mode)?.name || 'Texto plano';
+
     return (
-        <PageContentBlock>
-            <FlashMessageRender byKey={'files:view'} css={tw`mb-4`} />
-            <ErrorBoundary>
-                <div css={tw`mb-4`}>
-                    <FileManagerBreadcrumbs withinFileEditor isNewFile={action !== 'edit'} />
-                </div>
-            </ErrorBoundary>
-            {hash.replace(/^#/, '').endsWith('.pteroignore') && (
-                <div css={tw`mb-4 p-4 border-l-4 bg-neutral-900 rounded border-cyan-400`}>
-                    <p css={tw`text-neutral-300 text-sm`}>
-                        You&apos;re editing a <code css={tw`font-mono bg-black rounded py-px px-1`}>.pteroignore</code>{' '}
-                        file. Any files or directories listed in here will be excluded from backups. Wildcards are
-                        supported by using an asterisk (<code css={tw`font-mono bg-black rounded py-px px-1`}>*</code>).
-                        You can negate a prior rule by prepending an exclamation point (
-                        <code css={tw`font-mono bg-black rounded py-px px-1`}>!</code>).
-                    </p>
-                </div>
-            )}
-            <FileNameModal
-                visible={modalVisible}
-                onDismissed={() => setModalVisible(false)}
-                onFileNamed={(name) => {
-                    setModalVisible(false);
-                    save(name);
+        <div
+            className="min-h-screen"
+            style={{ background: 'linear-gradient(180deg, #080809 0%, #0a0a0d 100%)' }}
+        >
+            {/* Cabecera */}
+            <div
+                className="sticky top-0 z-30 px-6 py-3 flex items-center justify-between gap-4"
+                style={{
+                    background: 'rgba(10,10,13,0.95)',
+                    backdropFilter: 'blur(12px)',
+                    borderBottom: '1px solid rgba(255,255,255,0.06)',
                 }}
-            />
-            <div css={tw`relative`}>
-                <SpinnerOverlay visible={loading} />
-                <CodemirrorEditor
-                    mode={mode}
-                    filename={hash.replace(/^#/, '')}
-                    onModeChanged={setMode}
-                    initialContent={content}
-                    fetchContent={(value) => {
-                        fetchFileContent = value;
-                    }}
-                    onContentSaved={() => {
-                        if (action !== 'edit') {
-                            setModalVisible(true);
-                        } else {
-                            save();
-                        }
+            >
+                {/* Breadcrumb */}
+                <ErrorBoundary>
+                    <div className="flex-1 min-w-0">
+                        <FileManagerBreadcrumbs withinFileEditor isNewFile={action !== 'edit'} />
+                    </div>
+                </ErrorBoundary>
+
+                {/* Controles derechos */}
+                <div className="flex items-center gap-3 shrink-0">
+                    {/* Selector de lenguaje */}
+                    <div className="relative">
+                        <select
+                            value={mode}
+                            onChange={(e) => setMode(e.currentTarget.value)}
+                            className="appearance-none text-xs font-semibold pl-3 pr-8 py-2 rounded-xl cursor-pointer transition-all focus:outline-none"
+                            style={{
+                                background: 'rgba(139,92,246,0.12)',
+                                border: '1px solid rgba(139,92,246,0.25)',
+                                color: '#c4b5fd',
+                                minWidth: '130px',
+                            }}
+                        >
+                            {modes.map((m) => (
+                                <option
+                                    key={`${m.name}_${m.mime}`}
+                                    value={m.mime}
+                                    style={{ background: '#1a1a22', color: '#e2e8f0' }}
+                                >
+                                    {m.name}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-violet-400">
+                            <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
+                        </div>
+                    </div>
+
+                    {/* Botón Guardar / Crear */}
+                    {action === 'edit' ? (
+                        <Can action={'file.update'}>
+                            <button
+                                onClick={() => save()}
+                                disabled={loading}
+                                className="flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl transition-all disabled:opacity-50"
+                                style={{
+                                    background: saved
+                                        ? 'rgba(34,197,94,0.2)'
+                                        : 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+                                    color: saved ? '#4ade80' : 'white',
+                                    border: saved
+                                        ? '1px solid rgba(34,197,94,0.3)'
+                                        : '1px solid rgba(139,92,246,0.4)',
+                                    boxShadow: saved ? 'none' : '0 4px 15px rgba(109,40,217,0.3)',
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faSave} />
+                                {saved ? '¡Guardado!' : 'Guardar'}
+                            </button>
+                        </Can>
+                    ) : (
+                        <Can action={'file.create'}>
+                            <button
+                                onClick={() => setModalVisible(true)}
+                                disabled={loading}
+                                className="flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl transition-all disabled:opacity-50"
+                                style={{
+                                    background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+                                    color: 'white',
+                                    border: '1px solid rgba(139,92,246,0.4)',
+                                    boxShadow: '0 4px 15px rgba(109,40,217,0.3)',
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faPlus} />
+                                Crear archivo
+                            </button>
+                        </Can>
+                    )}
+                </div>
+            </div>
+
+            {/* Cuerpo */}
+            <div className="px-6 py-4">
+                <FlashMessageRender byKey={'files:view'} className="mb-4" />
+
+                {/* Aviso .pteroignore */}
+                {hash.replace(/^#/, '').endsWith('.pteroignore') && (
+                    <div
+                        className="mb-4 p-4 rounded-xl flex items-start gap-3"
+                        style={{
+                            background: 'rgba(6,182,212,0.08)',
+                            border: '1px solid rgba(6,182,212,0.2)',
+                            borderLeft: '3px solid #06b6d4',
+                        }}
+                    >
+                        <p className="text-neutral-300 text-sm leading-relaxed">
+                            Estás editando un archivo{' '}
+                            <code
+                                className="px-1.5 py-0.5 rounded text-cyan-300"
+                                style={{ background: 'rgba(0,0,0,0.4)', fontFamily: "'JetBrains Mono', monospace", fontSize: '0.75rem' }}
+                            >
+                                .pteroignore
+                            </code>
+                            . Los archivos y directorios listados aquí serán excluidos de las copias de seguridad.
+                            Puedes usar el comodín{' '}
+                            <code
+                                className="px-1.5 py-0.5 rounded text-cyan-300"
+                                style={{ background: 'rgba(0,0,0,0.4)', fontFamily: "'JetBrains Mono', monospace", fontSize: '0.75rem' }}
+                            >
+                                *
+                            </code>
+                            {' '}y negar reglas con{' '}
+                            <code
+                                className="px-1.5 py-0.5 rounded text-cyan-300"
+                                style={{ background: 'rgba(0,0,0,0.4)', fontFamily: "'JetBrains Mono', monospace", fontSize: '0.75rem' }}
+                            >
+                                !
+                            </code>
+                            .
+                        </p>
+                    </div>
+                )}
+
+                <FileNameModal
+                    visible={modalVisible}
+                    onDismissed={() => setModalVisible(false)}
+                    onFileNamed={(name) => {
+                        setModalVisible(false);
+                        save(name);
                     }}
                 />
-            </div>
-            <div css={tw`flex justify-end mt-4`}>
-                <div css={tw`flex-1 sm:flex-none rounded bg-neutral-900 mr-4`}>
-                    <Select value={mode} onChange={(e) => setMode(e.currentTarget.value)}>
-                        {modes.map((mode) => (
-                            <option key={`${mode.name}_${mode.mime}`} value={mode.mime}>
-                                {mode.name}
-                            </option>
-                        ))}
-                    </Select>
+
+                {/* Editor */}
+                <div
+                    className="relative rounded-2xl overflow-hidden shadow-2xl"
+                    style={{ border: '1px solid rgba(255,255,255,0.07)' }}
+                >
+                    <SpinnerOverlay visible={loading} />
+                    <CodemirrorEditor
+                        mode={mode}
+                        filename={hash.replace(/^#/, '')}
+                        onModeChanged={setMode}
+                        initialContent={content}
+                        fetchContent={(value) => {
+                            fetchFileContent = value;
+                        }}
+                        onContentSaved={() => {
+                            if (action !== 'edit') {
+                                setModalVisible(true);
+                            } else {
+                                save();
+                            }
+                        }}
+                    />
                 </div>
-                {action === 'edit' ? (
-                    <Can action={'file.update'}>
-                        <Button css={tw`flex-1 sm:flex-none`} onClick={() => save()}>
-                            Save Content
-                        </Button>
-                    </Can>
-                ) : (
-                    <Can action={'file.create'}>
-                        <Button css={tw`flex-1 sm:flex-none`} onClick={() => setModalVisible(true)}>
-                            Create File
-                        </Button>
-                    </Can>
-                )}
+
+                {/* Pie del editor */}
+                <div
+                    className="flex items-center justify-between px-4 py-2 mt-0 rounded-b-2xl"
+                    style={{
+                        background: 'rgba(15,15,20,0.95)',
+                        borderTop: '1px solid rgba(255,255,255,0.05)',
+                        marginTop: '-2px',
+                    }}
+                >
+                    <span className="text-xs text-neutral-600" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                        {currentModeName}
+                    </span>
+                    <span className="text-xs text-neutral-700">
+                        Ctrl+S para guardar
+                    </span>
+                </div>
             </div>
-        </PageContentBlock>
+        </div>
     );
 };

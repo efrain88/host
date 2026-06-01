@@ -89,8 +89,33 @@ const EditorContainer = styled.div`
     }
 
     .CodeMirror {
-        font-size: 12px;
-        line-height: 1.375rem;
+        font-size: 13px;
+        line-height: 1.6rem;
+        font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+        background: #07070a;
+    }
+
+    .CodeMirror-gutters {
+        background: #0c0c10;
+        border-right: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .CodeMirror-linenumber {
+        color: #3d3d52 !important;
+    }
+
+    .CodeMirror-cursor {
+        border-left: 2px solid #8b5cf6;
+    }
+
+    .CodeMirror-selected {
+        background: rgba(139,92,246,0.15) !important;
+    }
+
+    .CodeMirror-line::selection,
+    .CodeMirror-line > span::selection,
+    .CodeMirror-line > span > span::selection {
+        background: rgba(139,92,246,0.2);
     }
 
     .CodeMirror-linenumber {
@@ -152,6 +177,7 @@ export default ({ style, initialContent, filename, mode, fetchContent, onContent
         const e = CodeMirror.fromTextArea(node, {
             mode: 'text/plain',
             theme: 'ayu-mirage',
+            extraKeys: { 'Ctrl-Space': 'autocomplete' },
             indentUnit: 4,
             smartIndent: true,
             tabSize: 4,
