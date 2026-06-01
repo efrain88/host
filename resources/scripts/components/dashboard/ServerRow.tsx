@@ -16,13 +16,13 @@ const isAlarmState = (current: number, limit: number): boolean => limit > 0 && c
 
 const StatusIndicatorBox = styled(Link)<{ $status: ServerPowerState | undefined }>`
     ${tw`flex flex-col lg:flex-row items-center gap-y-4 gap-x-6 relative border border-white/5 p-5 transition-all duration-300 overflow-hidden no-underline`};
-    background-color: rgba(5, 5, 5, 0.6);
+    background-color: rgba(18, 18, 18, 0.7); /* Lighter gray/black */
     backdrop-filter: blur(12px);
     border-radius: 1.5rem;
     box-shadow: 0 8px 30px rgba(0,0,0,0.5);
 
     &:hover {
-        background-color: rgba(10, 10, 12, 0.8);
+        background-color: rgba(24, 24, 27, 0.9); /* Lighter on hover */
         border-color: rgba(245, 158, 11, 0.3);
         transform: translateY(-2px);
     }
