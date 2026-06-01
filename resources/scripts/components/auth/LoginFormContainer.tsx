@@ -1,57 +1,92 @@
 import React, { forwardRef } from 'react';
 import { Form } from 'formik';
-import styled from 'styled-components/macro';
+import styled, { createGlobalStyle, keyframes } from 'styled-components/macro';
 import { breakpoint } from '@/theme';
 import FlashMessageRender from '@/components/FlashMessageRender';
 import tw from 'twin.macro';
+
+const animateBackground = keyframes`
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+`;
+
+const GlobalStyle = createGlobalStyle`
+    body {
+        background: linear-gradient(-45deg, #09090e, #1a1525, #2d1b36, #161224);
+        background-size: 400% 400%;
+        animation: ${animateBackground} 15s ease infinite;
+    }
+    
+    #app {
+        ${tw`min-h-screen flex items-center justify-center`}
+    }
+
+    /* Customize input fields across auth */
+    input {
+        background-color: rgba(0, 0, 0, 0.4) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 0.75rem !important;
+        transition: all 0.3s ease-in-out;
+    }
+    
+    input:focus {
+        border-color: rgba(245, 158, 11, 0.5) !important; /* amber-500/50 */
+        box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.5) !important;
+        outline: none !important;
+    }
+    
+    input::placeholder {
+        color: #737373 !important; /* neutral-500 */
+    }
+    
+    .grecaptcha-badge {
+        display: none !important;
+    }
+`;
 
 type Props = React.DetailedHTMLProps<React.FormHTMLAttributes<HTMLFormElement>, HTMLFormElement> & {
     title?: string;
 };
 
 const Container = styled.div`
-    ${breakpoint('sm')`
-        ${tw`w-4/5 mx-auto`}
-    `};
-
-    ${breakpoint('md')`
-        ${tw`p-10`}
-    `};
-
-    ${breakpoint('lg')`
-        ${tw`w-3/5`}
-    `};
-
-    ${breakpoint('xl')`
-        ${tw`w-full`}
-        max-width: 700px;
-    `};
+    ${tw`w-full mx-auto p-4 sm:p-6`}
+    max-width: 480px;
 `;
 
 export default forwardRef<HTMLFormElement, Props>(({ title, ...props }, ref) => (
-    <Container>
-        {title && <h2 css={tw`text-3xl text-center text-neutral-100 font-medium py-4`}>{title}</h2>}
-        <FlashMessageRender css={tw`mb-2 px-1`} />
-        <Form {...props} ref={ref}>
-            <div className="md:flex w-full bg-[#050505]/70 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl p-8 mx-1 items-center">
-                <div className="flex-none select-none mb-8 md:mb-0 md:w-64 self-center text-center">
-                    <h1 className="text-4xl md:text-5xl font-header font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 tracking-wider drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]">
-                        LumenCraft
-                    </h1>
+    <>
+        <GlobalStyle />
+        <Container>
+            <FlashMessageRender css={tw`mb-4 px-1`} />
+            <Form {...props} ref={ref}>
+                <div className="w-full bg-[#050505]/40 backdrop-blur-2xl border border-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.6)] rounded-[2.5rem] p-8 md:p-10 flex flex-col relative overflow-hidden">
+                    {/* Decoración de brillo superior */}
+                    <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+                    
+                    <div className="select-none mb-8 text-center">
+                        <h1 className="text-5xl font-header font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)] hover:scale-105 transition-transform duration-500 cursor-default">
+                            LumenCraft
+                        </h1>
+                        {title && <h2 className="text-xs uppercase tracking-widest text-neutral-400 font-bold mt-4">{title}</h2>}
+                    </div>
+                    <div className="w-full flex flex-col">
+                        {props.children}
+                    </div>
                 </div>
-                <div className="flex-1 md:border-l border-white/10 md:pl-8">{props.children}</div>
-            </div>
-        </Form>
-        <p css={tw`text-center text-neutral-500 text-xs mt-4`}>
-            &copy; 2026&nbsp;
-            <a
-                rel={'noopener nofollow noreferrer'}
-                href={'https://lumencraft.lat'}
-                target={'_blank'}
-                css={tw`no-underline text-neutral-500 hover:text-neutral-300 font-bold`}
-            >
-                TeamLumencraft
-            </a>
-        </p>
-    </Container>
+            </Form>
+            <p className="text-center text-neutral-500 text-xs mt-6 opacity-70 hover:opacity-100 transition-opacity">
+                &copy; 2026&nbsp;
+                <a
+                    rel={'noopener nofollow noreferrer'}
+                    href={'https://lumencraft.lat'}
+                    target={'_blank'}
+                    className="no-underline text-neutral-400 hover:text-amber-400 font-bold transition-colors"
+                >
+                    TeamLumencraft
+                </a>
+            </p>
+        </Container>
+    </>
 ));
