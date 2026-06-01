@@ -66,7 +66,7 @@ export default ({ children }: { children?: React.ReactNode }) => {
             <div className={'h-20 flex items-center justify-between px-6 border-b border-white/5'}>
                 <Link
                     to={'/'}
-                    className={'text-2xl font-header font-black no-underline text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-600 tracking-wider flex items-center drop-shadow-[0_0_10px_rgba(168,85,247,0.4)] transition-all hover:scale-105 duration-300'}
+                    className={'text-2xl font-header font-black no-underline text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 tracking-wider flex items-center drop-shadow-[0_0_10px_rgba(251,191,36,0.4)] transition-all hover:scale-105 duration-300'}
                 >
                     {name}
                 </Link>
