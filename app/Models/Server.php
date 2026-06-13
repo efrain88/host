@@ -174,6 +174,7 @@ class Server extends Model implements Identifiable
         'database_limit' => 'present|nullable|integer|min:0',
         'allocation_limit' => 'sometimes|nullable|integer|min:0',
         'backup_limit' => 'present|nullable|integer|min:0',
+        'allowed_splits' => 'sometimes|nullable|integer|min:0',
     ];
 
     /**
@@ -183,6 +184,8 @@ class Server extends Model implements Identifiable
         'node_id' => 'integer',
         'skip_scripts' => 'boolean',
         'owner_id' => 'integer',
+        'parent_id' => 'integer',
+        'allowed_splits' => 'integer',
         'memory' => 'integer',
         'swap' => 'integer',
         'disk' => 'integer',
@@ -229,6 +232,22 @@ class Server extends Model implements Identifiable
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /**
+     * Gets the parent server if this is a subserver.
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    /**
+     * Gets the subservers (children) of this server.
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     /**

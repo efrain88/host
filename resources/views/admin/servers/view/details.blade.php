@@ -46,6 +46,11 @@
                         <textarea name="description" rows="3" class="form-control">{{ old('description', $server->description) }}</textarea>
                         <p class="text-muted small">A brief description of this server.</p>
                     </div>
+                    <div class="form-group">
+                        <label for="allowed_splits" class="control-label">Allowed Splits (Mini-Servidores)</label>
+                        <input type="number" name="allowed_splits" value="{{ old('allowed_splits', $server->allowed_splits) }}" class="form-control" />
+                        <p class="text-muted small">The maximum number of mini-servers this server can create. Set to 0 to disable.</p>
+                    </div>
                 </div>
                 <div class="box-footer">
                     {!! csrf_field() !!}

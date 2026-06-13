@@ -155,6 +155,12 @@ export default {
             component: ImporterContainer,
         },
         {
+            path: '/split',
+            permission: ['settings.*'],
+            name: 'Divisores',
+            component: lazy(() => import('@/components/server/splitter/SplitterContainer')),
+        },
+        {
             path: '/activity',
             permission: 'activity.*',
             name: 'Actividad',

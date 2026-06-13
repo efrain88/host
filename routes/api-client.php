@@ -155,4 +155,10 @@ Route::group([
         Route::post('/test', [Client\Servers\ImporterController::class, 'testConnection']);
         Route::post('/run', [Client\Servers\ImporterController::class, 'runImport']);
     });
+
+    Route::group(['prefix' => '/splitter'], function () {
+        Route::get('/', [Client\Servers\SplitterController::class, 'index']);
+        Route::post('/', [Client\Servers\SplitterController::class, 'store']);
+        Route::delete('/{childUuid}', [Client\Servers\SplitterController::class, 'destroy']);
+    });
 });
