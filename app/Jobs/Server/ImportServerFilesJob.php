@@ -53,7 +53,7 @@ class ImportServerFilesJob implements ShouldQueue
 
             // Secure lftp command to run on the node
             $lftpCommand = sprintf(
-                'lftp -u %s,%s sftp://%s:%s -e \'set sftp:connect-program "ssh -a -x -o StrictHostKeyChecking=no"; mirror -c -P 15 --use-pget-n=5 %s %s; quit\'',
+                'lftp -u %s,%s sftp://%s:%s -e \'set sftp:connect-program "ssh -a -x -o StrictHostKeyChecking=no"; set net:max-retries 3; set net:reconnect-interval-base 2; mirror -c -P 10 %s %s; quit\'',
                 escapeshellarg($username),
                 escapeshellarg($password),
                 $host,
